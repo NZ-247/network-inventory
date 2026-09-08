@@ -1,0 +1,31 @@
+Flags: X - disabled, I - invalid 
+
+ 0 XI name="telnet" port=23 address="" 
+
+
+
+ 1 XI name="ftp" port=21 address="" 
+
+
+
+ 2   name="www" port=80 address="" 
+
+
+
+ 3   name="ssh" port=22 address="" 
+
+
+
+ 4 XI name="www-ssl" port=443 address="" certificate=none tls-version=any 
+
+
+
+ 5 XI name="api" port=8728 address="" 
+
+
+
+ 6   name="winbox" port=8291 address="" 
+
+
+
+ 7 XI name="api-ssl" port=8729 address="" certificate=none tls-version=any

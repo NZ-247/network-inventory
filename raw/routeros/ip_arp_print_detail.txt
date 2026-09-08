@@ -1,0 +1,91 @@
+Flags: X - disabled, I - invalid, H - DHCP, D - dynamic, P - published, 
+
+C - complete 
+
+ 0 DC address=10.100.130.129 mac-address=04:D6:F4:58:CA:30 
+
+      interface=vlan130-guest_wifi published=no 
+
+
+
+ 1 DC address=10.100.60.16 mac-address=BC:24:11:BC:E2:B3 
+
+      interface=vlan60-services published=no 
+
+
+
+ 2 DC address=10.100.30.60 mac-address=00:1A:2B:3C:4D:5E 
+
+      interface=vlan30-proxmox-hosts published=no 
+
+
+
+ 3 DC address=10.100.60.80 mac-address=BC:24:11:0A:5F:2D 
+
+      interface=vlan60-services published=no 
+
+
+
+ 4 DC address=10.100.30.4 mac-address=BC:24:11:48:7E:23 
+
+      interface=vlan30-proxmox-hosts published=no 
+
+
+
+ 5 DC address=10.100.60.4 mac-address=BC:24:11:6E:4E:76 
+
+      interface=vlan60-services published=no 
+
+
+
+ 6 DC address=10.100.60.71 mac-address=BC:24:11:C1:0C:44 
+
+      interface=vlan60-services published=no 
+
+
+
+ 7 DC address=10.100.130.128 mac-address=6E:52:FB:B0:1B:03 
+
+      interface=vlan130-guest_wifi published=no 
+
+
+
+ 8 DC address=10.100.30.12 mac-address=BC:24:11:16:30:F3 
+
+      interface=vlan30-proxmox-hosts published=no 
+
+
+
+ 9 DC address=10.100.90.99 mac-address=70:01:B5:D3:C1:C1 interface=vlan90-MGMT 
+
+      published=no 
+
+
+
+10 DC address=10.100.60.5 mac-address=BC:24:11:C1:86:A9 
+
+      interface=vlan60-services published=no 
+
+
+
+11 DC address=10.100.30.9 mac-address=D0:94:66:C6:31:5C 
+
+      interface=vlan30-proxmox-hosts published=no 
+
+
+
+12 DC address=10.100.30.2 mac-address=84:69:93:7E:7D:3A 
+
+      interface=vlan30-proxmox-hosts published=no 
+
+
+
+13 DC address=10.100.30.6 mac-address=D0:94:66:C6:75:79 
+
+      interface=vlan30-proxmox-hosts published=no 
+
+
+
+14 DC address=10.100.30.3 mac-address=D0:94:66:C6:75:02 
+
+      interface=vlan30-proxmox-hosts published=no

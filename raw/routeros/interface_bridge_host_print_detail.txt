@@ -1,0 +1,123 @@
+10   DL  mac-address=F4:1E:57:AF:71:62 vid=30 interface=bridge-core 
+
+         bridge=bridge-core on-interface=bridge-core 
+
+
+
+11   DL  mac-address=F4:1E:57:AF:71:63 vid=30 interface=ether3-switch 
+
+         bridge=bridge-core on-interface=ether3-switch 
+
+
+
+12   D   mac-address=70:01:B5:D3:C1:81 vid=60 interface=ether3-switch 
+
+         bridge=bridge-core on-interface=ether3-switch age=37s 
+
+
+
+13   D   mac-address=BC:24:11:0A:5F:2D vid=60 interface=ether3-switch 
+
+         bridge=bridge-core on-interface=ether3-switch age=36s 
+
+
+
+14   D   mac-address=BC:24:11:6E:4E:76 vid=60 interface=ether3-switch 
+
+         bridge=bridge-core on-interface=ether3-switch age=36s 
+
+
+
+15   D   mac-address=BC:24:11:BC:E2:B3 vid=60 interface=ether3-switch 
+
+         bridge=bridge-core on-interface=ether3-switch age=36s 
+
+
+
+16   D   mac-address=BC:24:11:C1:0C:44 vid=60 interface=ether3-switch 
+
+         bridge=bridge-core on-interface=ether3-switch age=1m2s 
+
+
+
+17   D   mac-address=BC:24:11:C1:86:A9 vid=60 interface=ether3-switch 
+
+         bridge=bridge-core on-interface=ether3-switch age=36s 
+
+
+
+18   DL  mac-address=F4:1E:57:AF:71:62 vid=60 interface=bridge-core 
+
+         bridge=bridge-core on-interface=bridge-core 
+
+
+
+19   DL  mac-address=F4:1E:57:AF:71:63 vid=60 interface=ether3-switch 
+
+         bridge=bridge-core on-interface=ether3-switch 
+
+
+
+20   D   mac-address=70:01:B5:D3:C1:81 vid=90 interface=ether3-switch 
+
+         bridge=bridge-core on-interface=ether3-switch age=37s 
+
+
+
+21   D   mac-address=70:01:B5:D3:C1:C1 vid=90 interface=ether3-switch 
+
+         bridge=bridge-core on-interface=ether3-switch age=46s 
+
+
+
+22   DL  mac-address=F4:1E:57:AF:71:62 vid=90 interface=bridge-core 
+
+         bridge=bridge-core on-interface=bridge-core 
+
+
+
+23   DL  mac-address=F4:1E:57:AF:71:63 vid=90 interface=ether3-switch 
+
+         bridge=bridge-core on-interface=ether3-switch 
+
+
+
+24   D   mac-address=04:D6:F4:58:CA:30 vid=130 interface=ether3-switch 
+
+         bridge=bridge-core on-interface=ether3-switch age=50s 
+
+
+
+25   D   mac-address=6E:52:FB:B0:1B:03 vid=130 interface=ether3-switch 
+
+         bridge=bridge-core on-interface=ether3-switch age=57s 
+
+
+
+26   D   mac-address=70:01:B5:D3:C1:81 vid=130 interface=ether3-switch 
+
+         bridge=bridge-core on-interface=ether3-switch age=37s 
+
+
+
+27   D   mac-address=98:DA:C4:FE:BA:B7 vid=130 interface=ether3-switch 
+
+         bridge=bridge-core on-interface=ether3-switch age=43s 
+
+
+
+28   D   mac-address=CC:FF:90:D7:25:BB vid=130 interface=ether3-switch 
+
+         bridge=bridge-core on-interface=ether3-switch age=39s 
+
+
+
+29   DL  mac-address=F4:1E:57:AF:71:62 vid=130 interface=bridge-core 
+
+         bridge=bridge-core on-interface=bridge-core 
+
+
+
+30   DL  mac-address=F4:1E:57:AF:71:63 vid=130 interface=ether3-switch 
+
+         bridge=bridge-core on-interface=ether3-switch

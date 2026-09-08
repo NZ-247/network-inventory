@@ -1,0 +1,11 @@
+Flags: X - disabled, D - dynamic 
+
+ 0   list=interfaces-secure interface=ether3-switch dynamic=no 
+
+
+
+ 1   list=interfaces-secure interface=ether2-PC_DN-06 dynamic=no 
+
+
+
+ 2   list=interfaces-secure interface=vlan90-MGMT dynamic=no

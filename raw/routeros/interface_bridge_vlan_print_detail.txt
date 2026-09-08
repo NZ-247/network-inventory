@@ -1,0 +1,31 @@
+Flags: X - disabled, D - dynamic 
+
+ 0   bridge=bridge-core vlan-ids=90 tagged=bridge-core,ether3-switch 
+
+     untagged=ether2-PC_DN-06 current-tagged=bridge-core,ether3-switch 
+
+     current-untagged="" 
+
+
+
+ 1   bridge=bridge-core vlan-ids=30 tagged=bridge-core,ether3-switch 
+
+     untagged="" current-tagged=bridge-core,ether3-switch current-untagged="" 
+
+
+
+ 2   bridge=bridge-core vlan-ids=60 tagged=bridge-core,ether3-switch 
+
+     untagged="" current-tagged=bridge-core,ether3-switch current-untagged="" 
+
+
+
+ 3   bridge=bridge-core vlan-ids=130 tagged=bridge-core,ether3-switch 
+
+     untagged="" current-tagged=bridge-core,ether3-switch current-untagged="" 
+
+
+
+ 4 D bridge=bridge-core vlan-ids=1 tagged="" untagged="" current-tagged="" 
+
+     current-untagged=bridge-core

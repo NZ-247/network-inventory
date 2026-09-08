@@ -1,0 +1,82 @@
+VLAN0030
+  Spanning tree enabled protocol ieee
+  Root ID    Priority    32798
+             Address     7001.b5d3.c180
+             This bridge is the root
+             Hello Time   2 sec  Max Age 20 sec  Forward Delay 15 sec
+
+  Bridge ID  Priority    32798  (priority 32768 sys-id-ext 30)
+             Address     7001.b5d3.c180
+             Hello Time   2 sec  Max Age 20 sec  Forward Delay 15 sec
+             Aging Time  300 sec
+
+Interface           Role Sts Cost      Prio.Nbr Type
+------------------- ---- --- --------- -------- --------------------------------
+Gi1/0/1             Desg FWD 4         128.1    P2p Edge 
+Gi1/0/3             Desg FWD 4         128.3    P2p 
+Gi1/0/5             Desg FWD 4         128.5    P2p Edge 
+Gi1/0/6             Desg FWD 4         128.6    P2p Edge 
+Gi1/0/15            Desg FWD 19        128.15   P2p Edge 
+
+
+
+VLAN0060
+  Spanning tree enabled protocol ieee
+  Root ID    Priority    32828
+             Address     7001.b5d3.c180
+             This bridge is the root
+             Hello Time   2 sec  Max Age 20 sec  Forward Delay 15 sec
+
+  Bridge ID  Priority    32828  (priority 32768 sys-id-ext 60)
+             Address     7001.b5d3.c180
+             Hello Time   2 sec  Max Age 20 sec  Forward Delay 15 sec
+             Aging Time  300 sec
+
+Interface           Role Sts Cost      Prio.Nbr Type
+------------------- ---- --- --------- -------- --------------------------------
+Gi1/0/1             Desg FWD 4         128.1    P2p Edge 
+Gi1/0/3             Desg FWD 4         128.3    P2p 
+Gi1/0/5             Desg FWD 4         128.5    P2p Edge 
+Gi1/0/6             Desg FWD 4         128.6    P2p Edge 
+Gi1/0/15            Desg FWD 19        128.15   P2p Edge 
+
+
+
+VLAN0090
+  Spanning tree enabled protocol ieee
+  Root ID    Priority    32858
+             Address     7001.b5d3.c180
+             This bridge is the root
+             Hello Time   2 sec  Max Age 20 sec  Forward Delay 15 sec
+
+  Bridge ID  Priority    32858  (priority 32768 sys-id-ext 90)
+             Address     7001.b5d3.c180
+             Hello Time   2 sec  Max Age 20 sec  Forward Delay 15 sec
+             Aging Time  300 sec
+
+Interface           Role Sts Cost      Prio.Nbr Type
+------------------- ---- --- --------- -------- --------------------------------
+Gi1/0/1             Desg FWD 4         128.1    P2p Edge 
+Gi1/0/3             Desg FWD 4         128.3    P2p 
+Gi1/0/5             Desg FWD 4         128.5    P2p Edge 
+Gi1/0/6             Desg FWD 4         128.6    P2p Edge 
+
+
+
+VLAN0130
+  Spanning tree enabled protocol ieee
+  Root ID    Priority    32898
+             Address     7001.b5d3.c180
+             This bridge is the root
+             Hello Time   2 sec  Max Age 20 sec  Forward Delay 15 sec
+
+  Bridge ID  Priority    32898  (priority 32768 sys-id-ext 130)
+             Address     7001.b5d3.c180
+             Hello Time   2 sec  Max Age 20 sec  Forward Delay 15 sec
+             Aging Time  300 sec
+
+Interface           Role Sts Cost      Prio.Nbr Type
+------------------- ---- --- --------- -------- --------------------------------
+Gi1/0/1             Desg FWD 4         128.1    P2p Edge 
+Gi1/0/7             Desg FWD 4         128.7    P2p 
+Gi1/0/10            Desg FWD 19        128.10   P2p Edge

@@ -1,0 +1,37 @@
+Flags: X - disabled, I - inactive, D - dynamic, H - hw-offload 
+
+ 0     interface=ether3-switch bridge=bridge-core priority=0x80 path-cost=10 
+
+       internal-path-cost=10 edge=auto point-to-point=auto learn=auto 
+
+       horizon=none hw=yes auto-isolate=no restricted-role=no 
+
+       restricted-tcn=no pvid=1 frame-types=admit-only-vlan-tagged 
+
+       ingress-filtering=yes unknown-unicast-flood=yes 
+
+       unknown-multicast-flood=yes broadcast-flood=yes tag-stacking=no 
+
+       bpdu-guard=no trusted=no multicast-router=temporary-query 
+
+       fast-leave=no 
+
+
+
+ 1 I   interface=ether2-PC_DN-06 bridge=bridge-core priority=0x80 path-cost=10 
+
+       internal-path-cost=10 edge=auto point-to-point=auto learn=auto 
+
+       horizon=none hw=yes auto-isolate=no restricted-role=no 
+
+       restricted-tcn=no pvid=90 
+
+       frame-types=admit-only-untagged-and-priority-tagged 
+
+       ingress-filtering=yes unknown-unicast-flood=yes 
+
+       unknown-multicast-flood=yes broadcast-flood=yes tag-stacking=no 
+
+       bpdu-guard=no trusted=no multicast-router=temporary-query 
+
+       fast-leave=no

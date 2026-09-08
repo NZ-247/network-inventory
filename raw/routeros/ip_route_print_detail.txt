@@ -1,0 +1,47 @@
+Flags: X - disabled, A - active, D - dynamic, 
+
+C - connect, S - static, r - rip, b - bgp, o - ospf, m - mme, 
+
+B - blackhole, U - unreachable, P - prohibit 
+
+ 0 ADS  dst-address=0.0.0.0/0 gateway=pppoe-Link-WaveMax 
+
+        gateway-status=pppoe-Link-WaveMax reachable distance=1 scope=30 
+
+        target-scope=10 
+
+
+
+ 1 ADC  dst-address=10.88.1.1/32 pref-src=100.66.55.211 
+
+        gateway=pppoe-Link-WaveMax 
+
+        gateway-status=pppoe-Link-WaveMax reachable distance=0 scope=10 
+
+
+
+ 2 ADC  dst-address=10.100.30.0/24 pref-src=10.100.30.1 
+
+        gateway=vlan30-proxmox-hosts 
+
+        gateway-status=vlan30-proxmox-hosts reachable distance=0 scope=10 
+
+
+
+ 3 ADC  dst-address=10.100.60.0/24 pref-src=10.100.60.1 gateway=vlan60-services 
+
+        gateway-status=vlan60-services reachable distance=0 scope=10 
+
+
+
+ 4 ADC  dst-address=10.100.90.0/24 pref-src=10.100.90.1 gateway=vlan90-MGMT 
+
+        gateway-status=vlan90-MGMT reachable distance=0 scope=10 
+
+
+
+ 5 ADC  dst-address=10.100.130.0/24 pref-src=10.100.130.1 
+
+        gateway=vlan130-guest_wifi 
+
+        gateway-status=vlan130-guest_wifi reachable distance=0 scope=10

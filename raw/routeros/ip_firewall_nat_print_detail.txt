@@ -1,0 +1,27 @@
+Flags: X - disabled, I - invalid, D - dynamic 
+
+ 0    chain=srcnat action=masquerade out-interface=pppoe-Link-WaveMax log=no 
+
+      log-prefix="" 
+
+
+
+ 1    ;;; Força DNS Pi-Hole
+
+      chain=dstnat action=dst-nat to-addresses=10.100.60.71 protocol=tcp 
+
+      src-address=10.100.130.0/24 dst-address-list=!DNS dst-port=53 log=no 
+
+      log-prefix="" 
+
+
+
+ 2    chain=dstnat action=dst-nat to-addresses=10.100.60.71 protocol=udp 
+
+      src-address=10.100.130.0/24 dst-address-list=!DNS dst-port=53 log=no 
+
+      log-prefix="" 
+
+
+
+ 3    chain=dstnat action=accept src-address-list=DNS log=no log-prefix=""

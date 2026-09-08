@@ -1,0 +1,20 @@
+record_type,name,ip,mac,vlan,observed_switch_port,host_switch_port,bridge,status,source
+proxmox-host,host0,10.100.30.2,84:69:93:7E:7D:3A,30,Gi1/0/15,,,,router arp + switch mac table
+proxmox-host,host1,10.100.30.3,D0:94:66:C6:75:02,30,Gi1/0/6,,,,router arp + switch mac table
+proxmox-host,host2,10.100.30.6,D0:94:66:C6:75:79,30,Gi1/0/3,,,,router arp + switch mac table
+proxmox-host,host3,10.100.30.9,D0:94:66:C6:31:5C,30,Gi1/0/5,,,,router arp + switch mac table
+workload,VM 100 Ubuntu-Server,Nao determinado,BC:24:11:1C:FD:1D,Nao determinado,Nao determinado,Gi1/0/6,vmbr0,stopped,proxmox inventory + switch mac table + router subnets
+workload,CT 101 Mine-Server,10.100.20.10/24,BC:24:11:2D:FA:72,Nao determinado,Nao determinado,Gi1/0/6,vmbr0,stopped,proxmox inventory + switch mac table + router subnets
+workload,VM 102 Nextcloud,Nao determinado,BC:24:11:A3:DE:DD,Nao determinado,Nao determinado,Gi1/0/6,vmbr0,running,proxmox inventory + switch mac table + router subnets
+workload,VM 102 Nextcloud,Nao determinado,BC:24:11:C1:86:A9,60,Gi1/0/6,Gi1/0/6,vmbr2,running,proxmox inventory + switch mac table + router subnets
+workload,VM 103 tailscale-vpn,Nao determinado,BC:24:11:48:7E:23,Nao determinado,Nao determinado,Gi1/0/6,vmbr0,running,proxmox inventory + switch mac table + router subnets
+workload,VM 103 tailscale-vpn,Nao determinado,BC:24:11:6E:4E:76,60,Gi1/0/6,Gi1/0/6,vmbr2,running,proxmox inventory + switch mac table + router subnets
+workload,CT 104 Page-ServicesNET,10.100.30.12/24,BC:24:11:16:30:F3,30,Gi1/0/6,Gi1/0/6,vmbr0,running,proxmox inventory + switch mac table + router subnets
+workload,CT 106 Interface-Web,10.100.60.16/24,BC:24:11:BC:E2:B3,60,Gi1/0/6,Gi1/0/6,vmbr2,running,proxmox inventory + switch mac table + router subnets
+workload,CT 107 CT107,10.100.60.71/24,BC:24:11:C1:0C:44,60,Gi1/0/6,Gi1/0/6,vmbr2,running,proxmox inventory + switch mac table + router subnets
+workload,CT 109 Zabbix-server,10.100.30.60/24,00:1A:2B:3C:4D:5E,30,Gi1/0/6,Gi1/0/6,vmbr0,running,proxmox inventory + switch mac table + router subnets
+workload,VM 105 LAB-REDES,Nao determinado,BC:24:11:D1:5E:4F,Nao determinado,Nao determinado,Gi1/0/3,vmbr1,stopped,proxmox inventory + switch mac table + router subnets
+workload,CT 108 PiHole-2,10.100.60.72/24,BC:24:11:06:B5:CD,60,Gi1/0/3,Gi1/0/3,vmbr1,running,proxmox inventory + switch mac table + router subnets
+workload,CT 110 bot-server,10.100.60.20/24,BC:24:11:6E:1F:50,60,Nao determinado,Gi1/0/3,vmbr1,stopped,proxmox inventory + switch mac table + router subnets
+workload,CT 111 Pag-darling,10.100.60.80/24,BC:24:11:0A:5F:2D,60,Gi1/0/3,Gi1/0/3,vmbr1,running,proxmox inventory + switch mac table + router subnets
+workload,VM 112 streaming,Nao determinado,BC:24:11:BA:03:FB,Nao determinado,Nao determinado,Gi1/0/5,vmbr0,stopped,proxmox inventory + switch mac table + router subnets

@@ -1,0 +1,25 @@
+# Relative raw path<TAB>read-only command
+switch/terminal_length_0.txt	terminal length 0
+switch/terminal_datadump.txt	terminal datadump
+switch/show_version.txt	show version
+switch/show_system.txt	show system
+switch/show_inventory.txt	show inventory
+switch/show_cdp_neighbors_detail.txt	show cdp neighbors detail
+switch/show_running_config.txt	show running-config
+switch/show_startup_config.txt	show startup-config
+switch/show_interfaces.txt	show interfaces
+switch/show_interfaces_status.txt	show interfaces status
+switch/show_interfaces_description.txt	show interfaces description
+switch/show_interfaces_switchport.txt	show interfaces switchport
+switch/show_vlan.txt	show vlan
+switch/show_vlan_brief.txt	show vlan brief
+switch/show_mac_address_table.txt	show mac address-table
+switch/show_mac_addr_table.txt	show mac-addr-table
+switch/show_arp.txt	show arp
+switch/show_lldp_neighbors.txt	show lldp neighbors
+switch/show_lldp_neighbors_detail.txt	show lldp neighbors detail
+switch/show_spanning_tree.txt	show spanning-tree
+switch/show_lacp.txt	show lacp
+switch/show_port.txt	show port
+switch/show_ip_interface.txt	show ip interface
+switch/show_ip_route.txt	show ip route

@@ -1,0 +1,55 @@
+Flags: X - disabled, R - radius, D - dynamic, B - blocked 
+
+ 0   address=10.100.130.139 mac-address=F4:B3:01:94:35:90 
+
+     client-id="1:f4:b3:1:94:35:90" address-lists="" server=dhcp_guest 
+
+     dhcp-option="" status=waiting last-seen=13w3d3h26s host-name="DN-06" 
+
+
+
+ 1   address=10.100.30.7 mac-address=50:00:00:01:00:00 
+
+     client-id="1:50:0:0:1:0:0" address-lists="" server=dhcp_proxmox 
+
+     dhcp-option="" status=waiting last-seen=30w4d20h4m6s 
+
+     host-name="001-VIVO" 
+
+
+
+ 2 D address=10.100.130.130 mac-address=CC:FF:90:D7:25:BB 
+
+     client-id="1:cc:ff:90:d7:25:bb" address-lists="" server=dhcp_guest 
+
+     dhcp-option="" status=bound expires-after=57m25s last-seen=2m35s 
+
+     active-address=10.100.130.130 active-mac-address=CC:FF:90:D7:25:BB 
+
+     active-client-id="1:cc:ff:90:d7:25:bb" active-server=dhcp_guest 
+
+     host-name="0628ef45ee0621fd38fc546bcbb4ac2" 
+
+
+
+ 3 D address=10.100.130.129 mac-address=04:D6:F4:58:CA:30 address-lists="" 
+
+     server=dhcp_guest dhcp-option="" status=bound expires-after=57m18s 
+
+     last-seen=2m42s active-address=10.100.130.129 
+
+     active-mac-address=04:D6:F4:58:CA:30 active-server=dhcp_guest 
+
+
+
+ 4 D address=10.100.130.128 mac-address=6E:52:FB:B0:1B:03 
+
+     client-id="1:6e:52:fb:b0:1b:3" address-lists="" server=dhcp_guest 
+
+     dhcp-option="" status=bound expires-after=40m22s last-seen=19m38s 
+
+     active-address=10.100.130.128 active-mac-address=6E:52:FB:B0:1B:03 
+
+     active-client-id="1:6e:52:fb:b0:1b:3" active-server=dhcp_guest 
+
+     host-name="A36-de-Leidinara"

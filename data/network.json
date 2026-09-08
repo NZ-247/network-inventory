@@ -1,0 +1,498 @@
+{
+  "router": {
+    "name": "RT-SN-003",
+    "platform": "MikroTik",
+    "board_name": "hEX",
+    "model": "RB750Gr3",
+    "serial": "HHK0A0BXD64",
+    "routeros_version": "6.49.18 (long-term)",
+    "firmware_current": "6.49.17",
+    "firmware_available": "6.49.18",
+    "uptime": "1w4d34m40s",
+    "cpu": "MIPS 1004Kc V2.15",
+    "memory_total": "256.0MiB",
+    "management_ip": "10.100.30.1"
+  },
+  "switch": {
+    "hostname": "SW-SN-03",
+    "management_ip": "10.100.90.99",
+    "default_gateway": "10.100.90.1",
+    "platform": "Cisco Catalyst 2960XR",
+    "model": "WS-C2960XR-24PS-I",
+    "serial": "FDO2213B011",
+    "base_mac": "70:01:B5:D3:C1:80",
+    "ios_version": "15.2(2)E7",
+    "uptime": "1 week, 4 days, 59 minutes"
+  },
+  "vlans": [
+    {
+      "id": "30",
+      "name": "vlan30-proxmox-hosts",
+      "parent": "bridge-core",
+      "gateway": "10.100.30.1/24",
+      "network": "10.100.30.0/24",
+      "dhcp_server": "dhcp_proxmox",
+      "dhcp_pool": "dhcp_pool7",
+      "dhcp_dns": "1.1.1.1,8.8.8.8",
+      "domain": "services.net.br"
+    },
+    {
+      "id": "60",
+      "name": "vlan60-services",
+      "parent": "bridge-core",
+      "gateway": "10.100.60.1/24",
+      "network": "10.100.60.0/24",
+      "dhcp_server": "dhcp_services",
+      "dhcp_pool": "dhcp_pool8",
+      "dhcp_dns": "1.1.1.1,8.8.8.8",
+      "domain": "services.net.br"
+    },
+    {
+      "id": "90",
+      "name": "vlan90-MGMT",
+      "parent": "bridge-core",
+      "gateway": "10.100.90.1/24",
+      "network": "10.100.90.0/24",
+      "dhcp_server": "dhcp_gerencia",
+      "dhcp_pool": "dhcp_pool11",
+      "dhcp_dns": "1.1.1.1,8.8.8.8",
+      "domain": "services.net.br"
+    },
+    {
+      "id": "130",
+      "name": "vlan130-guest_wifi",
+      "parent": "bridge-core",
+      "gateway": "10.100.130.1/24",
+      "network": "10.100.130.0/24",
+      "dhcp_server": "dhcp_guest",
+      "dhcp_pool": "dhcp_pool5",
+      "dhcp_dns": "10.100.60.71,10.100.60.72",
+      "domain": "services.net.br"
+    }
+  ],
+  "proxmox_nodes": [
+    {
+      "node": "host0",
+      "management_ip": "10.100.30.2",
+      "management_mac": "84:69:93:7E:7D:3A",
+      "switch_port": "Gi1/0/15",
+      "observed_vlan": "30",
+      "bridges": {
+        "vmbr0": {
+          "bridge": "vmbr0",
+          "ports": [
+            "nic0"
+          ],
+          "physical_nics": [
+            "nic0"
+          ],
+          "vlans_from_bridge": [],
+          "vlan_aware": true,
+          "bridge_vids": "2-4094",
+          "address": "Nao determinado",
+          "cidr": "Nao determinado",
+          "gateway": "Nao determinado",
+          "notes": []
+        }
+      }
+    },
+    {
+      "node": "host1",
+      "management_ip": "10.100.30.3",
+      "management_mac": "D0:94:66:C6:75:02",
+      "switch_port": "Gi1/0/6",
+      "observed_vlan": "30",
+      "bridges": {
+        "vmbr1": {
+          "bridge": "vmbr1",
+          "ports": [
+            "vlan90"
+          ],
+          "physical_nics": [
+            "enp1s0"
+          ],
+          "vlans_from_bridge": [
+            "90"
+          ],
+          "vlan_aware": true,
+          "bridge_vids": "2-4094",
+          "address": "Nao determinado",
+          "cidr": "Nao determinado",
+          "gateway": "Nao determinado",
+          "notes": []
+        },
+        "vmbr2": {
+          "bridge": "vmbr2",
+          "ports": [
+            "vlan60"
+          ],
+          "physical_nics": [
+            "enp1s0"
+          ],
+          "vlans_from_bridge": [
+            "60"
+          ],
+          "vlan_aware": true,
+          "bridge_vids": "2-4094",
+          "address": "Nao determinado",
+          "cidr": "Nao determinado",
+          "gateway": "Nao determinado",
+          "notes": []
+        },
+        "vmbr0": {
+          "bridge": "vmbr0",
+          "ports": [
+            "enp1s0"
+          ],
+          "physical_nics": [
+            "enp1s0"
+          ],
+          "vlans_from_bridge": [],
+          "vlan_aware": true,
+          "bridge_vids": "2-4094",
+          "address": "10.100.30.3",
+          "cidr": "10.100.30.3/24",
+          "gateway": "10.100.30.1",
+          "notes": []
+        }
+      }
+    },
+    {
+      "node": "host2",
+      "management_ip": "10.100.30.6",
+      "management_mac": "D0:94:66:C6:75:79",
+      "switch_port": "Gi1/0/3",
+      "observed_vlan": "30",
+      "bridges": {
+        "vmbr2": {
+          "bridge": "vmbr2",
+          "ports": [
+            "vlan90"
+          ],
+          "physical_nics": [
+            "nic0"
+          ],
+          "vlans_from_bridge": [
+            "90"
+          ],
+          "vlan_aware": false,
+          "bridge_vids": "Nao determinado",
+          "address": "Nao determinado",
+          "cidr": "Nao determinado",
+          "gateway": "Nao determinado",
+          "notes": []
+        },
+        "vmbr1": {
+          "bridge": "vmbr1",
+          "ports": [
+            "vlan60"
+          ],
+          "physical_nics": [
+            "nic0"
+          ],
+          "vlans_from_bridge": [
+            "60"
+          ],
+          "vlan_aware": false,
+          "bridge_vids": "Nao determinado",
+          "address": "Nao determinado",
+          "cidr": "Nao determinado",
+          "gateway": "Nao determinado",
+          "notes": []
+        },
+        "vmbr0": {
+          "bridge": "vmbr0",
+          "ports": [
+            "nic0"
+          ],
+          "physical_nics": [
+            "nic0"
+          ],
+          "vlans_from_bridge": [],
+          "vlan_aware": true,
+          "bridge_vids": "2-4094",
+          "address": "10.100.30.6",
+          "cidr": "10.100.30.6/24",
+          "gateway": "10.100.30.1",
+          "notes": []
+        }
+      }
+    },
+    {
+      "node": "host3",
+      "management_ip": "10.100.30.9",
+      "management_mac": "D0:94:66:C6:31:5C",
+      "switch_port": "Gi1/0/5",
+      "observed_vlan": "30",
+      "bridges": {
+        "vmbr0": {
+          "bridge": "vmbr0",
+          "ports": [
+            "nic0"
+          ],
+          "physical_nics": [
+            "nic0"
+          ],
+          "vlans_from_bridge": [],
+          "vlan_aware": true,
+          "bridge_vids": "2-4094",
+          "address": "Nao determinado",
+          "cidr": "Nao determinado",
+          "gateway": "Nao determinado",
+          "notes": []
+        },
+        "vmbr1": {
+          "bridge": "vmbr1",
+          "ports": [
+            "vlan60"
+          ],
+          "physical_nics": [
+            "nic0"
+          ],
+          "vlans_from_bridge": [
+            "60"
+          ],
+          "vlan_aware": false,
+          "bridge_vids": "Nao determinado",
+          "address": "Nao determinado",
+          "cidr": "Nao determinado",
+          "gateway": "Nao determinado",
+          "notes": []
+        }
+      }
+    }
+  ],
+  "workloads": [
+    {
+      "id": 100,
+      "name": "Ubuntu-Server",
+      "type": "VM",
+      "node": "host1",
+      "status": "stopped",
+      "bridge": "vmbr0",
+      "mac": "BC:24:11:1C:FD:1D",
+      "ip": "Nao determinado",
+      "configured_vlan": "Nao determinado",
+      "effective_vlan": "Nao determinado",
+      "observed_switch_port": "Nao determinado",
+      "observed_vlan": "Nao determinado",
+      "host_switch_port": "Gi1/0/6"
+    },
+    {
+      "id": 101,
+      "name": "Mine-Server",
+      "type": "CT",
+      "node": "host1",
+      "status": "stopped",
+      "bridge": "vmbr0",
+      "mac": "BC:24:11:2D:FA:72",
+      "ip": "10.100.20.10/24",
+      "configured_vlan": "Nao determinado",
+      "effective_vlan": "Nao determinado",
+      "observed_switch_port": "Nao determinado",
+      "observed_vlan": "Nao determinado",
+      "host_switch_port": "Gi1/0/6"
+    },
+    {
+      "id": 102,
+      "name": "Nextcloud",
+      "type": "VM",
+      "node": "host1",
+      "status": "running",
+      "bridge": "vmbr0",
+      "mac": "BC:24:11:A3:DE:DD",
+      "ip": "Nao determinado",
+      "configured_vlan": "Nao determinado",
+      "effective_vlan": "Nao determinado",
+      "observed_switch_port": "Nao determinado",
+      "observed_vlan": "Nao determinado",
+      "host_switch_port": "Gi1/0/6"
+    },
+    {
+      "id": 102,
+      "name": "Nextcloud",
+      "type": "VM",
+      "node": "host1",
+      "status": "running",
+      "bridge": "vmbr2",
+      "mac": "BC:24:11:C1:86:A9",
+      "ip": "Nao determinado",
+      "configured_vlan": "Nao determinado",
+      "effective_vlan": "60 via bridge",
+      "observed_switch_port": "Gi1/0/6",
+      "observed_vlan": "60",
+      "host_switch_port": "Gi1/0/6"
+    },
+    {
+      "id": 103,
+      "name": "tailscale-vpn",
+      "type": "VM",
+      "node": "host1",
+      "status": "running",
+      "bridge": "vmbr0",
+      "mac": "BC:24:11:48:7E:23",
+      "ip": "Nao determinado",
+      "configured_vlan": "Nao determinado",
+      "effective_vlan": "Nao determinado",
+      "observed_switch_port": "Nao determinado",
+      "observed_vlan": "Nao determinado",
+      "host_switch_port": "Gi1/0/6"
+    },
+    {
+      "id": 103,
+      "name": "tailscale-vpn",
+      "type": "VM",
+      "node": "host1",
+      "status": "running",
+      "bridge": "vmbr2",
+      "mac": "BC:24:11:6E:4E:76",
+      "ip": "Nao determinado",
+      "configured_vlan": "Nao determinado",
+      "effective_vlan": "60 via bridge",
+      "observed_switch_port": "Gi1/0/6",
+      "observed_vlan": "60",
+      "host_switch_port": "Gi1/0/6"
+    },
+    {
+      "id": 104,
+      "name": "Page-ServicesNET",
+      "type": "CT",
+      "node": "host1",
+      "status": "running",
+      "bridge": "vmbr0",
+      "mac": "BC:24:11:16:30:F3",
+      "ip": "10.100.30.12/24",
+      "configured_vlan": "Nao determinado",
+      "effective_vlan": "30 (inferido pelo IP)",
+      "observed_switch_port": "Gi1/0/6",
+      "observed_vlan": "30",
+      "host_switch_port": "Gi1/0/6"
+    },
+    {
+      "id": 106,
+      "name": "Interface-Web",
+      "type": "CT",
+      "node": "host1",
+      "status": "running",
+      "bridge": "vmbr2",
+      "mac": "BC:24:11:BC:E2:B3",
+      "ip": "10.100.60.16/24",
+      "configured_vlan": "Nao determinado",
+      "effective_vlan": "60 via bridge",
+      "observed_switch_port": "Gi1/0/6",
+      "observed_vlan": "60",
+      "host_switch_port": "Gi1/0/6"
+    },
+    {
+      "id": 107,
+      "name": "CT107",
+      "type": "CT",
+      "node": "host1",
+      "status": "running",
+      "bridge": "vmbr2",
+      "mac": "BC:24:11:C1:0C:44",
+      "ip": "10.100.60.71/24",
+      "configured_vlan": "Nao determinado",
+      "effective_vlan": "60 via bridge",
+      "observed_switch_port": "Gi1/0/6",
+      "observed_vlan": "60",
+      "host_switch_port": "Gi1/0/6"
+    },
+    {
+      "id": 109,
+      "name": "Zabbix-server",
+      "type": "CT",
+      "node": "host1",
+      "status": "running",
+      "bridge": "vmbr0",
+      "mac": "00:1A:2B:3C:4D:5E",
+      "ip": "10.100.30.60/24",
+      "configured_vlan": "Nao determinado",
+      "effective_vlan": "30 (inferido pelo IP)",
+      "observed_switch_port": "Gi1/0/6",
+      "observed_vlan": "30",
+      "host_switch_port": "Gi1/0/6"
+    },
+    {
+      "id": 105,
+      "name": "LAB-REDES",
+      "type": "VM",
+      "node": "host2",
+      "status": "stopped",
+      "bridge": "vmbr1",
+      "mac": "BC:24:11:D1:5E:4F",
+      "ip": "Nao determinado",
+      "configured_vlan": "Nao determinado",
+      "effective_vlan": "60 via bridge",
+      "observed_switch_port": "Nao determinado",
+      "observed_vlan": "Nao determinado",
+      "host_switch_port": "Gi1/0/3"
+    },
+    {
+      "id": 108,
+      "name": "PiHole-2",
+      "type": "CT",
+      "node": "host2",
+      "status": "running",
+      "bridge": "vmbr1",
+      "mac": "BC:24:11:06:B5:CD",
+      "ip": "10.100.60.72/24",
+      "configured_vlan": "Nao determinado",
+      "effective_vlan": "60 via bridge",
+      "observed_switch_port": "Gi1/0/3",
+      "observed_vlan": "60",
+      "host_switch_port": "Gi1/0/3"
+    },
+    {
+      "id": 110,
+      "name": "bot-server",
+      "type": "CT",
+      "node": "host2",
+      "status": "stopped",
+      "bridge": "vmbr1",
+      "mac": "BC:24:11:6E:1F:50",
+      "ip": "10.100.60.20/24",
+      "configured_vlan": "Nao determinado",
+      "effective_vlan": "60 via bridge",
+      "observed_switch_port": "Nao determinado",
+      "observed_vlan": "60",
+      "host_switch_port": "Gi1/0/3"
+    },
+    {
+      "id": 111,
+      "name": "Pag-darling",
+      "type": "CT",
+      "node": "host2",
+      "status": "running",
+      "bridge": "vmbr1",
+      "mac": "BC:24:11:0A:5F:2D",
+      "ip": "10.100.60.80/24",
+      "configured_vlan": "Nao determinado",
+      "effective_vlan": "60 via bridge",
+      "observed_switch_port": "Gi1/0/3",
+      "observed_vlan": "60",
+      "host_switch_port": "Gi1/0/3"
+    },
+    {
+      "id": 112,
+      "name": "streaming",
+      "type": "VM",
+      "node": "host3",
+      "status": "stopped",
+      "bridge": "vmbr0",
+      "mac": "BC:24:11:BA:03:FB",
+      "ip": "Nao determinado",
+      "configured_vlan": "60",
+      "effective_vlan": "60",
+      "observed_switch_port": "Nao determinado",
+      "observed_vlan": "Nao determinado",
+      "host_switch_port": "Gi1/0/5"
+    }
+  ],
+  "findings_summary": {
+    "critical": 0,
+    "warnings": 3,
+    "review": 6,
+    "info": 3
+  }
+}

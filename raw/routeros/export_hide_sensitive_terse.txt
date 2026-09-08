@@ -1,0 +1,107 @@
+90.0/24
+
+/ip firewall filter add action=accept chain=input comment="Aceita conex\F5es estabelecidas ou relacionadas" connection-state=established,related
+
+/ip firewall filter add action=accept chain=input comment="Aceita 50 packages ICMP/S" limit=50,5:packet protocol=icmp
+
+/ip firewall filter add action=accept chain=input comment="Libera SMNP para Zabbix" dst-port=161 protocol=udp src-address=10.100.30.60
+
+/ip firewall filter add action=accept chain=forward comment="Permitir ICMP Frag Needed" icmp-options=3:4 protocol=icmp
+
+/ip firewall filter add action=accept chain=input comment="Permitir Frag Needed para o Mikrotik" icmp-options=3:4 protocol=icmp
+
+/ip firewall filter add action=add-src-to-address-list address-list=pre-rede-suporte address-list-timeout=3s chain=input comment="Pega IP para pre-rede-Admin" dst-port=3399 protocol=tcp
+
+/ip firewall filter add action=add-src-to-address-list address-list=rede-suporte address-list-timeout=5h chain=input comment="Pega IP para rede Admin" dst-port=6699 protocol=tcp src-address-list=pre-rede-suporte
+
+/ip firewall filter add action=drop chain=input comment="DROP GERAL" disabled=yes
+
+/ip firewall nat add action=masquerade chain=srcnat out-interface=pppoe-Link-WaveMax
+
+/ip firewall nat add action=dst-nat chain=dstnat comment="For\E7a DNS Pi-Hole" dst-address-list=!DNS dst-port=53 protocol=tcp src-address=10.100.130.0/24 to-addresses=10.100.60.71
+
+/ip firewall nat add action=dst-nat chain=dstnat dst-address-list=!DNS dst-port=53 protocol=udp src-address=10.100.130.0/24 to-addresses=10.100.60.71
+
+/ip firewall nat add action=accept chain=dstnat src-address-list=DNS
+
+/ip service set telnet disabled=yes
+
+/ip service set ftp disabled=yes
+
+/ip service set api disabled=yes
+
+/ip service set api-ssl disabled=yes
+
+/snmp set contact=nzservices396@gmail.com enabled=yes location=Homelab trap-community=<REDACTED> trap-generators=temp-exception,start-trap,interfaces trap-interfaces=all
+
+/system clock set time-zone-name=America/Cuiaba
+
+/system identity set name=RT-SN-003
+
+/system note set note="\r\
+
+    \n\r\
+
+    \n\r\
+
+    \n\r\
+
+    \n\r\
+
+    \n\r\
+
+    \n\r\
+
+    \n\r\
+
+    \n\r\
+
+    \n\r\
+
+    \nSSSSSS    EEEEEEE  RRRRRR   V       V  III  CCCCCCC  EEEEEEE  SSSSSS\r\
+
+    \nSS        EE       RR   RR  V       V  III  CC       EE      SS\r\
+
+    \nSSSSS     EEEEE    RRRRRR    V     V   III  CC       EEEEE    SSSSS\r\
+
+    \n    SS    EE       RR  RR     V   V    III  CC       EE           SS\r\
+
+    \nSSSSSS    EEEEEEE  RR   RR     VVV     III  CCCCCCC  EEEEEEE  SSSSSS\r\
+
+    \n\r\
+
+    \n                 SERVICES.NET\r\
+
+    \n\r\
+
+    \n=================================================================\r\
+
+    \n ACESSO RESTRITO - SERVICES.NET\r\
+
+    \n\r\
+
+    \n Este sistema e de uso exclusivo de usuarios autorizados.\r\
+
+    \n As atividades realizadas podem ser monitoradas e registradas\r\
+
+    \n para fins de seguranca, auditoria e conformidade legal.\r\
+
+    \n\r\
+
+    \n O uso nao autorizado e proibido e podera resultar em medidas\r\
+
+    \n administrativas, civis e penais, conforme legislacao vigente,\r\
+
+    \n incluindo a Lei Geral de Protecao de Dados (LGPD - Lei 13.709).\r\
+
+    \n\r\
+
+    \n Ao prosseguir, voce declara estar ciente e de acordo.\r\
+
+    \n================================================================="
+
+/system package update set channel=long-term
+
+/tool mac-server set allowed-interface-list=interfaces-secure
+
+/tool mac-server mac-winbox set allowed-interface-list=interfaces-secure

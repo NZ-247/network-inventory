@@ -1,0 +1,30 @@
+# Relative raw path<TAB>read-only command
+routeros/system_identity.txt	/system identity print
+routeros/system_resource.txt	/system resource print
+routeros/system_routerboard.txt	/system routerboard print
+routeros/system_package.txt	/system package print
+routeros/export_hide_sensitive_terse.txt	/export hide-sensitive terse
+routeros/interface_print_detail.txt	/interface print detail
+routeros/interface_ethernet_print_detail.txt	/interface ethernet print detail
+routeros/interface_bridge_print_detail.txt	/interface bridge print detail
+routeros/interface_bridge_port_print_detail.txt	/interface bridge port print detail
+routeros/interface_bridge_vlan_print_detail.txt	/interface bridge vlan print detail
+routeros/interface_bridge_host_print_detail.txt	/interface bridge host print detail
+routeros/interface_list_print_detail.txt	/interface list print detail
+routeros/interface_list_member_print_detail.txt	/interface list member print detail
+routeros/interface_vlan_print_detail.txt	/interface vlan print detail
+routeros/ip_address_print_detail.txt	/ip address print detail
+routeros/ip_route_print_detail.txt	/ip route print detail
+routeros/ip_dns_print.txt	/ip dns print
+routeros/ip_pool_print_detail.txt	/ip pool print detail
+routeros/ip_dhcp_server_print_detail.txt	/ip dhcp-server print detail
+routeros/ip_dhcp_server_network_print_detail.txt	/ip dhcp-server network print detail
+routeros/ip_dhcp_server_lease_print_detail.txt	/ip dhcp-server lease print detail
+routeros/ip_firewall_filter_print_detail.txt	/ip firewall filter print detail
+routeros/ip_firewall_nat_print_detail.txt	/ip firewall nat print detail
+routeros/ip_firewall_address_list_print_detail.txt	/ip firewall address-list print detail
+routeros/ip_service_print_detail.txt	/ip service print detail
+routeros/ip_arp_print_detail.txt	/ip arp print detail
+routeros/ip_neighbor_print_detail.txt	/ip neighbor print detail
+routeros/routing_table_print_detail.txt	/routing table print detail
+routeros/routing_route_print_detail.txt	/routing route print detail

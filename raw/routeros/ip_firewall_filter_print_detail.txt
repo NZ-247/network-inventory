@@ -1,0 +1,105 @@
+Flags: X - disabled, I - invalid, D - dynamic 
+
+ 0  D ;;; special dummy rule to show fasttrack counters
+
+      chain=forward action=passthrough 
+
+
+
+ 1    ;;; Ativa FastTrack
+
+      chain=forward action=fasttrack-connection 
+
+      connection-state=established,related log=no log-prefix="" 
+
+
+
+ 2    ;;; Rede-Admin
+
+      chain=input action=accept src-address-list=rede-admin log=no 
+
+      log-prefix="" 
+
+
+
+ 3    ;;; Permite tráfego passar no FastTrack
+
+      chain=forward action=accept connection-state=established,related log=no 
+
+      log-prefix="" 
+
+
+
+ 4    ;;; Allow full access from MGMT VLAN
+
+      chain=input action=accept in-interface=vlan90-MGMT 
+
+
+
+ 5    ;;; MGMT -> ALL
+
+      chain=forward action=accept src-address=10.100.90.0/24 
+
+      in-interface=vlan90-MGMT log=no log-prefix="" 
+
+
+
+ 6    ;;; Aceita conexões estabelecidas ou relacionadas
+
+      chain=input action=accept connection-state=established,related log=no 
+
+      log-prefix="" 
+
+
+
+ 7    ;;; Aceita 50 packages ICMP/S
+
+      chain=input action=accept protocol=icmp limit=50,5:packet log=no 
+
+      log-prefix="" 
+
+
+
+ 8    ;;; Libera SMNP para Zabbix
+
+      chain=input action=accept protocol=udp src-address=10.100.30.60 
+
+      dst-port=161 log=no log-prefix="" 
+
+
+
+ 9    ;;; Permitir ICMP Frag Needed
+
+      chain=forward action=accept protocol=icmp icmp-options=3:4 
+
+
+
+10    ;;; Permitir Frag Needed para o Mikrotik
+
+      chain=input action=accept protocol=icmp icmp-options=3:4 
+
+
+
+11    ;;; Pega IP para pre-rede-Admin
+
+      chain=input action=add-src-to-address-list protocol=tcp 
+
+      address-list=pre-rede-suporte address-list-timeout=3s dst-port=3399 
+
+      log=no log-prefix="" 
+
+
+
+12    ;;; Pega IP para rede Admin
+
+      chain=input action=add-src-to-address-list protocol=tcp 
+
+      src-address-list=pre-rede-suporte address-list=rede-suporte 
+
+      address-list-timeout=5h dst-port=6699 log=no log-prefix="" 
+
+
+
+13 X  ;;; DROP GERAL
+
+      chain=input action=drop log=no log-prefix=""

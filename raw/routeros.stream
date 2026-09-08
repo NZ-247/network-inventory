@@ -1,0 +1,762 @@
+### NETINV_DEVICE user=agent host=10.100.30.1 collected_at=2026-09-08T16:12:29-0400
+### NETINV_NOTE output is redacted for common secret/password patterns
+### NETINV_BEGIN path=routeros/system_identity.txt
+### NETINV_COMMAND /system identity print
+ 
+  name: RT-SN-003
+
+
+### NETINV_END path=routeros/system_identity.txt
+### NETINV_BEGIN path=routeros/system_resource.txt
+### NETINV_COMMAND /system resource print
+ 
+                   uptime: 1w4d34m40s
+                  version: 6.49.18 (long-term)
+               build-time: Feb/27/2025 15:58:10
+         factory-software: 6.46.3
+              free-memory: 213.5MiB
+             total-memory: 256.0MiB
+                      cpu: MIPS 1004Kc V2.15
+                cpu-count: 4
+            cpu-frequency: 880MHz
+                 cpu-load: 4%
+           free-hdd-space: 4680.0KiB
+          total-hdd-space: 16.3MiB
+  write-sect-since-reboot: 195056
+         write-sect-total: 356436
+               bad-blocks: 0%
+        architecture-name: mmips
+               board-name: hEX
+                 platform: MikroTik
+
+
+### NETINV_END path=routeros/system_resource.txt
+### NETINV_BEGIN path=routeros/system_routerboard.txt
+### NETINV_COMMAND /system routerboard print
+ 
+       routerboard: yes
+        board-name: hEX
+             model: RB750Gr3
+          revision: r4
+     serial-number: HHK0A0BXD64
+     firmware-type: mt7621L
+  factory-firmware: 6.49.17
+  current-firmware: 6.49.17
+  upgrade-firmware: 6.49.18
+
+
+### NETINV_END path=routeros/system_routerboard.txt
+### NETINV_BEGIN path=routeros/system_package.txt
+### NETINV_COMMAND /system package print
+ 
+Flags: X - disabled 
+ #   NAME                    VERSION                    SCHEDULED              
+ 0   routeros-mmips          6.49.18                                           
+ 1   system                  6.49.18                                           
+ 2 X ipv6                    6.49.18                                           
+ 3   wireless                6.49.18                                           
+ 4   hotspot                 6.49.18                                           
+ 5   mpls                    6.49.18                                           
+ 6   routing                 6.49.18                                           
+ 7   ppp                     6.49.18                                           
+ 8   dhcp                    6.49.18                                           
+ 9   security                6.49.18                                           
+10   advanced-tools          6.49.18                                           
+
+
+### NETINV_END path=routeros/system_package.txt
+### NETINV_BEGIN path=routeros/export_hide_sensitive_terse.txt
+### NETINV_COMMAND /export hide-sensitive terse
+90.0/24
+/ip firewall filter add action=accept chain=input comment="Aceita conex\F5es estabelecidas ou relacionadas" connection-state=established,related
+/ip firewall filter add action=accept chain=input comment="Aceita 50 packages ICMP/S" limit=50,5:packet protocol=icmp
+/ip firewall filter add action=accept chain=input comment="Libera SMNP para Zabbix" dst-port=161 protocol=udp src-address=10.100.30.60
+/ip firewall filter add action=accept chain=forward comment="Permitir ICMP Frag Needed" icmp-options=3:4 protocol=icmp
+/ip firewall filter add action=accept chain=input comment="Permitir Frag Needed para o Mikrotik" icmp-options=3:4 protocol=icmp
+/ip firewall filter add action=add-src-to-address-list address-list=pre-rede-suporte address-list-timeout=3s chain=input comment="Pega IP para pre-rede-Admin" dst-port=3399 protocol=tcp
+/ip firewall filter add action=add-src-to-address-list address-list=rede-suporte address-list-timeout=5h chain=input comment="Pega IP para rede Admin" dst-port=6699 protocol=tcp src-address-list=pre-rede-suporte
+/ip firewall filter add action=drop chain=input comment="DROP GERAL" disabled=yes
+/ip firewall nat add action=masquerade chain=srcnat out-interface=pppoe-Link-WaveMax
+/ip firewall nat add action=dst-nat chain=dstnat comment="For\E7a DNS Pi-Hole" dst-address-list=!DNS dst-port=53 protocol=tcp src-address=10.100.130.0/24 to-addresses=10.100.60.71
+/ip firewall nat add action=dst-nat chain=dstnat dst-address-list=!DNS dst-port=53 protocol=udp src-address=10.100.130.0/24 to-addresses=10.100.60.71
+/ip firewall nat add action=accept chain=dstnat src-address-list=DNS
+/ip service set telnet disabled=yes
+/ip service set ftp disabled=yes
+/ip service set api disabled=yes
+/ip service set api-ssl disabled=yes
+/snmp set contact=nzservices396@gmail.com enabled=yes location=Homelab trap-community=<REDACTED> trap-generators=temp-exception,start-trap,interfaces trap-interfaces=all
+/system clock set time-zone-name=America/Cuiaba
+/system identity set name=RT-SN-003
+/system note set note="\r\
+    \n\r\
+    \n\r\
+    \n\r\
+    \n\r\
+    \n\r\
+    \n\r\
+    \n\r\
+    \n\r\
+    \n\r\
+    \nSSSSSS    EEEEEEE  RRRRRR   V       V  III  CCCCCCC  EEEEEEE  SSSSSS\r\
+    \nSS        EE       RR   RR  V       V  III  CC       EE      SS\r\
+    \nSSSSS     EEEEE    RRRRRR    V     V   III  CC       EEEEE    SSSSS\r\
+    \n    SS    EE       RR  RR     V   V    III  CC       EE           SS\r\
+    \nSSSSSS    EEEEEEE  RR   RR     VVV     III  CCCCCCC  EEEEEEE  SSSSSS\r\
+    \n\r\
+    \n                 SERVICES.NET\r\
+    \n\r\
+    \n=================================================================\r\
+    \n ACESSO RESTRITO - SERVICES.NET\r\
+    \n\r\
+    \n Este sistema e de uso exclusivo de usuarios autorizados.\r\
+    \n As atividades realizadas podem ser monitoradas e registradas\r\
+    \n para fins de seguranca, auditoria e conformidade legal.\r\
+    \n\r\
+    \n O uso nao autorizado e proibido e podera resultar em medidas\r\
+    \n administrativas, civis e penais, conforme legislacao vigente,\r\
+    \n incluindo a Lei Geral de Protecao de Dados (LGPD - Lei 13.709).\r\
+    \n\r\
+    \n Ao prosseguir, voce declara estar ciente e de acordo.\r\
+    \n================================================================="
+/system package update set channel=long-term
+/tool mac-server set allowed-interface-list=interfaces-secure
+/tool mac-server mac-winbox set allowed-interface-list=interfaces-secure
+
+### NETINV_END path=routeros/export_hide_sensitive_terse.txt
+### NETINV_BEGIN path=routeros/interface_print_detail.txt
+### NETINV_COMMAND /interface print detail
+ 
+Flags: D - dynamic, X - disabled, R - running, S - slave 
+ 0  R  name="ether1-Link-WaveMax" default-name="ether1" type="ether" mtu=1500 
+       actual-mtu=1500 l2mtu=1596 max-l2mtu=2026 
+       mac-address=F4:1E:57:AF:71:61 last-link-up-time=aug/28/2026 15:38:24 
+       link-downs=0 
+
+ 1   S name="ether2-PC_DN-06" default-name="ether2" type="ether" mtu=1500 
+       actual-mtu=1500 l2mtu=1596 max-l2mtu=2026 
+       mac-address=F4:1E:57:AF:71:62 last-link-down-time=aug/29/2026 09:02:48 
+       last-link-up-time=aug/29/2026 08:25:16 link-downs=3 
+
+ 2  RS name="ether3-switch" default-name="ether3" type="ether" mtu=1500 
+       actual-mtu=1500 l2mtu=1596 max-l2mtu=2026 
+       mac-address=F4:1E:57:AF:71:63 last-link-up-time=aug/28/2026 15:42:08 
+       link-downs=0 
+
+ 3     name="ether4" default-name="ether4" type="ether" mtu=1500 
+       actual-mtu=1500 l2mtu=1596 max-l2mtu=2026 
+       mac-address=F4:1E:57:AF:71:64 link-downs=0 
+
+ 4     name="ether5" default-name="ether5" type="ether" mtu=1500 
+       actual-mtu=1500 l2mtu=1596 max-l2mtu=2026 
+       mac-address=F4:1E:57:AF:71:65 link-downs=0 
+
+ 5  R  name="bridge-core" type="bridge" mtu=auto actual-mtu=1500 l2mtu=1596 
+       mac-address=F4:1E:57:AF:71:62 last-link-up-time=aug/28/2026 15:38:15 
+       link-downs=0 
+
+ 6  R  name="pppoe-Link-WaveMax" type="pppoe-out" mtu=1480 actual-mtu=1480 
+       last-link-down-time=sep/02/2026 07:10:55 
+       last-link-up-time=sep/02/2026 07:10:56 link-downs=4 
+
+ 7  R  name="vlan30-proxmox-hosts" type="vlan" mtu=1500 actual-mtu=1500 
+       l2mtu=1592 mac-address=F4:1E:57:AF:71:62 
+       last-link-up-time=aug/28/2026 15:38:15 link-downs=0 
+
+ 8  R  name="vlan60-services" type="vlan" mtu=1500 actual-mtu=1500 l2mtu=1592 
+       mac-address=F4:1E:57:AF:71:62 last-link-up-time=aug/28/2026 15:38:15 
+       link-downs=0 
+
+ 9  R  name="vlan90-MGMT" type="vlan" mtu=1500 actual-mtu=1500 l2mtu=1592 
+       mac-address=F4:1E:57:AF:71:62 last-link-up-time=aug/28/2026 15:38:15 
+       link-downs=0 
+
+10  R  name="vlan130-guest_wifi" type="vlan" mtu=1500 actual-mtu=1500 
+       l2mtu=1592 mac-address=F4:1E:57:AF:71:62 
+       last-link-up-time=aug/28/2026 15:38:14 link-downs=0 
+
+
+### NETINV_END path=routeros/interface_print_detail.txt
+### NETINV_BEGIN path=routeros/interface_ethernet_print_detail.txt
+### NETINV_COMMAND /interface ethernet print detail
+ 
+Flags: X - disabled, R - running, S - slave 
+ 0 R  name="ether1-Link-WaveMax" default-name="ether1" mtu=1500 l2mtu=1596 
+      mac-address=F4:1E:57:AF:71:61 orig-mac-address=F4:1E:57:AF:71:61 
+      arp=enabled arp-timeout=auto loop-protect=default 
+      loop-protect-status=off loop-protect-send-interval=5s 
+      loop-protect-disable-time=5m auto-negotiation=yes 
+      advertise=10M-half,10M-full,100M-half,100M-full,1000M-half,1000M-full 
+      full-duplex=yes tx-flow-control=off rx-flow-control=off speed=1Gbps 
+      bandwidth=unlimited/unlimited switch=switch1 
+
+ 1  S name="ether2-PC_DN-06" default-name="ether2" mtu=1500 l2mtu=1596 
+      mac-address=F4:1E:57:AF:71:62 orig-mac-address=F4:1E:57:AF:71:62 
+      arp=enabled arp-timeout=auto loop-protect=default 
+      loop-protect-status=off loop-protect-send-interval=5s 
+      loop-protect-disable-time=5m auto-negotiation=yes 
+      advertise=10M-half,10M-full,100M-half,100M-full,1000M-half,1000M-full 
+      full-duplex=yes tx-flow-control=off rx-flow-control=off speed=1Gbps 
+      bandwidth=unlimited/unlimited switch=switch1 
+
+ 2 RS name="ether3-switch" default-name="ether3" mtu=1500 l2mtu=1596 
+      mac-address=F4:1E:57:AF:71:63 orig-mac-address=F4:1E:57:AF:71:63 
+      arp=enabled arp-timeout=auto loop-protect=default 
+      loop-protect-status=off loop-protect-send-interval=5s 
+      loop-protect-disable-time=5m auto-negotiation=yes 
+      advertise=10M-half,10M-full,100M-half,100M-full,1000M-half,1000M-full 
+      full-duplex=yes tx-flow-control=off rx-flow-control=off speed=1Gbps 
+      bandwidth=unlimited/unlimited switch=switch1 
+
+ 3    name="ether4" default-name="ether4" mtu=1500 l2mtu=1596 
+      mac-address=F4:1E:57:AF:71:64 orig-mac-address=F4:1E:57:AF:71:64 
+      arp=enabled arp-timeout=auto loop-protect=default 
+      loop-protect-status=off loop-protect-send-interval=5s 
+      loop-protect-disable-time=5m auto-negotiation=yes 
+      advertise=10M-half,10M-full,100M-half,100M-full,1000M-half,1000M-full 
+      full-duplex=yes tx-flow-control=off rx-flow-control=off speed=1Gbps 
+      bandwidth=unlimited/unlimited switch=switch1 
+
+ 4    name="ether5" default-name="ether5" mtu=1500 l2mtu=1596 
+      mac-address=F4:1E:57:AF:71:65 orig-mac-address=F4:1E:57:AF:71:65 
+      arp=enabled arp-timeout=auto loop-protect=default 
+      loop-protect-status=off loop-protect-send-interval=5s 
+      loop-protect-disable-time=5m auto-negotiation=yes 
+      advertise=10M-half,10M-full,100M-half,100M-full,1000M-half,1000M-full 
+      full-duplex=yes tx-flow-control=off rx-flow-control=off speed=1Gbps 
+      bandwidth=unlimited/unlimited switch=switch1 
+
+
+### NETINV_END path=routeros/interface_ethernet_print_detail.txt
+### NETINV_BEGIN path=routeros/interface_bridge_print_detail.txt
+### NETINV_COMMAND /interface bridge print detail
+ 
+Flags: X - disabled, R - running 
+ 0 R name="bridge-core" mtu=auto actual-mtu=1500 l2mtu=1596 arp=enabled 
+     arp-timeout=auto mac-address=F4:1E:57:AF:71:62 protocol-mode=rstp 
+     fast-forward=yes igmp-snooping=no auto-mac=yes ageing-time=5m 
+     priority=0x8000 max-message-age=20s forward-delay=15s 
+     transmit-hold-count=6 vlan-filtering=yes ether-type=0x8100 pvid=1 
+     frame-types=admit-all ingress-filtering=no dhcp-snooping=no 
+
+
+### NETINV_END path=routeros/interface_bridge_print_detail.txt
+### NETINV_BEGIN path=routeros/interface_bridge_port_print_detail.txt
+### NETINV_COMMAND /interface bridge port print detail
+ 
+Flags: X - disabled, I - inactive, D - dynamic, H - hw-offload 
+ 0     interface=ether3-switch bridge=bridge-core priority=0x80 path-cost=10 
+       internal-path-cost=10 edge=auto point-to-point=auto learn=auto 
+       horizon=none hw=yes auto-isolate=no restricted-role=no 
+       restricted-tcn=no pvid=1 frame-types=admit-only-vlan-tagged 
+       ingress-filtering=yes unknown-unicast-flood=yes 
+       unknown-multicast-flood=yes broadcast-flood=yes tag-stacking=no 
+       bpdu-guard=no trusted=no multicast-router=temporary-query 
+       fast-leave=no 
+
+ 1 I   interface=ether2-PC_DN-06 bridge=bridge-core priority=0x80 path-cost=10 
+       internal-path-cost=10 edge=auto point-to-point=auto learn=auto 
+       horizon=none hw=yes auto-isolate=no restricted-role=no 
+       restricted-tcn=no pvid=90 
+       frame-types=admit-only-untagged-and-priority-tagged 
+       ingress-filtering=yes unknown-unicast-flood=yes 
+       unknown-multicast-flood=yes broadcast-flood=yes tag-stacking=no 
+       bpdu-guard=no trusted=no multicast-router=temporary-query 
+       fast-leave=no 
+
+
+### NETINV_END path=routeros/interface_bridge_port_print_detail.txt
+### NETINV_BEGIN path=routeros/interface_bridge_vlan_print_detail.txt
+### NETINV_COMMAND /interface bridge vlan print detail
+ 
+Flags: X - disabled, D - dynamic 
+ 0   bridge=bridge-core vlan-ids=90 tagged=bridge-core,ether3-switch 
+     untagged=ether2-PC_DN-06 current-tagged=bridge-core,ether3-switch 
+     current-untagged="" 
+
+ 1   bridge=bridge-core vlan-ids=30 tagged=bridge-core,ether3-switch 
+     untagged="" current-tagged=bridge-core,ether3-switch current-untagged="" 
+
+ 2   bridge=bridge-core vlan-ids=60 tagged=bridge-core,ether3-switch 
+     untagged="" current-tagged=bridge-core,ether3-switch current-untagged="" 
+
+ 3   bridge=bridge-core vlan-ids=130 tagged=bridge-core,ether3-switch 
+     untagged="" current-tagged=bridge-core,ether3-switch current-untagged="" 
+
+ 4 D bridge=bridge-core vlan-ids=1 tagged="" untagged="" current-tagged="" 
+     current-untagged=bridge-core 
+
+
+### NETINV_END path=routeros/interface_bridge_vlan_print_detail.txt
+### NETINV_BEGIN path=routeros/interface_bridge_host_print_detail.txt
+### NETINV_COMMAND /interface bridge host print detail
+10   DL  mac-address=F4:1E:57:AF:71:62 vid=30 interface=bridge-core 
+         bridge=bridge-core on-interface=bridge-core 
+
+11   DL  mac-address=F4:1E:57:AF:71:63 vid=30 interface=ether3-switch 
+         bridge=bridge-core on-interface=ether3-switch 
+
+12   D   mac-address=70:01:B5:D3:C1:81 vid=60 interface=ether3-switch 
+         bridge=bridge-core on-interface=ether3-switch age=37s 
+
+13   D   mac-address=BC:24:11:0A:5F:2D vid=60 interface=ether3-switch 
+         bridge=bridge-core on-interface=ether3-switch age=36s 
+
+14   D   mac-address=BC:24:11:6E:4E:76 vid=60 interface=ether3-switch 
+         bridge=bridge-core on-interface=ether3-switch age=36s 
+
+15   D   mac-address=BC:24:11:BC:E2:B3 vid=60 interface=ether3-switch 
+         bridge=bridge-core on-interface=ether3-switch age=36s 
+
+16   D   mac-address=BC:24:11:C1:0C:44 vid=60 interface=ether3-switch 
+         bridge=bridge-core on-interface=ether3-switch age=1m2s 
+
+17   D   mac-address=BC:24:11:C1:86:A9 vid=60 interface=ether3-switch 
+         bridge=bridge-core on-interface=ether3-switch age=36s 
+
+18   DL  mac-address=F4:1E:57:AF:71:62 vid=60 interface=bridge-core 
+         bridge=bridge-core on-interface=bridge-core 
+
+19   DL  mac-address=F4:1E:57:AF:71:63 vid=60 interface=ether3-switch 
+         bridge=bridge-core on-interface=ether3-switch 
+
+20   D   mac-address=70:01:B5:D3:C1:81 vid=90 interface=ether3-switch 
+         bridge=bridge-core on-interface=ether3-switch age=37s 
+
+21   D   mac-address=70:01:B5:D3:C1:C1 vid=90 interface=ether3-switch 
+         bridge=bridge-core on-interface=ether3-switch age=46s 
+
+22   DL  mac-address=F4:1E:57:AF:71:62 vid=90 interface=bridge-core 
+         bridge=bridge-core on-interface=bridge-core 
+
+23   DL  mac-address=F4:1E:57:AF:71:63 vid=90 interface=ether3-switch 
+         bridge=bridge-core on-interface=ether3-switch 
+
+24   D   mac-address=04:D6:F4:58:CA:30 vid=130 interface=ether3-switch 
+         bridge=bridge-core on-interface=ether3-switch age=50s 
+
+25   D   mac-address=6E:52:FB:B0:1B:03 vid=130 interface=ether3-switch 
+         bridge=bridge-core on-interface=ether3-switch age=57s 
+
+26   D   mac-address=70:01:B5:D3:C1:81 vid=130 interface=ether3-switch 
+         bridge=bridge-core on-interface=ether3-switch age=37s 
+
+27   D   mac-address=98:DA:C4:FE:BA:B7 vid=130 interface=ether3-switch 
+         bridge=bridge-core on-interface=ether3-switch age=43s 
+
+28   D   mac-address=CC:FF:90:D7:25:BB vid=130 interface=ether3-switch 
+         bridge=bridge-core on-interface=ether3-switch age=39s 
+
+29   DL  mac-address=F4:1E:57:AF:71:62 vid=130 interface=bridge-core 
+         bridge=bridge-core on-interface=bridge-core 
+
+30   DL  mac-address=F4:1E:57:AF:71:63 vid=130 interface=ether3-switch 
+         bridge=bridge-core on-interface=ether3-switch 
+
+
+### NETINV_END path=routeros/interface_bridge_host_print_detail.txt
+### NETINV_BEGIN path=routeros/interface_list_print_detail.txt
+### NETINV_COMMAND /interface list print detail
+ 
+Flags: * - builtin, D - dynamic 
+ 0 * ;;; contains all interfaces
+     name="all" dynamic=no include="" exclude="" 
+
+ 1 * ;;; contains no interfaces
+     name="none" dynamic=no include="" exclude="" 
+
+ 2 * ;;; contains dynamic interfaces
+     name="dynamic" dynamic=no include="" exclude="" 
+
+ 3 * ;;; contains static interfaces
+     name="static" dynamic=no include="" exclude="" 
+
+ 4   name="interfaces-secure" dynamic=no include="" exclude="" 
+
+
+### NETINV_END path=routeros/interface_list_print_detail.txt
+### NETINV_BEGIN path=routeros/interface_list_member_print_detail.txt
+### NETINV_COMMAND /interface list member print detail
+ 
+Flags: X - disabled, D - dynamic 
+ 0   list=interfaces-secure interface=ether3-switch dynamic=no 
+
+ 1   list=interfaces-secure interface=ether2-PC_DN-06 dynamic=no 
+
+ 2   list=interfaces-secure interface=vlan90-MGMT dynamic=no 
+
+
+### NETINV_END path=routeros/interface_list_member_print_detail.txt
+### NETINV_BEGIN path=routeros/interface_vlan_print_detail.txt
+### NETINV_COMMAND /interface vlan print detail
+ 
+Flags: X - disabled, R - running 
+ 0 R name="vlan30-proxmox-hosts" mtu=1500 l2mtu=1592 
+     mac-address=F4:1E:57:AF:71:62 arp=enabled arp-timeout=auto 
+     loop-protect=default loop-protect-status=off 
+     loop-protect-send-interval=5s loop-protect-disable-time=5m vlan-id=30 
+     interface=bridge-core use-service-tag=no 
+
+ 1 R name="vlan60-services" mtu=1500 l2mtu=1592 mac-address=F4:1E:57:AF:71:62 
+     arp=enabled arp-timeout=auto loop-protect=default 
+     loop-protect-status=off loop-protect-send-interval=5s 
+     loop-protect-disable-time=5m vlan-id=60 interface=bridge-core 
+     use-service-tag=no 
+
+ 2 R name="vlan90-MGMT" mtu=1500 l2mtu=1592 mac-address=F4:1E:57:AF:71:62 
+     arp=enabled arp-timeout=auto loop-protect=default 
+     loop-protect-status=off loop-protect-send-interval=5s 
+     loop-protect-disable-time=5m vlan-id=90 interface=bridge-core 
+     use-service-tag=no 
+
+ 3 R name="vlan130-guest_wifi" mtu=1500 l2mtu=1592 
+     mac-address=F4:1E:57:AF:71:62 arp=enabled arp-timeout=auto 
+     loop-protect=default loop-protect-status=off 
+     loop-protect-send-interval=5s loop-protect-disable-time=5m vlan-id=130 
+     interface=bridge-core use-service-tag=no 
+
+
+### NETINV_END path=routeros/interface_vlan_print_detail.txt
+### NETINV_BEGIN path=routeros/ip_address_print_detail.txt
+### NETINV_COMMAND /ip address print detail
+ 
+Flags: X - disabled, I - invalid, D - dynamic 
+ 0   address=10.100.90.1/24 network=10.100.90.0 interface=vlan90-MGMT 
+     actual-interface=vlan90-MGMT 
+
+ 1   address=10.100.30.1/24 network=10.100.30.0 interface=vlan30-proxmox-hosts 
+     actual-interface=vlan30-proxmox-hosts 
+
+ 2   address=10.100.60.1/24 network=10.100.60.0 interface=vlan60-services 
+     actual-interface=vlan60-services 
+
+ 3   address=10.100.130.1/24 network=10.100.130.0 interface=vlan130-guest_wifi 
+     actual-interface=vlan130-guest_wifi 
+
+ 4 D address=100.66.55.211/32 network=10.88.1.1 interface=pppoe-Link-WaveMax 
+     actual-interface=pppoe-Link-WaveMax 
+
+
+### NETINV_END path=routeros/ip_address_print_detail.txt
+### NETINV_BEGIN path=routeros/ip_route_print_detail.txt
+### NETINV_COMMAND /ip route print detail
+ 
+Flags: X - disabled, A - active, D - dynamic, 
+C - connect, S - static, r - rip, b - bgp, o - ospf, m - mme, 
+B - blackhole, U - unreachable, P - prohibit 
+ 0 ADS  dst-address=0.0.0.0/0 gateway=pppoe-Link-WaveMax 
+        gateway-status=pppoe-Link-WaveMax reachable distance=1 scope=30 
+        target-scope=10 
+
+ 1 ADC  dst-address=10.88.1.1/32 pref-src=100.66.55.211 
+        gateway=pppoe-Link-WaveMax 
+        gateway-status=pppoe-Link-WaveMax reachable distance=0 scope=10 
+
+ 2 ADC  dst-address=10.100.30.0/24 pref-src=10.100.30.1 
+        gateway=vlan30-proxmox-hosts 
+        gateway-status=vlan30-proxmox-hosts reachable distance=0 scope=10 
+
+ 3 ADC  dst-address=10.100.60.0/24 pref-src=10.100.60.1 gateway=vlan60-services 
+        gateway-status=vlan60-services reachable distance=0 scope=10 
+
+ 4 ADC  dst-address=10.100.90.0/24 pref-src=10.100.90.1 gateway=vlan90-MGMT 
+        gateway-status=vlan90-MGMT reachable distance=0 scope=10 
+
+ 5 ADC  dst-address=10.100.130.0/24 pref-src=10.100.130.1 
+        gateway=vlan130-guest_wifi 
+        gateway-status=vlan130-guest_wifi reachable distance=0 scope=10 
+
+
+### NETINV_END path=routeros/ip_route_print_detail.txt
+### NETINV_BEGIN path=routeros/ip_dns_print.txt
+### NETINV_COMMAND /ip dns print
+ 
+                      servers: 8.8.8.8,1.1.1.1
+              dynamic-servers: 177.155.84.53,45.237.24.53
+               use-doh-server: 
+              verify-doh-cert: no
+        allow-remote-requests: no
+          max-udp-packet-size: 4096
+         query-server-timeout: 2s
+          query-total-timeout: 10s
+       max-concurrent-queries: 100
+  max-concurrent-tcp-sessions: 20
+                   cache-size: 2048KiB
+                cache-max-ttl: 1w
+                   cache-used: 25KiB
+
+
+### NETINV_END path=routeros/ip_dns_print.txt
+### NETINV_BEGIN path=routeros/ip_pool_print_detail.txt
+### NETINV_COMMAND /ip pool print detail
+
+### NETINV_TIMEOUT waiting_for_command_completion
+
+### NETINV_END path=routeros/ip_pool_print_detail.txt
+### NETINV_BEGIN path=routeros/ip_dhcp_server_print_detail.txt
+### NETINV_COMMAND /ip dhcp-server print detail
+ 
+Flags: D - dynamic, X - disabled, I - invalid 
+ 0    name="dhcp_guest" interface=vlan130-guest_wifi lease-time=1h 
+      address-pool=dhcp_pool5 authoritative=yes use-radius=no lease-script="" 
+
+ 1    name="dhcp_proxmox" interface=vlan30-proxmox-hosts lease-time=1h 
+      address-pool=dhcp_pool7 authoritative=yes use-radius=no lease-script="" 
+
+ 2    name="dhcp_services" interface=vlan60-services lease-time=1h 
+      address-pool=dhcp_pool8 authoritative=yes use-radius=no lease-script="" 
+
+ 3    name="dhcp_gerencia" interface=vlan90-MGMT lease-time=8h 
+      address-pool=dhcp_pool11 authoritative=yes use-radius=no 
+      lease-script="" 
+
+
+### NETINV_END path=routeros/ip_dhcp_server_print_detail.txt
+### NETINV_BEGIN path=routeros/ip_dhcp_server_network_print_detail.txt
+### NETINV_COMMAND /ip dhcp-server network print detail
+ 
+Flags: D - dynamic 
+ 0   address=10.100.30.0/24 gateway=10.100.30.1 dns-server=1.1.1.1,8.8.8.8 
+     wins-server="" ntp-server="" caps-manager="" domain="services.net.br" 
+     dhcp-option="" 
+
+ 1   address=10.100.60.0/24 gateway=10.100.60.1 dns-server=1.1.1.1,8.8.8.8 
+     wins-server="" ntp-server="" caps-manager="" domain="services.net.br" 
+     dhcp-option="" 
+
+ 2   address=10.100.90.0/24 gateway=10.100.90.1 dns-server=1.1.1.1,8.8.8.8 
+     wins-server="" ntp-server="" caps-manager="" domain="services.net.br" 
+     dhcp-option="" 
+
+ 3   address=10.100.130.0/24 gateway=10.100.130.1 
+     dns-server=10.100.60.71,10.100.60.72 wins-server="" ntp-server="" 
+     caps-manager="" domain="services.net.br" dhcp-option="" 
+
+
+### NETINV_END path=routeros/ip_dhcp_server_network_print_detail.txt
+### NETINV_BEGIN path=routeros/ip_dhcp_server_lease_print_detail.txt
+### NETINV_COMMAND /ip dhcp-server lease print detail
+ 
+Flags: X - disabled, R - radius, D - dynamic, B - blocked 
+ 0   address=10.100.130.139 mac-address=F4:B3:01:94:35:90 
+     client-id="1:f4:b3:1:94:35:90" address-lists="" server=dhcp_guest 
+     dhcp-option="" status=waiting last-seen=13w3d3h26s host-name="DN-06" 
+
+ 1   address=10.100.30.7 mac-address=50:00:00:01:00:00 
+     client-id="1:50:0:0:1:0:0" address-lists="" server=dhcp_proxmox 
+     dhcp-option="" status=waiting last-seen=30w4d20h4m6s 
+     host-name="001-VIVO" 
+
+ 2 D address=10.100.130.130 mac-address=CC:FF:90:D7:25:BB 
+     client-id="1:cc:ff:90:d7:25:bb" address-lists="" server=dhcp_guest 
+     dhcp-option="" status=bound expires-after=57m25s last-seen=2m35s 
+     active-address=10.100.130.130 active-mac-address=CC:FF:90:D7:25:BB 
+     active-client-id="1:cc:ff:90:d7:25:bb" active-server=dhcp_guest 
+     host-name="0628ef45ee0621fd38fc546bcbb4ac2" 
+
+ 3 D address=10.100.130.129 mac-address=04:D6:F4:58:CA:30 address-lists="" 
+     server=dhcp_guest dhcp-option="" status=bound expires-after=57m18s 
+     last-seen=2m42s active-address=10.100.130.129 
+     active-mac-address=04:D6:F4:58:CA:30 active-server=dhcp_guest 
+
+ 4 D address=10.100.130.128 mac-address=6E:52:FB:B0:1B:03 
+     client-id="1:6e:52:fb:b0:1b:3" address-lists="" server=dhcp_guest 
+     dhcp-option="" status=bound expires-after=40m22s last-seen=19m38s 
+     active-address=10.100.130.128 active-mac-address=6E:52:FB:B0:1B:03 
+     active-client-id="1:6e:52:fb:b0:1b:3" active-server=dhcp_guest 
+     host-name="A36-de-Leidinara" 
+
+
+### NETINV_END path=routeros/ip_dhcp_server_lease_print_detail.txt
+### NETINV_BEGIN path=routeros/ip_firewall_filter_print_detail.txt
+### NETINV_COMMAND /ip firewall filter print detail
+ 
+Flags: X - disabled, I - invalid, D - dynamic 
+ 0  D ;;; special dummy rule to show fasttrack counters
+      chain=forward action=passthrough 
+
+ 1    ;;; Ativa FastTrack
+      chain=forward action=fasttrack-connection 
+      connection-state=established,related log=no log-prefix="" 
+
+ 2    ;;; Rede-Admin
+      chain=input action=accept src-address-list=rede-admin log=no 
+      log-prefix="" 
+
+ 3    ;;; Permite tráfego passar no FastTrack
+      chain=forward action=accept connection-state=established,related log=no 
+      log-prefix="" 
+
+ 4    ;;; Allow full access from MGMT VLAN
+      chain=input action=accept in-interface=vlan90-MGMT 
+
+ 5    ;;; MGMT -> ALL
+      chain=forward action=accept src-address=10.100.90.0/24 
+      in-interface=vlan90-MGMT log=no log-prefix="" 
+
+ 6    ;;; Aceita conexões estabelecidas ou relacionadas
+      chain=input action=accept connection-state=established,related log=no 
+      log-prefix="" 
+
+ 7    ;;; Aceita 50 packages ICMP/S
+      chain=input action=accept protocol=icmp limit=50,5:packet log=no 
+      log-prefix="" 
+
+ 8    ;;; Libera SMNP para Zabbix
+      chain=input action=accept protocol=udp src-address=10.100.30.60 
+      dst-port=161 log=no log-prefix="" 
+
+ 9    ;;; Permitir ICMP Frag Needed
+      chain=forward action=accept protocol=icmp icmp-options=3:4 
+
+10    ;;; Permitir Frag Needed para o Mikrotik
+      chain=input action=accept protocol=icmp icmp-options=3:4 
+
+11    ;;; Pega IP para pre-rede-Admin
+      chain=input action=add-src-to-address-list protocol=tcp 
+      address-list=pre-rede-suporte address-list-timeout=3s dst-port=3399 
+      log=no log-prefix="" 
+
+12    ;;; Pega IP para rede Admin
+      chain=input action=add-src-to-address-list protocol=tcp 
+      src-address-list=pre-rede-suporte address-list=rede-suporte 
+      address-list-timeout=5h dst-port=6699 log=no log-prefix="" 
+
+13 X  ;;; DROP GERAL
+      chain=input action=drop log=no log-prefix="" 
+
+
+### NETINV_END path=routeros/ip_firewall_filter_print_detail.txt
+### NETINV_BEGIN path=routeros/ip_firewall_nat_print_detail.txt
+### NETINV_COMMAND /ip firewall nat print detail
+ 
+Flags: X - disabled, I - invalid, D - dynamic 
+ 0    chain=srcnat action=masquerade out-interface=pppoe-Link-WaveMax log=no 
+      log-prefix="" 
+
+ 1    ;;; Força DNS Pi-Hole
+      chain=dstnat action=dst-nat to-addresses=10.100.60.71 protocol=tcp 
+      src-address=10.100.130.0/24 dst-address-list=!DNS dst-port=53 log=no 
+      log-prefix="" 
+
+ 2    chain=dstnat action=dst-nat to-addresses=10.100.60.71 protocol=udp 
+      src-address=10.100.130.0/24 dst-address-list=!DNS dst-port=53 log=no 
+      log-prefix="" 
+
+ 3    chain=dstnat action=accept src-address-list=DNS log=no log-prefix="" 
+
+
+### NETINV_END path=routeros/ip_firewall_nat_print_detail.txt
+### NETINV_BEGIN path=routeros/ip_firewall_address_list_print_detail.txt
+### NETINV_COMMAND /ip firewall address-list print detail
+ 
+Flags: X - disabled, D - dynamic 
+ 0   list=rede-admin address=10.100.90.0/24 creation-time=jan/28/2026 17:46:37 
+
+ 1   ;;; DN-06 Via WI-FI
+     list=rede-admin address=10.100.130.139 
+     creation-time=jan/28/2026 18:37:08 
+
+ 2   ;;; IP BKP VM Tailscale
+     list=rede-admin address=10.100.30.4 creation-time=feb/02/2026 17:52:55 
+
+ 3   ;;; IP VM Tailscale
+     list=rede-admin address=10.100.60.4 creation-time=feb/08/2026 10:05:00 
+
+ 4   list=DNS address=10.100.60.71 creation-time=feb/26/2026 17:27:13 
+
+ 5   list=DNS address=10.100.60.72 creation-time=feb/26/2026 17:27:27 
+
+
+### NETINV_END path=routeros/ip_firewall_address_list_print_detail.txt
+### NETINV_BEGIN path=routeros/ip_service_print_detail.txt
+### NETINV_COMMAND /ip service print detail
+ 
+Flags: X - disabled, I - invalid 
+ 0 XI name="telnet" port=23 address="" 
+
+ 1 XI name="ftp" port=21 address="" 
+
+ 2   name="www" port=80 address="" 
+
+ 3   name="ssh" port=22 address="" 
+
+ 4 XI name="www-ssl" port=443 address="" certificate=none tls-version=any 
+
+ 5 XI name="api" port=8728 address="" 
+
+ 6   name="winbox" port=8291 address="" 
+
+ 7 XI name="api-ssl" port=8729 address="" certificate=none tls-version=any 
+
+
+### NETINV_END path=routeros/ip_service_print_detail.txt
+### NETINV_BEGIN path=routeros/ip_arp_print_detail.txt
+### NETINV_COMMAND /ip arp print detail
+ 
+Flags: X - disabled, I - invalid, H - DHCP, D - dynamic, P - published, 
+C - complete 
+ 0 DC address=10.100.130.129 mac-address=04:D6:F4:58:CA:30 
+      interface=vlan130-guest_wifi published=no 
+
+ 1 DC address=10.100.60.16 mac-address=BC:24:11:BC:E2:B3 
+      interface=vlan60-services published=no 
+
+ 2 DC address=10.100.30.60 mac-address=00:1A:2B:3C:4D:5E 
+      interface=vlan30-proxmox-hosts published=no 
+
+ 3 DC address=10.100.60.80 mac-address=BC:24:11:0A:5F:2D 
+      interface=vlan60-services published=no 
+
+ 4 DC address=10.100.30.4 mac-address=BC:24:11:48:7E:23 
+      interface=vlan30-proxmox-hosts published=no 
+
+ 5 DC address=10.100.60.4 mac-address=BC:24:11:6E:4E:76 
+      interface=vlan60-services published=no 
+
+ 6 DC address=10.100.60.71 mac-address=BC:24:11:C1:0C:44 
+      interface=vlan60-services published=no 
+
+ 7 DC address=10.100.130.128 mac-address=6E:52:FB:B0:1B:03 
+      interface=vlan130-guest_wifi published=no 
+
+ 8 DC address=10.100.30.12 mac-address=BC:24:11:16:30:F3 
+      interface=vlan30-proxmox-hosts published=no 
+
+ 9 DC address=10.100.90.99 mac-address=70:01:B5:D3:C1:C1 interface=vlan90-MGMT 
+      published=no 
+
+10 DC address=10.100.60.5 mac-address=BC:24:11:C1:86:A9 
+      interface=vlan60-services published=no 
+
+11 DC address=10.100.30.9 mac-address=D0:94:66:C6:31:5C 
+      interface=vlan30-proxmox-hosts published=no 
+
+12 DC address=10.100.30.2 mac-address=84:69:93:7E:7D:3A 
+      interface=vlan30-proxmox-hosts published=no 
+
+13 DC address=10.100.30.6 mac-address=D0:94:66:C6:75:79 
+      interface=vlan30-proxmox-hosts published=no 
+
+14 DC address=10.100.30.3 mac-address=D0:94:66:C6:75:02 
+      interface=vlan30-proxmox-hosts published=no 
+
+
+### NETINV_END path=routeros/ip_arp_print_detail.txt
+### NETINV_BEGIN path=routeros/ip_neighbor_print_detail.txt
+### NETINV_COMMAND /ip neighbor print detail
+ 
+
+
+### NETINV_END path=routeros/ip_neighbor_print_detail.txt
+### NETINV_BEGIN path=routeros/routing_table_print_detail.txt
+### NETINV_COMMAND /routing table print detail
+ 
+bad command name table (line 1 column 10)
+
+### NETINV_END path=routeros/routing_table_print_detail.txt
+### NETINV_BEGIN path=routeros/routing_route_print_detail.txt
+### NETINV_COMMAND /routing route print detail
+ 
+bad command name route (line 1 column 10)
+
+### NETINV_END path=routeros/routing_route_print_detail.txt

@@ -1,0 +1,93 @@
+Flags: D - dynamic, X - disabled, R - running, S - slave 
+
+ 0  R  name="ether1-Link-WaveMax" default-name="ether1" type="ether" mtu=1500 
+
+       actual-mtu=1500 l2mtu=1596 max-l2mtu=2026 
+
+       mac-address=F4:1E:57:AF:71:61 last-link-up-time=aug/28/2026 15:38:24 
+
+       link-downs=0 
+
+
+
+ 1   S name="ether2-PC_DN-06" default-name="ether2" type="ether" mtu=1500 
+
+       actual-mtu=1500 l2mtu=1596 max-l2mtu=2026 
+
+       mac-address=F4:1E:57:AF:71:62 last-link-down-time=aug/29/2026 09:02:48 
+
+       last-link-up-time=aug/29/2026 08:25:16 link-downs=3 
+
+
+
+ 2  RS name="ether3-switch" default-name="ether3" type="ether" mtu=1500 
+
+       actual-mtu=1500 l2mtu=1596 max-l2mtu=2026 
+
+       mac-address=F4:1E:57:AF:71:63 last-link-up-time=aug/28/2026 15:42:08 
+
+       link-downs=0 
+
+
+
+ 3     name="ether4" default-name="ether4" type="ether" mtu=1500 
+
+       actual-mtu=1500 l2mtu=1596 max-l2mtu=2026 
+
+       mac-address=F4:1E:57:AF:71:64 link-downs=0 
+
+
+
+ 4     name="ether5" default-name="ether5" type="ether" mtu=1500 
+
+       actual-mtu=1500 l2mtu=1596 max-l2mtu=2026 
+
+       mac-address=F4:1E:57:AF:71:65 link-downs=0 
+
+
+
+ 5  R  name="bridge-core" type="bridge" mtu=auto actual-mtu=1500 l2mtu=1596 
+
+       mac-address=F4:1E:57:AF:71:62 last-link-up-time=aug/28/2026 15:38:15 
+
+       link-downs=0 
+
+
+
+ 6  R  name="pppoe-Link-WaveMax" type="pppoe-out" mtu=1480 actual-mtu=1480 
+
+       last-link-down-time=sep/02/2026 07:10:55 
+
+       last-link-up-time=sep/02/2026 07:10:56 link-downs=4 
+
+
+
+ 7  R  name="vlan30-proxmox-hosts" type="vlan" mtu=1500 actual-mtu=1500 
+
+       l2mtu=1592 mac-address=F4:1E:57:AF:71:62 
+
+       last-link-up-time=aug/28/2026 15:38:15 link-downs=0 
+
+
+
+ 8  R  name="vlan60-services" type="vlan" mtu=1500 actual-mtu=1500 l2mtu=1592 
+
+       mac-address=F4:1E:57:AF:71:62 last-link-up-time=aug/28/2026 15:38:15 
+
+       link-downs=0 
+
+
+
+ 9  R  name="vlan90-MGMT" type="vlan" mtu=1500 actual-mtu=1500 l2mtu=1592 
+
+       mac-address=F4:1E:57:AF:71:62 last-link-up-time=aug/28/2026 15:38:15 
+
+       link-downs=0 
+
+
+
+10  R  name="vlan130-guest_wifi" type="vlan" mtu=1500 actual-mtu=1500 
+
+       l2mtu=1592 mac-address=F4:1E:57:AF:71:62 
+
+       last-link-up-time=aug/28/2026 15:38:14 link-downs=0

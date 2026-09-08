@@ -1,0 +1,1044 @@
+{
+  "device": {
+    "name": "RT-SN-003",
+    "platform": "MikroTik",
+    "board_name": "hEX",
+    "model": "RB750Gr3",
+    "serial": "HHK0A0BXD64",
+    "routeros_version": "6.49.18 (long-term)",
+    "firmware_current": "6.49.17",
+    "firmware_available": "6.49.18",
+    "uptime": "1w4d34m40s",
+    "cpu": "MIPS 1004Kc V2.15",
+    "memory_total": "256.0MiB",
+    "management_ip": "10.100.30.1"
+  },
+  "interfaces": [
+    {
+      "name": "ether1-Link-WaveMax",
+      "default-name": "ether1",
+      "type": "ether",
+      "mtu": "1500",
+      "actual-mtu": "1500",
+      "l2mtu": "1596",
+      "max-l2mtu": "2026",
+      "mac-address": "F4:1E:57:AF:71:61",
+      "last-link-up-time": "aug/28/2026",
+      "link-downs": "0",
+      "_index": 0,
+      "_flags": ""
+    },
+    {
+      "name": "ether2-PC_DN-06",
+      "default-name": "ether2",
+      "type": "ether",
+      "mtu": "1500",
+      "actual-mtu": "1500",
+      "l2mtu": "1596",
+      "max-l2mtu": "2026",
+      "mac-address": "F4:1E:57:AF:71:62",
+      "last-link-down-time": "aug/29/2026",
+      "last-link-up-time": "aug/29/2026",
+      "link-downs": "3",
+      "_index": 1,
+      "_flags": ""
+    },
+    {
+      "name": "ether3-switch",
+      "default-name": "ether3",
+      "type": "ether",
+      "mtu": "1500",
+      "actual-mtu": "1500",
+      "l2mtu": "1596",
+      "max-l2mtu": "2026",
+      "mac-address": "F4:1E:57:AF:71:63",
+      "last-link-up-time": "aug/28/2026",
+      "link-downs": "0",
+      "_index": 2,
+      "_flags": ""
+    },
+    {
+      "name": "ether4",
+      "default-name": "ether4",
+      "type": "ether",
+      "mtu": "1500",
+      "actual-mtu": "1500",
+      "l2mtu": "1596",
+      "max-l2mtu": "2026",
+      "mac-address": "F4:1E:57:AF:71:64",
+      "link-downs": "0",
+      "_index": 3,
+      "_flags": ""
+    },
+    {
+      "name": "ether5",
+      "default-name": "ether5",
+      "type": "ether",
+      "mtu": "1500",
+      "actual-mtu": "1500",
+      "l2mtu": "1596",
+      "max-l2mtu": "2026",
+      "mac-address": "F4:1E:57:AF:71:65",
+      "link-downs": "0",
+      "_index": 4,
+      "_flags": ""
+    },
+    {
+      "name": "bridge-core",
+      "type": "bridge",
+      "mtu": "auto",
+      "actual-mtu": "1500",
+      "l2mtu": "1596",
+      "mac-address": "F4:1E:57:AF:71:62",
+      "last-link-up-time": "aug/28/2026",
+      "link-downs": "0",
+      "_index": 5,
+      "_flags": ""
+    },
+    {
+      "name": "pppoe-Link-WaveMax",
+      "type": "pppoe-out",
+      "mtu": "1480",
+      "actual-mtu": "1480",
+      "last-link-down-time": "sep/02/2026",
+      "last-link-up-time": "sep/02/2026",
+      "link-downs": "4",
+      "_index": 6,
+      "_flags": ""
+    },
+    {
+      "name": "vlan30-proxmox-hosts",
+      "type": "vlan",
+      "mtu": "1500",
+      "actual-mtu": "1500",
+      "l2mtu": "1592",
+      "mac-address": "F4:1E:57:AF:71:62",
+      "last-link-up-time": "aug/28/2026",
+      "link-downs": "0",
+      "_index": 7,
+      "_flags": ""
+    },
+    {
+      "name": "vlan60-services",
+      "type": "vlan",
+      "mtu": "1500",
+      "actual-mtu": "1500",
+      "l2mtu": "1592",
+      "mac-address": "F4:1E:57:AF:71:62",
+      "last-link-up-time": "aug/28/2026",
+      "link-downs": "0",
+      "_index": 8,
+      "_flags": ""
+    },
+    {
+      "name": "vlan90-MGMT",
+      "type": "vlan",
+      "mtu": "1500",
+      "actual-mtu": "1500",
+      "l2mtu": "1592",
+      "mac-address": "F4:1E:57:AF:71:62",
+      "last-link-up-time": "aug/28/2026",
+      "link-downs": "0",
+      "_index": 9,
+      "_flags": ""
+    },
+    {
+      "name": "vlan130-guest_wifi",
+      "type": "vlan",
+      "mtu": "1500",
+      "actual-mtu": "1500",
+      "l2mtu": "1592",
+      "mac-address": "F4:1E:57:AF:71:62",
+      "last-link-up-time": "aug/28/2026",
+      "link-downs": "0",
+      "_index": 10,
+      "_flags": ""
+    }
+  ],
+  "bridge_ports": [
+    {
+      "interface": "ether3-switch",
+      "bridge": "bridge-core",
+      "priority": "0x80",
+      "path-cost": "10",
+      "internal-path-cost": "10",
+      "edge": "auto",
+      "point-to-point": "auto",
+      "learn": "auto",
+      "horizon": "none",
+      "hw": "yes",
+      "auto-isolate": "no",
+      "restricted-role": "no",
+      "restricted-tcn": "no",
+      "pvid": "1",
+      "frame-types": "admit-only-vlan-tagged",
+      "ingress-filtering": "yes",
+      "unknown-unicast-flood": "yes",
+      "unknown-multicast-flood": "yes",
+      "broadcast-flood": "yes",
+      "tag-stacking": "no",
+      "bpdu-guard": "no",
+      "trusted": "no",
+      "multicast-router": "temporary-query",
+      "fast-leave": "no",
+      "_index": 0,
+      "_flags": ""
+    },
+    {
+      "interface": "ether2-PC_DN-06",
+      "bridge": "bridge-core",
+      "priority": "0x80",
+      "path-cost": "10",
+      "internal-path-cost": "10",
+      "edge": "auto",
+      "point-to-point": "auto",
+      "learn": "auto",
+      "horizon": "none",
+      "hw": "yes",
+      "auto-isolate": "no",
+      "restricted-role": "no",
+      "restricted-tcn": "no",
+      "pvid": "90",
+      "frame-types": "admit-only-untagged-and-priority-tagged",
+      "ingress-filtering": "yes",
+      "unknown-unicast-flood": "yes",
+      "unknown-multicast-flood": "yes",
+      "broadcast-flood": "yes",
+      "tag-stacking": "no",
+      "bpdu-guard": "no",
+      "trusted": "no",
+      "multicast-router": "temporary-query",
+      "fast-leave": "no",
+      "_index": 1,
+      "_flags": ""
+    }
+  ],
+  "bridge_vlans": [
+    {
+      "bridge": "bridge-core",
+      "vlan-ids": "90",
+      "tagged": "bridge-core,ether3-switch",
+      "untagged": "ether2-PC_DN-06",
+      "current-tagged": "bridge-core,ether3-switch",
+      "current-untagged": "",
+      "_index": 0,
+      "_flags": ""
+    },
+    {
+      "bridge": "bridge-core",
+      "vlan-ids": "30",
+      "tagged": "bridge-core,ether3-switch",
+      "untagged": "",
+      "current-tagged": "bridge-core,ether3-switch",
+      "current-untagged": "",
+      "_index": 1,
+      "_flags": ""
+    },
+    {
+      "bridge": "bridge-core",
+      "vlan-ids": "60",
+      "tagged": "bridge-core,ether3-switch",
+      "untagged": "",
+      "current-tagged": "bridge-core,ether3-switch",
+      "current-untagged": "",
+      "_index": 2,
+      "_flags": ""
+    },
+    {
+      "bridge": "bridge-core",
+      "vlan-ids": "130",
+      "tagged": "bridge-core,ether3-switch",
+      "untagged": "",
+      "current-tagged": "bridge-core,ether3-switch",
+      "current-untagged": "",
+      "_index": 3,
+      "_flags": ""
+    },
+    {
+      "bridge": "bridge-core",
+      "vlan-ids": "1",
+      "tagged": "",
+      "untagged": "",
+      "current-tagged": "",
+      "current-untagged": "bridge-core",
+      "_index": 4,
+      "_flags": ""
+    }
+  ],
+  "bridge_hosts": [
+    {
+      "mac-address": "F4:1E:57:AF:71:62",
+      "vid": "30",
+      "interface": "bridge-core",
+      "bridge": "bridge-core",
+      "on-interface": "bridge-core",
+      "_index": 10,
+      "_flags": ""
+    },
+    {
+      "mac-address": "F4:1E:57:AF:71:63",
+      "vid": "30",
+      "interface": "ether3-switch",
+      "bridge": "bridge-core",
+      "on-interface": "ether3-switch",
+      "_index": 11,
+      "_flags": ""
+    },
+    {
+      "mac-address": "70:01:B5:D3:C1:81",
+      "vid": "60",
+      "interface": "ether3-switch",
+      "bridge": "bridge-core",
+      "on-interface": "ether3-switch",
+      "age": "37s",
+      "_index": 12,
+      "_flags": ""
+    },
+    {
+      "mac-address": "BC:24:11:0A:5F:2D",
+      "vid": "60",
+      "interface": "ether3-switch",
+      "bridge": "bridge-core",
+      "on-interface": "ether3-switch",
+      "age": "36s",
+      "_index": 13,
+      "_flags": ""
+    },
+    {
+      "mac-address": "BC:24:11:6E:4E:76",
+      "vid": "60",
+      "interface": "ether3-switch",
+      "bridge": "bridge-core",
+      "on-interface": "ether3-switch",
+      "age": "36s",
+      "_index": 14,
+      "_flags": ""
+    },
+    {
+      "mac-address": "BC:24:11:BC:E2:B3",
+      "vid": "60",
+      "interface": "ether3-switch",
+      "bridge": "bridge-core",
+      "on-interface": "ether3-switch",
+      "age": "36s",
+      "_index": 15,
+      "_flags": ""
+    },
+    {
+      "mac-address": "BC:24:11:C1:0C:44",
+      "vid": "60",
+      "interface": "ether3-switch",
+      "bridge": "bridge-core",
+      "on-interface": "ether3-switch",
+      "age": "1m2s",
+      "_index": 16,
+      "_flags": ""
+    },
+    {
+      "mac-address": "BC:24:11:C1:86:A9",
+      "vid": "60",
+      "interface": "ether3-switch",
+      "bridge": "bridge-core",
+      "on-interface": "ether3-switch",
+      "age": "36s",
+      "_index": 17,
+      "_flags": ""
+    },
+    {
+      "mac-address": "F4:1E:57:AF:71:62",
+      "vid": "60",
+      "interface": "bridge-core",
+      "bridge": "bridge-core",
+      "on-interface": "bridge-core",
+      "_index": 18,
+      "_flags": ""
+    },
+    {
+      "mac-address": "F4:1E:57:AF:71:63",
+      "vid": "60",
+      "interface": "ether3-switch",
+      "bridge": "bridge-core",
+      "on-interface": "ether3-switch",
+      "_index": 19,
+      "_flags": ""
+    },
+    {
+      "mac-address": "70:01:B5:D3:C1:81",
+      "vid": "90",
+      "interface": "ether3-switch",
+      "bridge": "bridge-core",
+      "on-interface": "ether3-switch",
+      "age": "37s",
+      "_index": 20,
+      "_flags": ""
+    },
+    {
+      "mac-address": "70:01:B5:D3:C1:C1",
+      "vid": "90",
+      "interface": "ether3-switch",
+      "bridge": "bridge-core",
+      "on-interface": "ether3-switch",
+      "age": "46s",
+      "_index": 21,
+      "_flags": ""
+    },
+    {
+      "mac-address": "F4:1E:57:AF:71:62",
+      "vid": "90",
+      "interface": "bridge-core",
+      "bridge": "bridge-core",
+      "on-interface": "bridge-core",
+      "_index": 22,
+      "_flags": ""
+    },
+    {
+      "mac-address": "F4:1E:57:AF:71:63",
+      "vid": "90",
+      "interface": "ether3-switch",
+      "bridge": "bridge-core",
+      "on-interface": "ether3-switch",
+      "_index": 23,
+      "_flags": ""
+    },
+    {
+      "mac-address": "04:D6:F4:58:CA:30",
+      "vid": "130",
+      "interface": "ether3-switch",
+      "bridge": "bridge-core",
+      "on-interface": "ether3-switch",
+      "age": "50s",
+      "_index": 24,
+      "_flags": ""
+    },
+    {
+      "mac-address": "6E:52:FB:B0:1B:03",
+      "vid": "130",
+      "interface": "ether3-switch",
+      "bridge": "bridge-core",
+      "on-interface": "ether3-switch",
+      "age": "57s",
+      "_index": 25,
+      "_flags": ""
+    },
+    {
+      "mac-address": "70:01:B5:D3:C1:81",
+      "vid": "130",
+      "interface": "ether3-switch",
+      "bridge": "bridge-core",
+      "on-interface": "ether3-switch",
+      "age": "37s",
+      "_index": 26,
+      "_flags": ""
+    },
+    {
+      "mac-address": "98:DA:C4:FE:BA:B7",
+      "vid": "130",
+      "interface": "ether3-switch",
+      "bridge": "bridge-core",
+      "on-interface": "ether3-switch",
+      "age": "43s",
+      "_index": 27,
+      "_flags": ""
+    },
+    {
+      "mac-address": "CC:FF:90:D7:25:BB",
+      "vid": "130",
+      "interface": "ether3-switch",
+      "bridge": "bridge-core",
+      "on-interface": "ether3-switch",
+      "age": "39s",
+      "_index": 28,
+      "_flags": ""
+    },
+    {
+      "mac-address": "F4:1E:57:AF:71:62",
+      "vid": "130",
+      "interface": "bridge-core",
+      "bridge": "bridge-core",
+      "on-interface": "bridge-core",
+      "_index": 29,
+      "_flags": ""
+    },
+    {
+      "mac-address": "F4:1E:57:AF:71:63",
+      "vid": "130",
+      "interface": "ether3-switch",
+      "bridge": "bridge-core",
+      "on-interface": "ether3-switch",
+      "_index": 30,
+      "_flags": ""
+    }
+  ],
+  "vlans": [
+    {
+      "id": "30",
+      "name": "vlan30-proxmox-hosts",
+      "parent": "bridge-core",
+      "gateway": "10.100.30.1/24",
+      "network": "10.100.30.0/24",
+      "dhcp_server": "dhcp_proxmox",
+      "dhcp_pool": "dhcp_pool7",
+      "dhcp_dns": "1.1.1.1,8.8.8.8",
+      "domain": "services.net.br"
+    },
+    {
+      "id": "60",
+      "name": "vlan60-services",
+      "parent": "bridge-core",
+      "gateway": "10.100.60.1/24",
+      "network": "10.100.60.0/24",
+      "dhcp_server": "dhcp_services",
+      "dhcp_pool": "dhcp_pool8",
+      "dhcp_dns": "1.1.1.1,8.8.8.8",
+      "domain": "services.net.br"
+    },
+    {
+      "id": "90",
+      "name": "vlan90-MGMT",
+      "parent": "bridge-core",
+      "gateway": "10.100.90.1/24",
+      "network": "10.100.90.0/24",
+      "dhcp_server": "dhcp_gerencia",
+      "dhcp_pool": "dhcp_pool11",
+      "dhcp_dns": "1.1.1.1,8.8.8.8",
+      "domain": "services.net.br"
+    },
+    {
+      "id": "130",
+      "name": "vlan130-guest_wifi",
+      "parent": "bridge-core",
+      "gateway": "10.100.130.1/24",
+      "network": "10.100.130.0/24",
+      "dhcp_server": "dhcp_guest",
+      "dhcp_pool": "dhcp_pool5",
+      "dhcp_dns": "10.100.60.71,10.100.60.72",
+      "domain": "services.net.br"
+    }
+  ],
+  "ip_addresses": [
+    {
+      "address": "10.100.90.1/24",
+      "network": "10.100.90.0",
+      "interface": "vlan90-MGMT",
+      "actual-interface": "vlan90-MGMT",
+      "_index": 0,
+      "_flags": ""
+    },
+    {
+      "address": "10.100.30.1/24",
+      "network": "10.100.30.0",
+      "interface": "vlan30-proxmox-hosts",
+      "actual-interface": "vlan30-proxmox-hosts",
+      "_index": 1,
+      "_flags": ""
+    },
+    {
+      "address": "10.100.60.1/24",
+      "network": "10.100.60.0",
+      "interface": "vlan60-services",
+      "actual-interface": "vlan60-services",
+      "_index": 2,
+      "_flags": ""
+    },
+    {
+      "address": "10.100.130.1/24",
+      "network": "10.100.130.0",
+      "interface": "vlan130-guest_wifi",
+      "actual-interface": "vlan130-guest_wifi",
+      "_index": 3,
+      "_flags": ""
+    },
+    {
+      "address": "100.66.55.211/32",
+      "network": "10.88.1.1",
+      "interface": "pppoe-Link-WaveMax",
+      "actual-interface": "pppoe-Link-WaveMax",
+      "_index": 4,
+      "_flags": ""
+    }
+  ],
+  "routes": [
+    {
+      "dst-address": "0.0.0.0/0",
+      "gateway": "pppoe-Link-WaveMax",
+      "gateway-status": "pppoe-Link-WaveMax",
+      "distance": "1",
+      "scope": "30",
+      "target-scope": "10",
+      "_index": 0,
+      "_flags": ""
+    },
+    {
+      "dst-address": "10.88.1.1/32",
+      "pref-src": "100.66.55.211",
+      "gateway": "pppoe-Link-WaveMax",
+      "gateway-status": "pppoe-Link-WaveMax",
+      "distance": "0",
+      "scope": "10",
+      "_index": 1,
+      "_flags": ""
+    },
+    {
+      "dst-address": "10.100.30.0/24",
+      "pref-src": "10.100.30.1",
+      "gateway": "vlan30-proxmox-hosts",
+      "gateway-status": "vlan30-proxmox-hosts",
+      "distance": "0",
+      "scope": "10",
+      "_index": 2,
+      "_flags": ""
+    },
+    {
+      "dst-address": "10.100.60.0/24",
+      "pref-src": "10.100.60.1",
+      "gateway": "vlan60-services",
+      "gateway-status": "vlan60-services",
+      "distance": "0",
+      "scope": "10",
+      "_index": 3,
+      "_flags": ""
+    },
+    {
+      "dst-address": "10.100.90.0/24",
+      "pref-src": "10.100.90.1",
+      "gateway": "vlan90-MGMT",
+      "gateway-status": "vlan90-MGMT",
+      "distance": "0",
+      "scope": "10",
+      "_index": 4,
+      "_flags": ""
+    },
+    {
+      "dst-address": "10.100.130.0/24",
+      "pref-src": "10.100.130.1",
+      "gateway": "vlan130-guest_wifi",
+      "gateway-status": "vlan130-guest_wifi",
+      "distance": "0",
+      "scope": "10",
+      "_index": 5,
+      "_flags": ""
+    }
+  ],
+  "dns": {
+    "servers": "8.8.8.8,1.1.1.1",
+    "dynamic-servers": "177.155.84.53,45.237.24.53",
+    "use-doh-server": "",
+    "verify-doh-cert": "no",
+    "allow-remote-requests": "no",
+    "max-udp-packet-size": "4096",
+    "query-server-timeout": "2s",
+    "query-total-timeout": "10s",
+    "max-concurrent-queries": "100",
+    "max-concurrent-tcp-sessions": "20",
+    "cache-size": "2048KiB",
+    "cache-max-ttl": "1w",
+    "cache-used": "25KiB"
+  },
+  "dhcp_servers": [
+    {
+      "name": "dhcp_guest",
+      "interface": "vlan130-guest_wifi",
+      "lease-time": "1h",
+      "address-pool": "dhcp_pool5",
+      "authoritative": "yes",
+      "use-radius": "no",
+      "lease-script": "",
+      "_index": 0,
+      "_flags": ""
+    },
+    {
+      "name": "dhcp_proxmox",
+      "interface": "vlan30-proxmox-hosts",
+      "lease-time": "1h",
+      "address-pool": "dhcp_pool7",
+      "authoritative": "yes",
+      "use-radius": "no",
+      "lease-script": "",
+      "_index": 1,
+      "_flags": ""
+    },
+    {
+      "name": "dhcp_services",
+      "interface": "vlan60-services",
+      "lease-time": "1h",
+      "address-pool": "dhcp_pool8",
+      "authoritative": "yes",
+      "use-radius": "no",
+      "lease-script": "",
+      "_index": 2,
+      "_flags": ""
+    },
+    {
+      "name": "dhcp_gerencia",
+      "interface": "vlan90-MGMT",
+      "lease-time": "8h",
+      "address-pool": "dhcp_pool11",
+      "authoritative": "yes",
+      "use-radius": "no",
+      "lease-script": "",
+      "_index": 3,
+      "_flags": ""
+    }
+  ],
+  "dhcp_networks": [
+    {
+      "address": "10.100.30.0/24",
+      "gateway": "10.100.30.1",
+      "dns-server": "1.1.1.1,8.8.8.8",
+      "wins-server": "",
+      "ntp-server": "",
+      "caps-manager": "",
+      "domain": "services.net.br",
+      "dhcp-option": "",
+      "_index": 0,
+      "_flags": ""
+    },
+    {
+      "address": "10.100.60.0/24",
+      "gateway": "10.100.60.1",
+      "dns-server": "1.1.1.1,8.8.8.8",
+      "wins-server": "",
+      "ntp-server": "",
+      "caps-manager": "",
+      "domain": "services.net.br",
+      "dhcp-option": "",
+      "_index": 1,
+      "_flags": ""
+    },
+    {
+      "address": "10.100.90.0/24",
+      "gateway": "10.100.90.1",
+      "dns-server": "1.1.1.1,8.8.8.8",
+      "wins-server": "",
+      "ntp-server": "",
+      "caps-manager": "",
+      "domain": "services.net.br",
+      "dhcp-option": "",
+      "_index": 2,
+      "_flags": ""
+    },
+    {
+      "address": "10.100.130.0/24",
+      "gateway": "10.100.130.1",
+      "dns-server": "10.100.60.71,10.100.60.72",
+      "wins-server": "",
+      "ntp-server": "",
+      "caps-manager": "",
+      "domain": "services.net.br",
+      "dhcp-option": "",
+      "_index": 3,
+      "_flags": ""
+    }
+  ],
+  "dhcp_leases": [
+    {
+      "address": "10.100.130.139",
+      "mac-address": "F4:B3:01:94:35:90",
+      "client-id": "1:f4:b3:1:94:35:90",
+      "address-lists": "",
+      "server": "dhcp_guest",
+      "dhcp-option": "",
+      "status": "waiting",
+      "last-seen": "13w3d3h26s",
+      "host-name": "DN-06",
+      "_index": 0,
+      "_flags": ""
+    },
+    {
+      "address": "10.100.30.7",
+      "mac-address": "50:00:00:01:00:00",
+      "client-id": "1:50:0:0:1:0:0",
+      "address-lists": "",
+      "server": "dhcp_proxmox",
+      "dhcp-option": "",
+      "status": "waiting",
+      "last-seen": "30w4d20h4m6s",
+      "host-name": "001-VIVO",
+      "_index": 1,
+      "_flags": ""
+    },
+    {
+      "address": "10.100.130.130",
+      "mac-address": "CC:FF:90:D7:25:BB",
+      "client-id": "1:cc:ff:90:d7:25:bb",
+      "address-lists": "",
+      "server": "dhcp_guest",
+      "dhcp-option": "",
+      "status": "bound",
+      "expires-after": "57m25s",
+      "last-seen": "2m35s",
+      "active-address": "10.100.130.130",
+      "active-mac-address": "CC:FF:90:D7:25:BB",
+      "active-client-id": "1:cc:ff:90:d7:25:bb",
+      "active-server": "dhcp_guest",
+      "host-name": "0628ef45ee0621fd38fc546bcbb4ac2",
+      "_index": 2,
+      "_flags": ""
+    },
+    {
+      "address": "10.100.130.129",
+      "mac-address": "04:D6:F4:58:CA:30",
+      "address-lists": "",
+      "server": "dhcp_guest",
+      "dhcp-option": "",
+      "status": "bound",
+      "expires-after": "57m18s",
+      "last-seen": "2m42s",
+      "active-address": "10.100.130.129",
+      "active-mac-address": "04:D6:F4:58:CA:30",
+      "active-server": "dhcp_guest",
+      "_index": 3,
+      "_flags": ""
+    },
+    {
+      "address": "10.100.130.128",
+      "mac-address": "6E:52:FB:B0:1B:03",
+      "client-id": "1:6e:52:fb:b0:1b:3",
+      "address-lists": "",
+      "server": "dhcp_guest",
+      "dhcp-option": "",
+      "status": "bound",
+      "expires-after": "40m22s",
+      "last-seen": "19m38s",
+      "active-address": "10.100.130.128",
+      "active-mac-address": "6E:52:FB:B0:1B:03",
+      "active-client-id": "1:6e:52:fb:b0:1b:3",
+      "active-server": "dhcp_guest",
+      "host-name": "A36-de-Leidinara",
+      "_index": 4,
+      "_flags": ""
+    }
+  ],
+  "arp": [
+    {
+      "address": "10.100.130.129",
+      "mac-address": "04:D6:F4:58:CA:30",
+      "interface": "vlan130-guest_wifi",
+      "published": "no",
+      "_index": 0,
+      "_flags": ""
+    },
+    {
+      "address": "10.100.60.16",
+      "mac-address": "BC:24:11:BC:E2:B3",
+      "interface": "vlan60-services",
+      "published": "no",
+      "_index": 1,
+      "_flags": ""
+    },
+    {
+      "address": "10.100.30.60",
+      "mac-address": "00:1A:2B:3C:4D:5E",
+      "interface": "vlan30-proxmox-hosts",
+      "published": "no",
+      "_index": 2,
+      "_flags": ""
+    },
+    {
+      "address": "10.100.60.80",
+      "mac-address": "BC:24:11:0A:5F:2D",
+      "interface": "vlan60-services",
+      "published": "no",
+      "_index": 3,
+      "_flags": ""
+    },
+    {
+      "address": "10.100.30.4",
+      "mac-address": "BC:24:11:48:7E:23",
+      "interface": "vlan30-proxmox-hosts",
+      "published": "no",
+      "_index": 4,
+      "_flags": ""
+    },
+    {
+      "address": "10.100.60.4",
+      "mac-address": "BC:24:11:6E:4E:76",
+      "interface": "vlan60-services",
+      "published": "no",
+      "_index": 5,
+      "_flags": ""
+    },
+    {
+      "address": "10.100.60.71",
+      "mac-address": "BC:24:11:C1:0C:44",
+      "interface": "vlan60-services",
+      "published": "no",
+      "_index": 6,
+      "_flags": ""
+    },
+    {
+      "address": "10.100.130.128",
+      "mac-address": "6E:52:FB:B0:1B:03",
+      "interface": "vlan130-guest_wifi",
+      "published": "no",
+      "_index": 7,
+      "_flags": ""
+    },
+    {
+      "address": "10.100.30.12",
+      "mac-address": "BC:24:11:16:30:F3",
+      "interface": "vlan30-proxmox-hosts",
+      "published": "no",
+      "_index": 8,
+      "_flags": ""
+    },
+    {
+      "address": "10.100.90.99",
+      "mac-address": "70:01:B5:D3:C1:C1",
+      "interface": "vlan90-MGMT",
+      "published": "no",
+      "_index": 9,
+      "_flags": ""
+    },
+    {
+      "address": "10.100.60.5",
+      "mac-address": "BC:24:11:C1:86:A9",
+      "interface": "vlan60-services",
+      "published": "no",
+      "_index": 10,
+      "_flags": ""
+    },
+    {
+      "address": "10.100.30.9",
+      "mac-address": "D0:94:66:C6:31:5C",
+      "interface": "vlan30-proxmox-hosts",
+      "published": "no",
+      "_index": 11,
+      "_flags": ""
+    },
+    {
+      "address": "10.100.30.2",
+      "mac-address": "84:69:93:7E:7D:3A",
+      "interface": "vlan30-proxmox-hosts",
+      "published": "no",
+      "_index": 12,
+      "_flags": ""
+    },
+    {
+      "address": "10.100.30.6",
+      "mac-address": "D0:94:66:C6:75:79",
+      "interface": "vlan30-proxmox-hosts",
+      "published": "no",
+      "_index": 13,
+      "_flags": ""
+    },
+    {
+      "address": "10.100.30.3",
+      "mac-address": "D0:94:66:C6:75:02",
+      "interface": "vlan30-proxmox-hosts",
+      "published": "no",
+      "_index": 14,
+      "_flags": ""
+    }
+  ],
+  "ip_services": [
+    {
+      "name": "telnet",
+      "port": "23",
+      "address": "",
+      "_index": 0,
+      "_flags": ""
+    },
+    {
+      "name": "ftp",
+      "port": "21",
+      "address": "",
+      "_index": 1,
+      "_flags": ""
+    },
+    {
+      "name": "www",
+      "port": "80",
+      "address": "",
+      "_index": 2,
+      "_flags": ""
+    },
+    {
+      "name": "ssh",
+      "port": "22",
+      "address": "",
+      "_index": 3,
+      "_flags": ""
+    },
+    {
+      "name": "www-ssl",
+      "port": "443",
+      "address": "",
+      "certificate": "none",
+      "tls-version": "any",
+      "_index": 4,
+      "_flags": ""
+    },
+    {
+      "name": "api",
+      "port": "8728",
+      "address": "",
+      "_index": 5,
+      "_flags": ""
+    },
+    {
+      "name": "winbox",
+      "port": "8291",
+      "address": "",
+      "_index": 6,
+      "_flags": ""
+    },
+    {
+      "name": "api-ssl",
+      "port": "8729",
+      "address": "",
+      "certificate": "none",
+      "tls-version": "any",
+      "_index": 7,
+      "_flags": ""
+    }
+  ],
+  "address_lists": [
+    {
+      "list": "rede-admin",
+      "address": "10.100.90.0/24",
+      "creation-time": "jan/28/2026",
+      "_index": 0,
+      "_flags": ""
+    },
+    {
+      "list": "rede-admin",
+      "address": "10.100.130.139",
+      "creation-time": "jan/28/2026",
+      "_index": 1,
+      "_flags": ""
+    },
+    {
+      "list": "rede-admin",
+      "address": "10.100.30.4",
+      "creation-time": "feb/02/2026",
+      "_index": 2,
+      "_flags": ""
+    },
+    {
+      "list": "rede-admin",
+      "address": "10.100.60.4",
+      "creation-time": "feb/08/2026",
+      "_index": 3,
+      "_flags": ""
+    },
+    {
+      "list": "DNS",
+      "address": "10.100.60.71",
+      "creation-time": "feb/26/2026",
+      "_index": 4,
+      "_flags": ""
+    },
+    {
+      "list": "DNS",
+      "address": "10.100.60.72",
+      "creation-time": "feb/26/2026",
+      "_index": 5,
+      "_flags": ""
+    }
+  ],
+  "collection_warnings": [
+    "Comando /ip pool print detail marcou timeout; pools aparecem referenciados pelos DHCP servers, mas os ranges nao foram comprovados nesta coleta.",
+    "Comandos /routing table print detail e /routing route print detail nao existem no RouterOS 6.49; rotas foram coletadas por /ip route print detail."
+  ]
+}

@@ -1,0 +1,4 @@
+Default gateway is 10.100.90.1
+
+Host               Gateway           Last Use    Total Uses  Interface
+ICMP redirect cache is empty

@@ -1,0 +1,25 @@
+Flags: D - dynamic, X - disabled, I - invalid 
+
+ 0    name="dhcp_guest" interface=vlan130-guest_wifi lease-time=1h 
+
+      address-pool=dhcp_pool5 authoritative=yes use-radius=no lease-script="" 
+
+
+
+ 1    name="dhcp_proxmox" interface=vlan30-proxmox-hosts lease-time=1h 
+
+      address-pool=dhcp_pool7 authoritative=yes use-radius=no lease-script="" 
+
+
+
+ 2    name="dhcp_services" interface=vlan60-services lease-time=1h 
+
+      address-pool=dhcp_pool8 authoritative=yes use-radius=no lease-script="" 
+
+
+
+ 3    name="dhcp_gerencia" interface=vlan90-MGMT lease-time=8h 
+
+      address-pool=dhcp_pool11 authoritative=yes use-radius=no 
+
+      lease-script=""

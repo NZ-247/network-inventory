@@ -1,0 +1,197 @@
+#!/usr/bin/expect -f
+
+if {$argc != 4} {
+    puts stderr "Usage: run_cli_collect.exp <user> <host> <commands.tsv> <output-file>"
+    exit 2
+}
+
+set user [lindex $argv 0]
+set host [lindex $argv 1]
+set commands_file [lindex $argv 2]
+set output_file [lindex $argv 3]
+
+set timeout 20
+set command_timeout 90
+set prompt_re {(?m)(^|\r\n|\n)(\[[^]\r\n]+@[^\]\r\n]+\]\s*[>#]\s*|<[^>\r\n]+>\s*|[A-Za-z0-9_.:/@() -]+[>#]\s*)$}
+
+proc redact_text {text} {
+    set safe_lines {}
+    foreach line [split $text "\n"] {
+        set safe $line
+        regsub -all -nocase {((password|passwd|secret|token|private-key|pre-shared-key|shared-secret|authentication-key|api[-_]?key|cloud-init)\s*(=|:)?\s*)("[^"]*"|'[^']*'|[^ \t\r\n]+)} $safe {\1<REDACTED>} safe
+        regsub -all -nocase {((enable secret|enable password|snmp-server community|radius-server key|tacacs-server key)\s+).*} $safe {\1<REDACTED>} safe
+        regsub -all -nocase {(ssh-rsa|ssh-ed25519|ecdsa-sha2-nistp[0-9]+) [A-Za-z0-9+/=]+} $safe {\1 <REDACTED>} safe
+        if {[regexp -nocase {(BEGIN|END) (OPENSSH|RSA|DSA|EC) PRIVATE KEY} $safe]} {
+            set safe "<REDACTED PRIVATE KEY MATERIAL>"
+        }
+        lappend safe_lines $safe
+    }
+    return [join $safe_lines "\n"]
+}
+
+proc collect_until_prompt {prompt_re command_timeout} {
+    set output ""
+    set timeout $command_timeout
+    while {1} {
+        expect {
+            -re {(?i)(--More--|More:|Press any key|press space|press <space>|press return|continue\? \[y/n\])} {
+                append output $expect_out(buffer)
+                send -- " "
+                exp_continue
+            }
+            -re $prompt_re {
+                append output $expect_out(buffer)
+                return $output
+            }
+            timeout {
+                append output "\n### NETINV_TIMEOUT waiting_for_prompt\n"
+                return $output
+            }
+            eof {
+                append output $expect_out(buffer)
+                return $output
+            }
+        }
+    }
+}
+
+send_user "Password for $user@$host: "
+stty -echo
+expect_user -re "(.*)\n"
+set password [string trimright $expect_out(1,string) "\r\n"]
+stty echo
+send_user "\n"
+
+set ssh_cmd [list ssh -tt -o LogLevel=ERROR -o ConnectTimeout=10 -o NumberOfPasswordPrompts=1]
+if {[info exists env(SSH_EXTRA_OPTS)] && $env(SSH_EXTRA_OPTS) ne ""} {
+    foreach opt [split $env(SSH_EXTRA_OPTS) " "] {
+        if {$opt ne ""} {
+            lappend ssh_cmd $opt
+        }
+    }
+}
+lappend ssh_cmd "${user}@${host}"
+
+log_user 0
+spawn {*}$ssh_cmd
+
+if {[info exists env(NETINV_SEND_PASSWORD_IMMEDIATE)] && $env(NETINV_SEND_PASSWORD_IMMEDIATE) eq "1"} {
+    after 1200
+    send -- "$password\r"
+    set timeout 60
+    expect {
+        -re {(?i)permission denied|authentication failed|access denied} {
+            puts stderr "ERROR: permission denied for $user@$host"
+            exit 11
+        }
+        -re {(?i)press return} {
+            send -- "\r"
+            exp_continue
+        }
+        -re $prompt_re {
+        }
+        timeout {
+            if {[info exists env(NETINV_DEBUG_LOGIN_FILE)] && $env(NETINV_DEBUG_LOGIN_FILE) ne ""} {
+                set df [open $env(NETINV_DEBUG_LOGIN_FILE) w]
+                puts $df "### NETINV_LOGIN_TIMEOUT_BUFFER"
+                puts $df [redact_text $expect_out(buffer)]
+                close $df
+            }
+            puts stderr "ERROR: timeout waiting for CLI prompt on $user@$host"
+            exit 12
+        }
+        eof {
+            if {[info exists env(NETINV_DEBUG_LOGIN_FILE)] && $env(NETINV_DEBUG_LOGIN_FILE) ne ""} {
+                set df [open $env(NETINV_DEBUG_LOGIN_FILE) w]
+                puts $df "### NETINV_LOGIN_EOF_BUFFER"
+                puts $df [redact_text $expect_out(buffer)]
+                close $df
+            }
+            puts stderr "ERROR: SSH session closed before CLI prompt on $user@$host"
+            exit 13
+        }
+    }
+} else {
+    expect {
+        -re {(?i)are you sure you want to continue connecting} {
+            puts stderr "ERROR: host key is not trusted by the selected known_hosts file"
+            exit 10
+        }
+        -re {(?i)password:} {
+            send -- "$password\r"
+            exp_continue
+        }
+        -re {(?i)permission denied} {
+            puts stderr "ERROR: permission denied for $user@$host"
+            exit 11
+        }
+        -re {(?i)press return} {
+            send -- "\r"
+            exp_continue
+        }
+        -re $prompt_re {
+        }
+        timeout {
+            if {[info exists env(NETINV_DEBUG_LOGIN_FILE)] && $env(NETINV_DEBUG_LOGIN_FILE) ne ""} {
+                set df [open $env(NETINV_DEBUG_LOGIN_FILE) w]
+                puts $df "### NETINV_LOGIN_TIMEOUT_BUFFER"
+                puts $df [redact_text $expect_out(buffer)]
+                close $df
+            }
+            puts stderr "ERROR: timeout waiting for CLI prompt on $user@$host"
+            exit 12
+        }
+        eof {
+            if {[info exists env(NETINV_DEBUG_LOGIN_FILE)] && $env(NETINV_DEBUG_LOGIN_FILE) ne ""} {
+                set df [open $env(NETINV_DEBUG_LOGIN_FILE) w]
+                puts $df "### NETINV_LOGIN_EOF_BUFFER"
+                puts $df [redact_text $expect_out(buffer)]
+                close $df
+            }
+            puts stderr "ERROR: SSH session closed before CLI prompt on $user@$host"
+            exit 13
+        }
+    }
+}
+
+set cf [open $commands_file r]
+set raw_commands [split [read $cf] "\n"]
+close $cf
+
+set of [open $output_file w]
+puts $of "### NETINV_DEVICE user=$user host=$host collected_at=[clock format [clock seconds] -format {%Y-%m-%dT%H:%M:%S%z}]"
+puts $of "### NETINV_NOTE output is redacted for common secret/password patterns"
+
+foreach raw_line $raw_commands {
+    set line [string trim $raw_line]
+    if {$line eq ""} {
+        continue
+    }
+    if {[string index $line 0] eq "#"} {
+        continue
+    }
+    set parts [split $raw_line "\t"]
+    if {[llength $parts] < 2} {
+        puts $of "### NETINV_SKIPPED malformed_command_line=$raw_line"
+        continue
+    }
+    set path [lindex $parts 0]
+    set command [join [lrange $parts 1 end] "\t"]
+
+    puts $of "### NETINV_BEGIN path=$path"
+    puts $of "### NETINV_COMMAND $command"
+    flush $of
+    send -- "$command\r"
+    set result [collect_until_prompt $prompt_re $command_timeout]
+    puts $of [redact_text $result]
+    puts $of "### NETINV_END path=$path"
+    flush $of
+}
+
+send -- "exit\r"
+expect {
+    eof {}
+    timeout {}
+}
+close $of
+exit 0

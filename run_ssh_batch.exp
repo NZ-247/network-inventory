@@ -1,0 +1,104 @@
+#!/usr/bin/expect -f
+
+if {$argc != 4} {
+    puts stderr "Usage: run_ssh_batch.exp <user> <host> <commands.tsv> <output-file>"
+    exit 2
+}
+
+set user [lindex $argv 0]
+set host [lindex $argv 1]
+set commands_file [lindex $argv 2]
+set output_file [lindex $argv 3]
+set timeout 90
+
+proc redact_text {text} {
+    set safe_lines {}
+    foreach line [split $text "\n"] {
+        set safe $line
+        regsub -all -nocase {((password|passwd|secret|token|private-key|pre-shared-key|shared-secret|authentication-key|api[-_]?key|cloud-init)\s*(=|:)?\s*)("[^"]*"|'[^']*'|[^ \t\r\n]+)} $safe {\1<REDACTED>} safe
+        regsub -all -nocase {((enable secret|enable password|snmp-server community|radius-server key|tacacs-server key)\s+).*} $safe {\1<REDACTED>} safe
+        regsub -all -nocase {(ssh-rsa|ssh-ed25519|ecdsa-sha2-nistp[0-9]+) [A-Za-z0-9+/=]+} $safe {\1 <REDACTED>} safe
+        if {[regexp -nocase {(BEGIN|END) (OPENSSH|RSA|DSA|EC) PRIVATE KEY} $safe]} {
+            set safe "<REDACTED PRIVATE KEY MATERIAL>"
+        }
+        lappend safe_lines $safe
+    }
+    return [join $safe_lines "\n"]
+}
+
+send_user "Password for $user@$host: "
+stty -echo
+expect_user -re "(.*)\n"
+set password [string trimright $expect_out(1,string) "\r\n"]
+stty echo
+send_user "\n"
+
+set cf [open $commands_file r]
+set raw_commands [split [read $cf] "\n"]
+close $cf
+
+set of [open $output_file w]
+puts $of "### NETINV_DEVICE user=$user host=$host collected_at=[clock format [clock seconds] -format {%Y-%m-%dT%H:%M:%S%z}]"
+puts $of "### NETINV_NOTE output is redacted for common secret/password patterns"
+
+foreach raw_line $raw_commands {
+    set line [string trim $raw_line]
+    if {$line eq ""} {
+        continue
+    }
+    if {[string index $line 0] eq "#"} {
+        continue
+    }
+    set parts [split $raw_line "\t"]
+    if {[llength $parts] < 2} {
+        puts $of "### NETINV_SKIPPED malformed_command_line=$raw_line"
+        continue
+    }
+
+    set path [lindex $parts 0]
+    set command [join [lrange $parts 1 end] "\t"]
+    set output ""
+
+    set ssh_cmd [list ssh -T -o LogLevel=ERROR -o ConnectTimeout=10 -o NumberOfPasswordPrompts=1]
+    if {[info exists env(SSH_EXTRA_OPTS)] && $env(SSH_EXTRA_OPTS) ne ""} {
+        foreach opt [split $env(SSH_EXTRA_OPTS) " "] {
+            if {$opt ne ""} {
+                lappend ssh_cmd $opt
+            }
+        }
+    }
+    lappend ssh_cmd "${user}@${host}" $command
+
+    puts $of "### NETINV_BEGIN path=$path"
+    puts $of "### NETINV_COMMAND $command"
+    flush $of
+
+    log_user 0
+    spawn {*}$ssh_cmd
+    expect {
+        -re {(?i)are you sure you want to continue connecting} {
+            append output "ERROR: host key is not trusted by the selected known_hosts file\n"
+        }
+        -re {(?i)password:} {
+            send -- "$password\r"
+            exp_continue
+        }
+        -re {(?i)permission denied} {
+            append output "ERROR: permission denied for $user@$host\n"
+        }
+        timeout {
+            append output "\n### NETINV_TIMEOUT waiting_for_command_completion\n"
+        }
+        eof {
+            append output $expect_out(buffer)
+        }
+    }
+    catch {wait}
+
+    puts $of [redact_text $output]
+    puts $of "### NETINV_END path=$path"
+    flush $of
+}
+
+close $of
+exit 0
