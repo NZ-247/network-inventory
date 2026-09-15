@@ -5,13 +5,15 @@
     "board_name": "hEX",
     "model": "RB750Gr3",
     "serial": "HHK0A0BXD64",
-    "routeros_version": "6.49.18 (long-term)",
-    "firmware_current": "6.49.17",
-    "firmware_available": "6.49.18",
-    "uptime": "1w4d34m40s",
-    "cpu": "MIPS 1004Kc V2.15",
-    "memory_total": "256.0MiB",
-    "management_ip": "10.100.30.1"
+    "routeros_version": "6.49.18 long-term",
+    "firmware_current": "Nao determinado",
+    "firmware_available": "Nao determinado",
+    "uptime": "Nao determinado",
+    "cpu": "Nao determinado",
+    "memory_total": "Nao determinado",
+    "management_ip": "10.100.90.1",
+    "timezone": "America/Cuiaba",
+    "wan": "PPPoE em ether1-Link-WaveMax; credencial redigida"
   },
   "switch": {
     "hostname": "SW-SN-03",
@@ -20,9 +22,12 @@
     "platform": "Cisco Catalyst 2960XR",
     "model": "WS-C2960XR-24PS-I",
     "serial": "FDO2213B011",
-    "base_mac": "70:01:B5:D3:C1:80",
-    "ios_version": "15.2(2)E7",
-    "uptime": "1 week, 4 days, 59 minutes"
+    "base_mac": "Nao determinado",
+    "ios_version": "15.2(7)E14",
+    "uptime": "Nao determinado",
+    "dns": "Pi-hole 10.100.60.71 / 10.100.60.72",
+    "ntp": "a.ntp.br prefer + b.ntp.br + c.ntp.br; sincronizado",
+    "timezone": "AMT UTC-4"
   },
   "vlans": [
     {
@@ -33,6 +38,7 @@
       "network": "10.100.30.0/24",
       "dhcp_server": "dhcp_proxmox",
       "dhcp_pool": "dhcp_pool7",
+      "dhcp_pool_range": "10.100.30.2-10.100.30.254",
       "dhcp_dns": "1.1.1.1,8.8.8.8",
       "domain": "services.net.br"
     },
@@ -44,6 +50,7 @@
       "network": "10.100.60.0/24",
       "dhcp_server": "dhcp_services",
       "dhcp_pool": "dhcp_pool8",
+      "dhcp_pool_range": "10.100.60.2-10.100.60.254",
       "dhcp_dns": "1.1.1.1,8.8.8.8",
       "domain": "services.net.br"
     },
@@ -55,6 +62,7 @@
       "network": "10.100.90.0/24",
       "dhcp_server": "dhcp_gerencia",
       "dhcp_pool": "dhcp_pool11",
+      "dhcp_pool_range": "10.100.90.2-10.100.90.254",
       "dhcp_dns": "1.1.1.1,8.8.8.8",
       "domain": "services.net.br"
     },
@@ -66,6 +74,7 @@
       "network": "10.100.130.0/24",
       "dhcp_server": "dhcp_guest",
       "dhcp_pool": "dhcp_pool5",
+      "dhcp_pool_range": "10.100.130.2-10.100.130.254",
       "dhcp_dns": "10.100.60.71,10.100.60.72",
       "domain": "services.net.br"
     }
@@ -74,7 +83,7 @@
     {
       "node": "host0",
       "management_ip": "10.100.30.2",
-      "management_mac": "84:69:93:7E:7D:3A",
+      "management_mac": "Nao determinado",
       "switch_port": "Gi1/0/15",
       "observed_vlan": "30",
       "bridges": {
@@ -99,7 +108,7 @@
     {
       "node": "host1",
       "management_ip": "10.100.30.3",
-      "management_mac": "D0:94:66:C6:75:02",
+      "management_mac": "Nao determinado",
       "switch_port": "Gi1/0/6",
       "observed_vlan": "30",
       "bridges": {
@@ -160,7 +169,7 @@
     {
       "node": "host2",
       "management_ip": "10.100.30.6",
-      "management_mac": "D0:94:66:C6:75:79",
+      "management_mac": "Nao determinado",
       "switch_port": "Gi1/0/3",
       "observed_vlan": "30",
       "bridges": {
@@ -221,7 +230,7 @@
     {
       "node": "host3",
       "management_ip": "10.100.30.9",
-      "management_mac": "D0:94:66:C6:31:5C",
+      "management_mac": "Nao determinado",
       "switch_port": "Gi1/0/5",
       "observed_vlan": "30",
       "bridges": {
@@ -319,8 +328,8 @@
       "ip": "Nao determinado",
       "configured_vlan": "Nao determinado",
       "effective_vlan": "60 via bridge",
-      "observed_switch_port": "Gi1/0/6",
-      "observed_vlan": "60",
+      "observed_switch_port": "Nao determinado",
+      "observed_vlan": "Nao determinado",
       "host_switch_port": "Gi1/0/6"
     },
     {
@@ -349,8 +358,8 @@
       "ip": "Nao determinado",
       "configured_vlan": "Nao determinado",
       "effective_vlan": "60 via bridge",
-      "observed_switch_port": "Gi1/0/6",
-      "observed_vlan": "60",
+      "observed_switch_port": "Nao determinado",
+      "observed_vlan": "Nao determinado",
       "host_switch_port": "Gi1/0/6"
     },
     {
@@ -364,7 +373,7 @@
       "ip": "10.100.30.12/24",
       "configured_vlan": "Nao determinado",
       "effective_vlan": "30 (inferido pelo IP)",
-      "observed_switch_port": "Gi1/0/6",
+      "observed_switch_port": "Nao determinado",
       "observed_vlan": "30",
       "host_switch_port": "Gi1/0/6"
     },
@@ -379,7 +388,7 @@
       "ip": "10.100.60.16/24",
       "configured_vlan": "Nao determinado",
       "effective_vlan": "60 via bridge",
-      "observed_switch_port": "Gi1/0/6",
+      "observed_switch_port": "Nao determinado",
       "observed_vlan": "60",
       "host_switch_port": "Gi1/0/6"
     },
@@ -394,7 +403,7 @@
       "ip": "10.100.60.71/24",
       "configured_vlan": "Nao determinado",
       "effective_vlan": "60 via bridge",
-      "observed_switch_port": "Gi1/0/6",
+      "observed_switch_port": "Nao determinado",
       "observed_vlan": "60",
       "host_switch_port": "Gi1/0/6"
     },
@@ -409,7 +418,7 @@
       "ip": "10.100.30.60/24",
       "configured_vlan": "Nao determinado",
       "effective_vlan": "30 (inferido pelo IP)",
-      "observed_switch_port": "Gi1/0/6",
+      "observed_switch_port": "Nao determinado",
       "observed_vlan": "30",
       "host_switch_port": "Gi1/0/6"
     },
@@ -439,7 +448,7 @@
       "ip": "10.100.60.72/24",
       "configured_vlan": "Nao determinado",
       "effective_vlan": "60 via bridge",
-      "observed_switch_port": "Gi1/0/3",
+      "observed_switch_port": "Nao determinado",
       "observed_vlan": "60",
       "host_switch_port": "Gi1/0/3"
     },
@@ -469,7 +478,7 @@
       "ip": "10.100.60.80/24",
       "configured_vlan": "Nao determinado",
       "effective_vlan": "60 via bridge",
-      "observed_switch_port": "Gi1/0/3",
+      "observed_switch_port": "Nao determinado",
       "observed_vlan": "60",
       "host_switch_port": "Gi1/0/3"
     },
@@ -490,9 +499,10 @@
     }
   ],
   "findings_summary": {
-    "critical": 0,
-    "warnings": 3,
-    "review": 6,
-    "info": 3
+    "critical": 1,
+    "high": 2,
+    "medium": 3,
+    "review": 1,
+    "low": 4
   }
 }

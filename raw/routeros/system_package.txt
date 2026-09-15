@@ -1,25 +1,2 @@
-Flags: X - disabled 
-
- #   NAME                    VERSION                    SCHEDULED              
-
- 0   routeros-mmips          6.49.18                                           
-
- 1   system                  6.49.18                                           
-
- 2 X ipv6                    6.49.18                                           
-
- 3   wireless                6.49.18                                           
-
- 4   hotspot                 6.49.18                                           
-
- 5   mpls                    6.49.18                                           
-
- 6   routing                 6.49.18                                           
-
- 7   ppp                     6.49.18                                           
-
- 8   dhcp                    6.49.18                                           
-
- 9   security                6.49.18                                           
-
-10   advanced-tools          6.49.18
+# Derived from sanitized RouterOS export section /system package update
+0   set channel=long-term

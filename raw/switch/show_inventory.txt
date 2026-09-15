@@ -1,5 +1,1 @@
-NAME: "1", DESCR: "WS-C2960XR-24PS-I"
-PID: WS-C2960XR-24PS-I , VID: V06  , SN: FDO2213B011
-
-NAME: "Switch 1 - Power Supply 1", DESCR: "FRU Power Supply"
-PID: PWR-C2-640WAC     , VID: V03L , SN: LIT22036T9N
+# Not provided by sanitized Cisco running-config baseline 2026-09-15

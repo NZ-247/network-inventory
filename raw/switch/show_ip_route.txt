@@ -1,4 +1,1 @@
-Default gateway is 10.100.90.1
-
-Host               Gateway           Last Use    Total Uses  Interface
-ICMP redirect cache is empty
+# Not provided by sanitized Cisco running-config baseline 2026-09-15

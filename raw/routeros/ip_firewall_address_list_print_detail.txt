@@ -1,31 +1,8 @@
-Flags: X - disabled, D - dynamic 
-
- 0   list=rede-admin address=10.100.90.0/24 creation-time=jan/28/2026 17:46:37 
-
-
-
- 1   ;;; DN-06 Via WI-FI
-
-     list=rede-admin address=10.100.130.139 
-
-     creation-time=jan/28/2026 18:37:08 
-
-
-
- 2   ;;; IP BKP VM Tailscale
-
-     list=rede-admin address=10.100.30.4 creation-time=feb/02/2026 17:52:55 
-
-
-
- 3   ;;; IP VM Tailscale
-
-     list=rede-admin address=10.100.60.4 creation-time=feb/08/2026 10:05:00 
-
-
-
- 4   list=DNS address=10.100.60.71 creation-time=feb/26/2026 17:27:13 
-
-
-
- 5   list=DNS address=10.100.60.72 creation-time=feb/26/2026 17:27:27
+# Derived from sanitized RouterOS export section /ip firewall address-list
+0   add address=10.100.90.0/24 list=rede-admin
+1   add address=10.100.130.139 comment="DN-06 Via WI-FI" list=rede-admin
+2   add address=10.100.30.4 comment="IP BKP VM Tailscale" list=rede-admin
+3   add address=10.100.60.4 comment="IP VM Tailscale" list=rede-admin
+4   add address=10.100.60.71 list=DNS
+5   add address=10.100.60.72 list=DNS
+6   add address=10.100.30.26 comment=TS-RESCUE list=rede-admin

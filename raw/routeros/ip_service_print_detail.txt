@@ -1,31 +1,5 @@
-Flags: X - disabled, I - invalid 
-
- 0 XI name="telnet" port=23 address="" 
-
-
-
- 1 XI name="ftp" port=21 address="" 
-
-
-
- 2   name="www" port=80 address="" 
-
-
-
- 3   name="ssh" port=22 address="" 
-
-
-
- 4 XI name="www-ssl" port=443 address="" certificate=none tls-version=any 
-
-
-
- 5 XI name="api" port=8728 address="" 
-
-
-
- 6   name="winbox" port=8291 address="" 
-
-
-
- 7 XI name="api-ssl" port=8729 address="" certificate=none tls-version=any
+# Derived from sanitized RouterOS export section /ip service
+0 X set telnet disabled=yes
+1 X set ftp disabled=yes
+2 X set api disabled=yes
+3 X set api-ssl disabled=yes

@@ -1,29 +1,5 @@
-Flags: X - disabled, I - invalid, D - dynamic 
-
- 0   address=10.100.90.1/24 network=10.100.90.0 interface=vlan90-MGMT 
-
-     actual-interface=vlan90-MGMT 
-
-
-
- 1   address=10.100.30.1/24 network=10.100.30.0 interface=vlan30-proxmox-hosts 
-
-     actual-interface=vlan30-proxmox-hosts 
-
-
-
- 2   address=10.100.60.1/24 network=10.100.60.0 interface=vlan60-services 
-
-     actual-interface=vlan60-services 
-
-
-
- 3   address=10.100.130.1/24 network=10.100.130.0 interface=vlan130-guest_wifi 
-
-     actual-interface=vlan130-guest_wifi 
-
-
-
- 4 D address=100.66.55.211/32 network=10.88.1.1 interface=pppoe-Link-WaveMax 
-
-     actual-interface=pppoe-Link-WaveMax
+# Derived from sanitized RouterOS export section /ip address
+0   add address=10.100.90.1/24 interface=vlan90-MGMT network=10.100.90.0
+1   add address=10.100.30.1/24 interface=vlan30-proxmox-hosts network=10.100.30.0
+2   add address=10.100.60.1/24 interface=vlan60-services network=10.100.60.0
+3   add address=10.100.130.1/24 interface=vlan130-guest_wifi network=10.100.130.0

@@ -1,27 +1,2 @@
-Flags: * - builtin, D - dynamic 
-
- 0 * ;;; contains all interfaces
-
-     name="all" dynamic=no include="" exclude="" 
-
-
-
- 1 * ;;; contains no interfaces
-
-     name="none" dynamic=no include="" exclude="" 
-
-
-
- 2 * ;;; contains dynamic interfaces
-
-     name="dynamic" dynamic=no include="" exclude="" 
-
-
-
- 3 * ;;; contains static interfaces
-
-     name="static" dynamic=no include="" exclude="" 
-
-
-
- 4   name="interfaces-secure" dynamic=no include="" exclude=""
+# Derived from sanitized RouterOS export section /interface list
+0   add name=interfaces-secure

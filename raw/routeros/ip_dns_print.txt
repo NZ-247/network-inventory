@@ -1,25 +1,2 @@
-servers: 8.8.8.8,1.1.1.1
-
-              dynamic-servers: 177.155.84.53,45.237.24.53
-
-               use-doh-server: 
-
-              verify-doh-cert: no
-
-        allow-remote-requests: no
-
-          max-udp-packet-size: 4096
-
-         query-server-timeout: 2s
-
-          query-total-timeout: 10s
-
-       max-concurrent-queries: 100
-
-  max-concurrent-tcp-sessions: 20
-
-                   cache-size: 2048KiB
-
-                cache-max-ttl: 1w
-
-                   cache-used: 25KiB
+# Derived from sanitized RouterOS export section /ip dns
+0   set servers=8.8.8.8,1.1.1.1

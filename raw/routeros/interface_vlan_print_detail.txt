@@ -1,47 +1,5 @@
-Flags: X - disabled, R - running 
-
- 0 R name="vlan30-proxmox-hosts" mtu=1500 l2mtu=1592 
-
-     mac-address=F4:1E:57:AF:71:62 arp=enabled arp-timeout=auto 
-
-     loop-protect=default loop-protect-status=off 
-
-     loop-protect-send-interval=5s loop-protect-disable-time=5m vlan-id=30 
-
-     interface=bridge-core use-service-tag=no 
-
-
-
- 1 R name="vlan60-services" mtu=1500 l2mtu=1592 mac-address=F4:1E:57:AF:71:62 
-
-     arp=enabled arp-timeout=auto loop-protect=default 
-
-     loop-protect-status=off loop-protect-send-interval=5s 
-
-     loop-protect-disable-time=5m vlan-id=60 interface=bridge-core 
-
-     use-service-tag=no 
-
-
-
- 2 R name="vlan90-MGMT" mtu=1500 l2mtu=1592 mac-address=F4:1E:57:AF:71:62 
-
-     arp=enabled arp-timeout=auto loop-protect=default 
-
-     loop-protect-status=off loop-protect-send-interval=5s 
-
-     loop-protect-disable-time=5m vlan-id=90 interface=bridge-core 
-
-     use-service-tag=no 
-
-
-
- 3 R name="vlan130-guest_wifi" mtu=1500 l2mtu=1592 
-
-     mac-address=F4:1E:57:AF:71:62 arp=enabled arp-timeout=auto 
-
-     loop-protect=default loop-protect-status=off 
-
-     loop-protect-send-interval=5s loop-protect-disable-time=5m vlan-id=130 
-
-     interface=bridge-core use-service-tag=no
+# Derived from sanitized RouterOS export section /interface vlan
+0   add interface=bridge-core name=vlan30-proxmox-hosts vlan-id=30
+1   add interface=bridge-core name=vlan60-services vlan-id=60
+2   add interface=bridge-core name=vlan90-MGMT vlan-id=90
+3   add interface=bridge-core name=vlan130-guest_wifi vlan-id=130

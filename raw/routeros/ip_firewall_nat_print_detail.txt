@@ -1,27 +1,5 @@
-Flags: X - disabled, I - invalid, D - dynamic 
-
- 0    chain=srcnat action=masquerade out-interface=pppoe-Link-WaveMax log=no 
-
-      log-prefix="" 
-
-
-
- 1    ;;; Força DNS Pi-Hole
-
-      chain=dstnat action=dst-nat to-addresses=10.100.60.71 protocol=tcp 
-
-      src-address=10.100.130.0/24 dst-address-list=!DNS dst-port=53 log=no 
-
-      log-prefix="" 
-
-
-
- 2    chain=dstnat action=dst-nat to-addresses=10.100.60.71 protocol=udp 
-
-      src-address=10.100.130.0/24 dst-address-list=!DNS dst-port=53 log=no 
-
-      log-prefix="" 
-
-
-
- 3    chain=dstnat action=accept src-address-list=DNS log=no log-prefix=""
+# Derived from sanitized RouterOS export section /ip firewall nat
+0   add action=masquerade chain=srcnat out-interface=pppoe-Link-WaveMax
+1   add action=dst-nat chain=dstnat comment="For\E7a DNS Pi-Hole" dst-address-list=!DNS dst-port=53 protocol=tcp src-address=10.100.130.0/24 to-addresses=10.100.60.71
+2   add action=dst-nat chain=dstnat dst-address-list=!DNS dst-port=53 protocol=udp src-address=10.100.130.0/24 to-addresses=10.100.60.71
+3   add action=accept chain=dstnat src-address-list=DNS

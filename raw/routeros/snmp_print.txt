@@ -1,0 +1,2 @@
+# Derived from sanitized RouterOS export section /snmp
+0   set contact=<REDACTED_EMAIL> enabled=yes location=Homelab trap-community=<REDACTED> trap-generators=temp-exception,start-trap,interfaces trap-interfaces=all
