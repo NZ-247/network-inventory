@@ -16,7 +16,7 @@
     {
       "node": "host0",
       "management_ip": "10.100.30.2",
-      "management_mac": "84:69:93:7E:7D:3A",
+      "management_mac": "Nao determinado",
       "switch_port": "Gi1/0/15",
       "observed_vlan": "30",
       "bridges": {
@@ -41,7 +41,7 @@
     {
       "node": "host1",
       "management_ip": "10.100.30.3",
-      "management_mac": "D0:94:66:C6:75:02",
+      "management_mac": "Nao determinado",
       "switch_port": "Gi1/0/6",
       "observed_vlan": "30",
       "bridges": {
@@ -102,7 +102,7 @@
     {
       "node": "host2",
       "management_ip": "10.100.30.6",
-      "management_mac": "D0:94:66:C6:75:79",
+      "management_mac": "Nao determinado",
       "switch_port": "Gi1/0/3",
       "observed_vlan": "30",
       "bridges": {
@@ -163,7 +163,7 @@
     {
       "node": "host3",
       "management_ip": "10.100.30.9",
-      "management_mac": "D0:94:66:C6:31:5C",
+      "management_mac": "Nao determinado",
       "switch_port": "Gi1/0/5",
       "observed_vlan": "30",
       "bridges": {
@@ -261,8 +261,8 @@
       "ip": "Nao determinado",
       "configured_vlan": "Nao determinado",
       "effective_vlan": "60 via bridge",
-      "observed_switch_port": "Gi1/0/6",
-      "observed_vlan": "60",
+      "observed_switch_port": "Nao determinado",
+      "observed_vlan": "Nao determinado",
       "host_switch_port": "Gi1/0/6"
     },
     {
@@ -291,8 +291,8 @@
       "ip": "Nao determinado",
       "configured_vlan": "Nao determinado",
       "effective_vlan": "60 via bridge",
-      "observed_switch_port": "Gi1/0/6",
-      "observed_vlan": "60",
+      "observed_switch_port": "Nao determinado",
+      "observed_vlan": "Nao determinado",
       "host_switch_port": "Gi1/0/6"
     },
     {
@@ -306,7 +306,7 @@
       "ip": "10.100.30.12/24",
       "configured_vlan": "Nao determinado",
       "effective_vlan": "30 (inferido pelo IP)",
-      "observed_switch_port": "Gi1/0/6",
+      "observed_switch_port": "Nao determinado",
       "observed_vlan": "30",
       "host_switch_port": "Gi1/0/6"
     },
@@ -321,7 +321,7 @@
       "ip": "10.100.60.16/24",
       "configured_vlan": "Nao determinado",
       "effective_vlan": "60 via bridge",
-      "observed_switch_port": "Gi1/0/6",
+      "observed_switch_port": "Nao determinado",
       "observed_vlan": "60",
       "host_switch_port": "Gi1/0/6"
     },
@@ -336,7 +336,7 @@
       "ip": "10.100.60.71/24",
       "configured_vlan": "Nao determinado",
       "effective_vlan": "60 via bridge",
-      "observed_switch_port": "Gi1/0/6",
+      "observed_switch_port": "Nao determinado",
       "observed_vlan": "60",
       "host_switch_port": "Gi1/0/6"
     },
@@ -351,7 +351,7 @@
       "ip": "10.100.30.60/24",
       "configured_vlan": "Nao determinado",
       "effective_vlan": "30 (inferido pelo IP)",
-      "observed_switch_port": "Gi1/0/6",
+      "observed_switch_port": "Nao determinado",
       "observed_vlan": "30",
       "host_switch_port": "Gi1/0/6"
     },
@@ -381,7 +381,7 @@
       "ip": "10.100.60.72/24",
       "configured_vlan": "Nao determinado",
       "effective_vlan": "60 via bridge",
-      "observed_switch_port": "Gi1/0/3",
+      "observed_switch_port": "Nao determinado",
       "observed_vlan": "60",
       "host_switch_port": "Gi1/0/3"
     },
@@ -411,7 +411,7 @@
       "ip": "10.100.60.80/24",
       "configured_vlan": "Nao determinado",
       "effective_vlan": "60 via bridge",
-      "observed_switch_port": "Gi1/0/3",
+      "observed_switch_port": "Nao determinado",
       "observed_vlan": "60",
       "host_switch_port": "Gi1/0/3"
     },

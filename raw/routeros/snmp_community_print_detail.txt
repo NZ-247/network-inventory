@@ -1,0 +1,2 @@
+# Derived from sanitized RouterOS export section /snmp community
+0   add addresses=10.100.0.6/32 name=<REDACTED>

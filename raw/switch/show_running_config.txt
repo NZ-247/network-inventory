@@ -1,30 +1,46 @@
 Building configuration...
 
-Current configuration : 5407 bytes
+Current configuration : 9920 bytes
 !
-! Last configuration change at 00:39:03 UTC Tue Sep 1 2026 by nz
-! NVRAM config last updated at 13:12:16 UTC Sat Aug 29 2026 by nz
+! Last configuration change at 15:11:03 AMT Tue Sep 15 2026 by nz
+! NVRAM config last updated at 15:11:20 AMT Tue Sep 15 2026 by nz
 !
 version 15.2
 no service pad
-service timestamps debug datetime msec
-service timestamps log datetime msec
-no service password-encryption
+service timestamps debug datetime msec localtime show-timezone
+service timestamps log datetime msec localtime show-timezone
+service password-encryption
+service sequence-numbers
 !
 hostname SW-SN-03
 !
 boot-start-marker
 boot-end-marker
 !
+logging buffered 32768 informational
+logging console warnings
+logging monitor notifications
 !
-username NZ privilege 15 secret 5 <REDACTED>
+username NZ privilege 15 secret 9 <REDACTED>
 no aaa new-model
+clock timezone AMT -4 0
 switch 1 provision ws-c2960xr-24ps-i
 system mtu routing 1500
 !
 !
-no ip domain-lookup
+!
+!
+!
+!
 ip domain-name services.net.br
+ip name-server 10.100.60.71
+ip name-server 10.100.60.72
+login block-for 120 attempts 5 within 60
+login delay 2
+login on-failure log
+login on-success log
+vtp mode transparent
+!
 !
 !
 !
@@ -35,12 +51,30 @@ ip domain-name services.net.br
 !
 spanning-tree mode pvst
 spanning-tree extend system-id
+spanning-tree vlan 30,60,90,130 priority 24576
 !
 !
 !
 !
 vlan internal allocation policy ascending
 !
+vlan 30
+ name PROXMOX
+!
+vlan 60
+ name SERVICES
+!
+vlan 90
+ name MGMT
+!
+vlan 130
+ name GUESTs
+!
+vlan 999
+ name BLACKHOLE
+no cdp run
+!
+lldp run
 !
 ! 
 !
@@ -56,122 +90,255 @@ interface FastEthernet0
  shutdown
 !
 interface GigabitEthernet1/0/1
- description UPLINK_RT
+ description UPLINK_RT-SN-003
  switchport trunk allowed vlan 30,60,90,130
+ switchport trunk native vlan 999
  switchport mode trunk
- spanning-tree portfast trunk
+ switchport nonegotiate
+ spanning-tree portfast edge trunk
 !
 interface GigabitEthernet1/0/2
- description MGMT_ACCESS
+ description RESERVED_MGMT_EMERGENCY
  switchport access vlan 90
  switchport mode access
- spanning-tree portfast
+ switchport nonegotiate
+ shutdown
+ spanning-tree portfast edge
+ spanning-tree bpduguard enable
 !
 interface GigabitEthernet1/0/3
- description PROXMOX_HOSTS
- switchport access vlan 30
- switchport trunk native vlan 30
- switchport trunk allowed vlan 30,60,90
+ description PROXMOX_HOST2
+ switchport access vlan 999
+ switchport trunk allowed vlan 30,60
+ switchport trunk native vlan 999
  switchport mode trunk
- spanning-tree portfast
+ switchport nonegotiate
+ spanning-tree portfast edge trunk
 !
 interface GigabitEthernet1/0/4
- description PROXMOX_HOSTS
- switchport access vlan 30
- switchport trunk allowed vlan 30,60,90
+ description RESERVED_PROXMOX
+ switchport access vlan 999
+ switchport trunk allowed vlan 30,60
+ switchport trunk native vlan 999
  switchport mode trunk
- spanning-tree portfast trunk
+ switchport nonegotiate
+ shutdown
+ spanning-tree portfast edge trunk
 !
 interface GigabitEthernet1/0/5
- description PROXMOX_HOSTS
- switchport access vlan 30
- switchport trunk allowed vlan 30,60,90
+ description PROXMOX_HOST3
+ switchport access vlan 999
+ switchport trunk allowed vlan 30,60
+ switchport trunk native vlan 999
  switchport mode trunk
- spanning-tree portfast trunk
+ switchport nonegotiate
+ spanning-tree portfast edge trunk
 !
 interface GigabitEthernet1/0/6
- description PROXMOX_HOSTS
- switchport access vlan 30
- switchport trunk native vlan 30
- switchport trunk allowed vlan 30,60,90
+ description PROXMOX_HOST1
+ switchport access vlan 999
+ switchport trunk allowed vlan 30,60
+ switchport trunk native vlan 999
  switchport mode trunk
- spanning-tree portfast trunk
+ switchport nonegotiate
+ spanning-tree portfast edge trunk
 !
 interface GigabitEthernet1/0/7
- description AP_GUEST
+ description AP_GUEST_01_HUAWEI-BE3
  switchport access vlan 130
  switchport mode access
- spanning-tree portfast
+ spanning-tree portfast edge
 !
 interface GigabitEthernet1/0/8
- description AP_GUEST
+ description RESERVED_AP_GUEST
  switchport access vlan 130
  switchport mode access
- spanning-tree portfast
+ switchport nonegotiate
+ shutdown
+ spanning-tree portfast edge
+ spanning-tree bpduguard enable
 !
 interface GigabitEthernet1/0/9
- description AP_GUEST
+ description RESERVED_AP_GUEST
  switchport access vlan 130
  switchport mode access
- spanning-tree portfast
+ switchport nonegotiate
+ shutdown
+ spanning-tree portfast edge
+ spanning-tree bpduguard enable
 !
 interface GigabitEthernet1/0/10
- description AP_GUEST
+ description AP_GUEST_02_TPLink
  switchport access vlan 130
  switchport mode access
- spanning-tree portfast
+ spanning-tree portfast edge
 !
 interface GigabitEthernet1/0/11
+ description UNUSED_BLACKHOLE
+ switchport access vlan 999
+ switchport mode access
+ switchport nonegotiate
+ shutdown
+ power inline never
+ spanning-tree portfast edge
+ spanning-tree bpduguard enable
 !
 interface GigabitEthernet1/0/12
- description teste-vlan60
- switchport access vlan 60
+ description UNUSED_BLACKHOLE
+ switchport access vlan 999
  switchport mode access
- spanning-tree portfast
+ switchport nonegotiate
+ shutdown
+ power inline never
+ spanning-tree portfast edge
+ spanning-tree bpduguard enable
 !
 interface GigabitEthernet1/0/13
- description PROXMOX_HOSTS
- switchport trunk allowed vlan 30,60,90
+ description RESERVED_PROXMOX
+ switchport access vlan 999
+ switchport trunk allowed vlan 30,60
+ switchport trunk native vlan 999
  switchport mode trunk
- spanning-tree portfast trunk
+ switchport nonegotiate
+ shutdown
+ spanning-tree portfast edge trunk
 !
 interface GigabitEthernet1/0/14
- description PROXMOX_HOSTS
- switchport trunk allowed vlan 30,60,90
+ description RESERVED_PROXMOX
+ switchport access vlan 999
+ switchport trunk allowed vlan 30,60
+ switchport trunk native vlan 999
  switchport mode trunk
- spanning-tree portfast trunk
+ switchport nonegotiate
+ shutdown
+ spanning-tree portfast edge trunk
 !
 interface GigabitEthernet1/0/15
- description PROXMOX_HOST-0
+ description PROXMOX_HOST0
+ switchport access vlan 999
  switchport trunk allowed vlan 30,60
+ switchport trunk native vlan 999
  switchport mode trunk
- spanning-tree portfast trunk
+ switchport nonegotiate
+ spanning-tree portfast edge trunk
 !
 interface GigabitEthernet1/0/16
+ description UNUSED_BLACKHOLE
+ switchport access vlan 999
+ switchport mode access
+ switchport nonegotiate
+ shutdown
+ power inline never
+ spanning-tree portfast edge
+ spanning-tree bpduguard enable
 !
 interface GigabitEthernet1/0/17
+ description UNUSED_BLACKHOLE
+ switchport access vlan 999
+ switchport mode access
+ switchport nonegotiate
+ shutdown
+ power inline never
+ spanning-tree portfast edge
+ spanning-tree bpduguard enable
 !
 interface GigabitEthernet1/0/18
+ description UNUSED_BLACKHOLE
+ switchport access vlan 999
+ switchport mode access
+ switchport nonegotiate
+ shutdown
+ power inline never
+ spanning-tree portfast edge
+ spanning-tree bpduguard enable
 !
 interface GigabitEthernet1/0/19
+ description UNUSED_BLACKHOLE
+ switchport access vlan 999
+ switchport mode access
+ switchport nonegotiate
+ shutdown
+ power inline never
+ spanning-tree portfast edge
+ spanning-tree bpduguard enable
 !
 interface GigabitEthernet1/0/20
+ description UNUSED_BLACKHOLE
+ switchport access vlan 999
+ switchport mode access
+ switchport nonegotiate
+ shutdown
+ power inline never
+ spanning-tree portfast edge
+ spanning-tree bpduguard enable
 !
 interface GigabitEthernet1/0/21
+ description UNUSED_BLACKHOLE
+ switchport access vlan 999
+ switchport mode access
+ switchport nonegotiate
+ shutdown
+ power inline never
+ spanning-tree portfast edge
+ spanning-tree bpduguard enable
 !
 interface GigabitEthernet1/0/22
+ description UNUSED_BLACKHOLE
+ switchport access vlan 999
+ switchport mode access
+ switchport nonegotiate
+ shutdown
+ power inline never
+ spanning-tree portfast edge
+ spanning-tree bpduguard enable
 !
 interface GigabitEthernet1/0/23
+ description UNUSED_BLACKHOLE
+ switchport access vlan 999
+ switchport mode access
+ switchport nonegotiate
+ shutdown
+ power inline never
+ spanning-tree portfast edge
+ spanning-tree bpduguard enable
 !
 interface GigabitEthernet1/0/24
+ description UNUSED_BLACKHOLE
+ switchport access vlan 999
+ switchport mode access
+ switchport nonegotiate
+ shutdown
+ power inline never
+ spanning-tree portfast edge
+ spanning-tree bpduguard enable
 !
 interface GigabitEthernet1/0/25
+ description UNUSED_SFP
+ switchport access vlan 999
+ switchport mode access
+ switchport nonegotiate
+ shutdown
 !
 interface GigabitEthernet1/0/26
+ description UNUSED_SFP
+ switchport access vlan 999
+ switchport mode access
+ switchport nonegotiate
+ shutdown
 !
 interface GigabitEthernet1/0/27
+ description UNUSED_SFP
+ switchport access vlan 999
+ switchport mode access
+ switchport nonegotiate
+ shutdown
 !
 interface GigabitEthernet1/0/28
+ description UNUSED_SFP
+ switchport access vlan 999
+ switchport mode access
+ switchport nonegotiate
+ shutdown
 !
 interface Vlan1
  no ip address
@@ -182,18 +349,32 @@ interface Vlan90
 !
 ip default-gateway 10.100.90.1
 ip forward-protocol nd
-ip http server
-ip http secure-server
 !
+no ip http server
+no ip http secure-server
+ip ssh time-out 60
+ip ssh authentication-retries 2
 ip ssh version 2
+!
+ip access-list standard SNMP_ZABBIX_ONLY
+ permit 10.100.30.60
+ip access-list standard SSH_MGMT_ONLY
+ remark Tailscale HA subnet router
+ permit 10.100.30.26
+ remark Tailscale primary subnet router
+ permit 10.100.30.4
+ remark VLAN90 - Management
+ permit 10.100.90.0 0.0.0.255
+ deny   any log
 !
 !
 access-list 10 permit 10.100.30.60
 !
-snmp-server community <REDACTED> RO 10
+!
+snmp-server group ZABBIX_V3 v3 priv read ZABBIX_READ access SNMP_ZABBIX_ONLY
+snmp-server view ZABBIX_READ iso included
 snmp-server location HomeLab
 snmp-server contact Alan
-no vstack
 banner login ^C
   SSSSSS   EEEEEEE  RRRRRR   V       V  III  CCCCCCC  EEEEEEE  SSSSSS
  SS        EE       RR   RR  V       V  III  CC       EE      SS
@@ -214,6 +395,7 @@ Este sistema e de uso exclusivo de usuarios autorizados
  administrativas, civis e penais, conforme legislacao vigente,
  incluindo a Lei Geral de Protecao de Dados (LGPD - Lei 13.709)
 
+          
 
  Ao prosseguir, voce declara estar ciente e de acordo.
 =================================================================
@@ -236,10 +418,20 @@ line con 0
  exec-timeout 30 0
  logging synchronous
 line vty 0 4
+ access-class SSH_MGMT_ONLY in
+ logging synchronous
  login local
  transport input ssh
 line vty 5 15
- login
+ access-class SSH_MGMT_ONLY in
+ logging synchronous
+ login local
+ transport input ssh
 !
-ntp server pool.ntp.org
+ntp server a.ntp.br prefer
+ntp server b.ntp.br
+ntp server c.ntp.br
+!
 end
+
+SW-SN-03#

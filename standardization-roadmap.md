@@ -1,118 +1,77 @@
 # Homelab Standardization Roadmap
 
-Documento de trabalho para padronizar rede, Proxmox VE e operacao do homelab. Nenhuma acao foi executada neste roadmap; ele parte dos fatos coletados em `network-inventory.md` e `proxmox-inventory/inventory.md`.
+Roadmap atualizado pelo baseline real de 15/09/2026. As etapas abaixo nao sao script de execucao; cada mudanca deve ter backup, janela e rollback.
 
-## 1. Baseline Atual
+## 1. Baseline atual
 
-| Area | Estado observado |
+| Area | Estado |
 | --- | --- |
-| Gateway | MikroTik RT-SN-003, RB750Gr3, RouterOS 6.49.18 |
-| Switch | Cisco SW-SN-03, WS-C2960XR-24PS-I, IOS 15.2(2)E7 |
-| Uplink RB -> Switch | RB `ether3-switch` para Cisco `Gi1/0/1`, trunk VLANs 30/60/90/130 |
-| VLAN 30 | Proxmox hosts, `10.100.30.0/24`, gateway `10.100.30.1` |
-| VLAN 60 | Services/workloads, `10.100.60.0/24`, gateway `10.100.60.1` |
-| VLAN 90 | Management, `10.100.90.0/24`, gateway `10.100.90.1`, switch em `10.100.90.99` |
-| VLAN 130 | Guest Wi-Fi, `10.100.130.0/24`, DNS entregue para Pi-hole `10.100.60.71/72` |
-| Proxmox hosts | `host0` Gi1/0/15, `host1` Gi1/0/6, `host2` Gi1/0/3, `host3` Gi1/0/5 |
-| Storage hd1tb | Storage Proxmox local/global, `shared=0`; montado de fato no `host1` |
+| Gateway | RT-SN-003, RB750Gr3, RouterOS 6.49.18 long-term |
+| Switch | SW-SN-03, WS-C2960XR-24PS-I, IOS 15.2(7)E14 |
+| VLANs funcionais | 30 PROXMOX, 60 SERVICES, 90 MGMT, 130 GUESTs |
+| Blackhole | VLAN 999 como native/blackhole no Cisco, sem SVI/L3 funcional |
+| Uplink RB-Cisco | ether3-switch <-> Gi1/0/1, tagged 30/60/90/130, STP boundary |
+| STP | Cisco PVST root; RouterOS bridge-core protocol-mode=none |
 
-## 2. Itens de Revisao Prioritarios
+## 2. Concluido no baseline
 
-| Prioridade | Item | Evidencia | Motivo |
+| Item | Resultado |
+| --- | --- |
+| Cisco IOS | Validado em 15.2(7)E14; finding antigo de IOS removido. |
+| VLANs legadas | VLANs legadas removidas do baseline atual do switch. |
+| Trunks Proxmox | Gi1/0/3, Gi1/0/5, Gi1/0/6 e Gi1/0/15 padronizados com allowed 30,60 e native 999. |
+| host0 | Gi1/0/15 validado em 1G apos troca de cabo. |
+| LLDP/CDP | LLDP habilitado e CDP desabilitado no Cisco. |
+| Web management Cisco | HTTP e HTTPS desabilitados. |
+| SNMP Cisco | v3 authPriv com ACL SNMP_ZABBIX_ONLY; v1/v2c removidos. |
+| NTP/DNS Cisco | NTP.br redundante e DNS via Pi-hole 10.100.60.71/72. |
+
+## 3. Prioridades abertas
+
+| Severidade | ID | Item | Proxima acao |
 | --- | --- | --- | --- |
-| Alta | Link do `host0` negociando a 100 Mbps | Cisco `Gi1/0/15` conectado em `a-100` | Pode limitar migracao do Nextcloud, backup, restore e trafego de servicos |
-| Alta | `running-config` diferente de `startup-config` no switch | Inventario Cisco encontrou diferenca, especialmente em `Gi1/0/15` | Um reboot pode desfazer parte da configuracao atual |
-| Media | Trunks Proxmox sem padrao unico | Native VLANs `1` e `30`; allowed VLANs `30,60` e `30,60,90` | Aumenta risco de comportamento diferente entre hosts |
-| Media | Bridges Proxmox inconsistentes | `vmbr1`/`vmbr2` representam VLANs diferentes entre hosts | Dificulta automacao, playbooks e troubleshooting |
-| Media | VLANs legadas no switch | VLANs 10, 20 e 369 sem L3 correspondente na RB | Podem ser reserva/teste, mas devem ser nomeadas ou removidas futuramente |
-| Media | Ceph parcial no Proxmox | Pacotes/configuracao presentes, cluster nao operacional | Evita conclusoes erradas sobre storage distribuido |
-| Alta | SMART ruim no `host3` | Inventario Proxmox marcou falha em `/dev/nvme0n1` | Risco de indisponibilidade local |
+| CRITICAL | RB-FW-001 | RB input firewall: DROP GERAL disabled | Auditar /ip service print detail, restringir servicos administrativos e aplicar default-deny seguro em Safe Mode. |
+| HIGH | RB-DHCP-001 | DHCP pools sobrepoem IPs estaticos | Separar faixas dinamicas das reservas/estaticos e revisar leases antes da mudanca. |
+| HIGH | RB-FW-002 | RB forward policy sem default-deny explicito | Definir matriz de fluxos inter-VLAN e implantar default-deny gradual, preservando fluxos necessarios. |
+| MEDIUM | RB-DNS-001 | DNS DHCP inconsistente entre VLANs | Definir politica DNS por VLAN; se Pi-hole for padrao, alinhar DHCP e NAT anti-bypass para as VLANs aplicaveis. |
+| MEDIUM | RB-NTP-001 | RB NTP client disabled | Habilitar NTP/SNTP com fontes confiaveis e validar timezone America/Cuiaba. |
+| MEDIUM | RB-SNMP-001 | RB SNMP community difere da origem liberada no firewall | Confirmar IP do Zabbix, alinhar a origem e migrar a RB para SNMPv3 authPriv. |
 
-## 3. Padrao-Alvo Sugerido
+## 4. Revisao e limpeza
 
-Este padrao e uma proposta para discussao, nao uma configuracao aplicada.
+| Severidade | ID | Item | Proxima acao |
+| --- | --- | --- | --- |
+| REVIEW | RB-DISC-001 | Neighbor discovery usa lista invertida | Validar intencao no RouterOS antes de alterar; limitar descoberta somente onde for necessario. |
+| LOW | RB-KNOCK-001 | Port-knocking popula rede-suporte sem accept correspondente | Revisar a intencao; concluir o fluxo de accept ou remover as regras orfas. |
+| LOW | RB-POOL-001 | Pools DHCP legados aparentemente nao usados | Confirmar ausencia de dependencias e remover em mudanca separada. |
+| LOW | SW-BANNER-001 | Cisco banner MOTD truncado/malformado | Remover o MOTD ou recria-lo com delimitador limpo e texto unico aprovado. |
+| LOW | SW-CLEAN-001 | Cisco ACL 10 orfa apos remocao do SNMPv2c | Remover ACL 10 apos confirmar que nao ha referencia remanescente. |
 
-| Tema | Padrao sugerido |
-| --- | --- |
-| Nomes de VLAN | Manter numeracao atual e documentar funcao: 30=PVE, 60=SERVICES, 90=MGMT, 130=GUEST |
-| Trunks Proxmox | Definir um unico perfil por tipo de host: VLANs permitidas, native VLAN e descricao de porta |
-| Gerencia Proxmox | Usar sempre o mesmo modelo: IP de host em VLAN 30 tagged via subinterface ou untagged/native, mas nao misturado |
-| Bridges Proxmox | Padronizar nomes: `vmbr0` como trunk fisico VLAN-aware; bridges/subinterfaces por VLAN com significado igual em todos os hosts |
-| Rede guest | Manter VLAN 130 fora dos trunks Proxmox salvo necessidade comprovada |
-| Management | Restringir administracao de RB/switch/Proxmox a VLAN 90 ou a hosts explicitamente autorizados |
-| DHCP/DNS | Centralizar nomes de pools, reservas e DNS por VLAN; registrar Pi-hole primario/secundario |
-| Storage Proxmox | Separar storage local, storage de VM e storage de dados do Nextcloud com nomes que indiquem host/escopo |
-| Documentacao | Atualizar `network-inventory` e `proxmox-inventory` apos cada mudanca real |
+## 5. Mapa operacional de portas
 
-## 4. Sequencia Segura de Trabalho
+| Porta | Uso | Modo | Allowed | Native | Speed |
+| --- | --- | --- | --- | --- | --- |
+| Gi1/0/1 | UPLINK_RT-SN-003 | trunk | 30,60,90,130 | 999 | 1G |
+| Gi1/0/3 | PROXMOX_HOST2 | trunk | 30,60 | 999 | 1G |
+| Gi1/0/5 | PROXMOX_HOST3 | trunk | 30,60 | 999 | 1G |
+| Gi1/0/6 | PROXMOX_HOST1 | trunk | 30,60 | 999 | 1G |
+| Gi1/0/7 | AP_GUEST_01_HUAWEI-BE3 | access | Nao determinado | Nao determinado | 1G |
+| Gi1/0/10 | AP_GUEST_02_TPLink | access | Nao determinado | Nao determinado | 100M |
+| Gi1/0/15 | PROXMOX_HOST0 | trunk | 30,60 | 999 | 1G |
 
-### Fase 0 - Preparacao
+## 6. Sequencia segura sugerida
 
-- Fazer backup/export das configuracoes antes de qualquer mudanca real.
-- Definir janela de manutencao para rede e Proxmox.
-- Congelar nomes desejados de VLAN, bridges, storages e hosts.
-- Confirmar se VLANs 10, 20 e 369 sao legado, reserva ou descarte.
+1. Auditar `/ip service print detail` na RB e restringir management plane.
+2. Ativar default-deny seguro no input da RB em Safe Mode.
+3. Definir matriz inter-VLAN e aplicar default-deny forward gradual.
+4. Redesenhar pools DHCP para nao sobrepor IPs estaticos.
+5. Alinhar SNMP da RB ao Zabbix real e migrar para v3.
+6. Habilitar NTP/SNTP na RB.
+7. Unificar politica DNS/Pi-hole por VLAN.
+8. Limpar ACL 10 e corrigir/remover banner MOTD no Cisco.
 
-### Fase 1 - Camada Fisica
+## 7. Guardrails
 
-- Resolver `Gi1/0/15` do `host0` negociando a 100 Mbps.
-- Resolver ou justificar `Gi1/0/10` em 100 Mbps.
-- Etiquetar cabos/portas conforme mapa:
-
-| Porta | Uso atual | Observacao |
-| --- | --- | --- |
-| Gi1/0/1 | UPLINK_RT | Trunk para RB, VLANs 30/60/90/130 |
-| Gi1/0/3 | host2 | Trunk Proxmox, VLANs 30/60/90, native 30 |
-| Gi1/0/5 | host3 | Trunk Proxmox, VLANs 30/60/90, native 1 |
-| Gi1/0/6 | host1 | Trunk Proxmox, VLANs 30/60/90, native 30 |
-| Gi1/0/15 | host0 | Trunk Proxmox, VLANs 30/60, speed 100 Mbps observado |
-| Gi1/0/7 | AP_GUEST | Access VLAN 130 |
-| Gi1/0/10 | AP_GUEST | Access VLAN 130, speed 100 Mbps observado |
-
-### Fase 2 - Padrao de VLAN/Trunk
-
-- Escolher um dos modelos:
-  - Gerencia Proxmox tagged: `vmbr0` trunk VLAN-aware e IP de host em `vmbr0.30`.
-  - Gerencia Proxmox untagged: native VLAN 30 em todos os trunks Proxmox e IP direto na bridge.
-- Evitar modelo misto, pois hoje ha native VLAN 1 e 30 em portas Proxmox.
-- Decidir se VLAN 90 deve chegar aos hosts Proxmox para administracao, backup ou monitoramento.
-
-### Fase 3 - Padrao de Bridges PVE
-
-- Padronizar o significado de `vmbr1` e `vmbr2`.
-- Sugestao de nomenclatura legivel:
-  - `vmbr0`: bridge fisica trunk VLAN-aware.
-  - `vmbr30`: rede de hosts/gerencia Proxmox, se bridge separada for usada.
-  - `vmbr60`: rede de servicos.
-  - `vmbr90`: rede de management, se necessaria nos hosts.
-- Atualizar playbooks para nunca assumir que `vmbr1` significa a mesma VLAN em todos os hosts ate a padronizacao acontecer.
-
-### Fase 4 - Storage e Nextcloud
-
-- Tratar `hd1tb` como storage local do `host1`, nao como storage compartilhado.
-- Renomear/segmentar storages futuramente para expressar escopo, por exemplo `host1-hd1tb-local` ou `host0-nc-mirror`.
-- Antes da migracao do Nextcloud para `host0`, resolver o link de 100 Mbps e validar backup/restore.
-- Para espelhamento temporario com dois discos, planejar pool/volume redundante fora deste inventario read-only.
-- Para os 4 SAS no `host1` via HBA, documentar previamente se o alvo e capacidade, IOPS ou resiliencia.
-
-### Fase 5 - Servicos, Backup e Operacao
-
-- Definir onde ficam DNS/Pi-hole, Nextcloud, VPN/Tailscale, Zabbix e paginas.
-- Criar politica simples de backup por workload critico.
-- Documentar ordem de restauracao: DNS, gateway/gerencia, storage, Nextcloud, monitoramento.
-- Usar Zabbix para alertar link a 100 Mbps, storage cheio, SMART ruim e hosts offline.
-
-## 5. Decisoes Pendentes
-
-| Decisao | Opcoes | Impacto |
-| --- | --- | --- |
-| Gerencia Proxmox tagged ou untagged | `vmbr0.30` em todos os hosts ou native VLAN 30 em todos os trunks | Define o padrao de switch e `/etc/network/interfaces` |
-| VLAN 90 nos hosts Proxmox | Permitida nos trunks ou restrita ao switch/RB | Afeta administracao e isolamento |
-| Nomes de bridges | `vmbr1/vmbr2` atuais ou nomes por VLAN | Afeta clareza, playbooks e migracoes |
-| Storage Nextcloud temporario | Mirror no `host0` ou manter no `host1` ate HBA/SAS | Afeta janela de migracao e risco |
-| Layout dos 4 SAS | Mirror pairs ou RAIDZ1/alternativa | Define capacidade util, resiliencia e performance |
-| VLANs 10/20/369 | Manter, reservar, renomear ou remover futuramente | Reduz ambiguidade do switch |
-
-## 6. Regra de Ouro
-
-Nao usar este roadmap como script de execucao. Cada item deve virar uma mudanca pequena, com backup, janela e rollback definidos.
+- Cisco remoto: backup, `reload in`, alteracao pequena, validacao, `reload cancel`, `write memory`.
+- MikroTik remoto: export + backup, Safe Mode, alteracao pequena, validacao e saida limpa do Safe Mode.
+- Nao adicionar segundo link L2 Cisco-RB sem redesign de STP, preferencialmente MSTP comum.

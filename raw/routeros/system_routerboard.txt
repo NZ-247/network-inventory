@@ -1,17 +1,1 @@
-routerboard: yes
-
-        board-name: hEX
-
-             model: RB750Gr3
-
-          revision: r4
-
-     serial-number: HHK0A0BXD64
-
-     firmware-type: mt7621L
-
-  factory-firmware: 6.49.17
-
-  current-firmware: 6.49.17
-
-  upgrade-firmware: 6.49.18
+# Not provided by sanitized RouterOS export baseline 2026-09-15

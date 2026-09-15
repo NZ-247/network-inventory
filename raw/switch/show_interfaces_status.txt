@@ -1,30 +1,32 @@
-Port      Name               Status       Vlan       Duplex  Speed Type 
-Gi1/0/1   UPLINK_RT          connected    trunk      a-full a-1000 10/100/1000BaseTX
-Gi1/0/2   MGMT_ACCESS        notconnect   90           auto   auto 10/100/1000BaseTX
-Gi1/0/3   PROXMOX_HOSTS      connected    trunk      a-full a-1000 10/100/1000BaseTX
-Gi1/0/4   PROXMOX_HOSTS      notconnect   30           auto   auto 10/100/1000BaseTX
-Gi1/0/5   PROXMOX_HOSTS      connected    trunk      a-full a-1000 10/100/1000BaseTX
-Gi1/0/6   PROXMOX_HOSTS      connected    trunk      a-full a-1000 10/100/1000BaseTX
-Gi1/0/7   AP_GUEST           connected    130        a-full a-1000 10/100/1000BaseTX
-Gi1/0/8   AP_GUEST           notconnect   130          auto   auto 10/100/1000BaseTX
-Gi1/0/9   AP_GUEST           notconnect   130          auto   auto 10/100/1000BaseTX
-Gi1/0/10  AP_GUEST           connected    130        a-full  a-100 10/100/1000BaseTX
-Gi1/0/11                     notconnect   1            auto   auto 10/100/1000BaseTX
-Gi1/0/12  teste-vlan60       notconnect   60           auto   auto 10/100/1000BaseTX
-Gi1/0/13  PROXMOX_HOSTS      notconnect   1            auto   auto 10/100/1000BaseTX
-Gi1/0/14  PROXMOX_HOSTS      notconnect   1            auto   auto 10/100/1000BaseTX
-Gi1/0/15  PROXMOX_HOST-0     connected    trunk      a-full  a-100 10/100/1000BaseTX
-Gi1/0/16                     notconnect   1            auto   auto 10/100/1000BaseTX
-Gi1/0/17                     notconnect   1            auto   auto 10/100/1000BaseTX
-Gi1/0/18                     notconnect   1            auto   auto 10/100/1000BaseTX
-Gi1/0/19                     notconnect   1            auto   auto 10/100/1000BaseTX
-Gi1/0/20                     notconnect   1            auto   auto 10/100/1000BaseTX
-Gi1/0/21                     notconnect   1            auto   auto 10/100/1000BaseTX
-Gi1/0/22                     notconnect   1            auto   auto 10/100/1000BaseTX
-Gi1/0/23                     notconnect   1            auto   auto 10/100/1000BaseTX
-Gi1/0/24                     notconnect   1            auto   auto 10/100/1000BaseTX
-Gi1/0/25                     notconnect   1            auto   auto Not Present
-Gi1/0/26                     notconnect   1            auto   auto Not Present
-Gi1/0/27                     notconnect   1            auto   auto Not Present
-Gi1/0/28                     notconnect   1            auto   auto Not Present
-Fa0                          disabled     routed       auto   auto 10/100BaseTX
+Port      Name                 Status       Vlan       Duplex Speed Type
+Gi1/0/1   UPLINK_RT-SN-003     connected    trunk      full   1G    10/100/1000BaseTX
+Gi1/0/2   RESERVED_MGMT_EMERGE disabled     90         auto   auto  10/100/1000BaseTX
+Gi1/0/3   PROXMOX_HOST2        connected    trunk      full   1G    10/100/1000BaseTX
+Gi1/0/4   RESERVED_PROXMOX     disabled     999        auto   auto  10/100/1000BaseTX
+Gi1/0/5   PROXMOX_HOST3        connected    trunk      full   1G    10/100/1000BaseTX
+Gi1/0/6   PROXMOX_HOST1        connected    trunk      full   1G    10/100/1000BaseTX
+Gi1/0/7   AP_GUEST_01_HUAWEI-B connected    130        full   1G    10/100/1000BaseTX
+Gi1/0/8   RESERVED_AP_GUEST    disabled     130        auto   auto  10/100/1000BaseTX
+Gi1/0/9   RESERVED_AP_GUEST    disabled     130        auto   auto  10/100/1000BaseTX
+Gi1/0/10  AP_GUEST_02_TPLink   connected    130        full   100M  10/100/1000BaseTX
+Gi1/0/11  UNUSED_BLACKHOLE     disabled     999        auto   auto  10/100/1000BaseTX
+Gi1/0/12  UNUSED_BLACKHOLE     disabled     999        auto   auto  10/100/1000BaseTX
+Gi1/0/13  RESERVED_PROXMOX     disabled     999        auto   auto  10/100/1000BaseTX
+Gi1/0/14  RESERVED_PROXMOX     disabled     999        auto   auto  10/100/1000BaseTX
+Gi1/0/15  PROXMOX_HOST0        connected    trunk      full   1G    10/100/1000BaseTX
+Gi1/0/16  UNUSED_BLACKHOLE     disabled     999        auto   auto  10/100/1000BaseTX
+Gi1/0/17  UNUSED_BLACKHOLE     disabled     999        auto   auto  10/100/1000BaseTX
+Gi1/0/18  UNUSED_BLACKHOLE     disabled     999        auto   auto  10/100/1000BaseTX
+Gi1/0/19  UNUSED_BLACKHOLE     disabled     999        auto   auto  10/100/1000BaseTX
+Gi1/0/20  UNUSED_BLACKHOLE     disabled     999        auto   auto  10/100/1000BaseTX
+Gi1/0/21  UNUSED_BLACKHOLE     disabled     999        auto   auto  10/100/1000BaseTX
+Gi1/0/22  UNUSED_BLACKHOLE     disabled     999        auto   auto  10/100/1000BaseTX
+Gi1/0/23  UNUSED_BLACKHOLE     disabled     999        auto   auto  10/100/1000BaseTX
+Gi1/0/24  UNUSED_BLACKHOLE     disabled     999        auto   auto  10/100/1000BaseTX
+Gi1/0/25  UNUSED_SFP           disabled     999        auto   auto  10/100/1000BaseTX
+Gi1/0/26  UNUSED_SFP           disabled     999        auto   auto  10/100/1000BaseTX
+Gi1/0/27  UNUSED_SFP           disabled     999        auto   auto  10/100/1000BaseTX
+Gi1/0/28  UNUSED_SFP           disabled     999        auto   auto  10/100/1000BaseTX
+Fa0                            disabled     routed     auto   auto  10/100BaseTX
+Vlan1                          disabled     Nao determinado auto   auto  Nao determinado
+Vlan90                         Nao determinado Nao determinado auto   Nao determinado Nao determinado

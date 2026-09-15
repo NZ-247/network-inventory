@@ -1,0 +1,2 @@
+# Derived from sanitized RouterOS export section /system clock
+0   set time-zone-name=America/Cuiaba

@@ -1,31 +1,5 @@
-Flags: D - dynamic 
-
- 0   address=10.100.30.0/24 gateway=10.100.30.1 dns-server=1.1.1.1,8.8.8.8 
-
-     wins-server="" ntp-server="" caps-manager="" domain="services.net.br" 
-
-     dhcp-option="" 
-
-
-
- 1   address=10.100.60.0/24 gateway=10.100.60.1 dns-server=1.1.1.1,8.8.8.8 
-
-     wins-server="" ntp-server="" caps-manager="" domain="services.net.br" 
-
-     dhcp-option="" 
-
-
-
- 2   address=10.100.90.0/24 gateway=10.100.90.1 dns-server=1.1.1.1,8.8.8.8 
-
-     wins-server="" ntp-server="" caps-manager="" domain="services.net.br" 
-
-     dhcp-option="" 
-
-
-
- 3   address=10.100.130.0/24 gateway=10.100.130.1 
-
-     dns-server=10.100.60.71,10.100.60.72 wins-server="" ntp-server="" 
-
-     caps-manager="" domain="services.net.br" dhcp-option=""
+# Derived from sanitized RouterOS export section /ip dhcp-server network
+0   add address=10.100.30.0/24 dns-server=1.1.1.1,8.8.8.8 domain=services.net.br gateway=10.100.30.1
+1   add address=10.100.60.0/24 dns-server=1.1.1.1,8.8.8.8 domain=services.net.br gateway=10.100.60.1
+2   add address=10.100.90.0/24 dns-server=1.1.1.1,8.8.8.8 domain=services.net.br gateway=10.100.90.1
+3   add address=10.100.130.0/24 dns-server=10.100.60.71,10.100.60.72 domain=services.net.br gateway=10.100.130.1

@@ -1,17 +1,19 @@
 # Current Network Topology
 
+Baseline real de 15/09/2026. Mermaid usa apenas sintaxe suportada pelo GitHub.
+
 ## 1. Physical Topology
 
 ```mermaid
 flowchart LR
-  INTERNET["Internet / ISP"] --> RB["RT-SN-003\nMikroTik RB750Gr3"]
-  RB -- "ether3-switch trunk\nVLAN 30/60/90/130" --> SW["SW-SN-03\nWS-C2960XR-24PS-I"]
-  SW -- "Gi1/0/15 a-100\nVLAN 30" --> H_host0["host0\n10.100.30.2"]
-  SW -- "Gi1/0/6 a-1000\nVLAN 30" --> H_host1["host1\n10.100.30.3"]
-  SW -- "Gi1/0/3 a-1000\nVLAN 30" --> H_host2["host2\n10.100.30.6"]
-  SW -- "Gi1/0/5 a-1000\nVLAN 30" --> H_host3["host3\n10.100.30.9"]
-  SW -- "Gi1/0/10\naccess VLAN 130" --> AP_Gi1_0_10["AP / Guest\nGi1/0/10"]
-  SW -- "Gi1/0/7\naccess VLAN 130" --> AP_Gi1_0_7["AP / Guest\nGi1/0/7"]
+  INTERNET["Internet / ISP"] -->|"PPPoE"| RB["RT-SN-003\nMikroTik RB750Gr3\nL3 Gateway"]
+  RB -- "ether3-switch <-> Gi1/0/1\n802.1Q 30,60,90,130\nSTP boundary" --> SW["SW-SN-03\nWS-C2960XR-24PS-I\n10.100.90.99"]
+  SW -- "Gi1/0/15 1G\ntrunk 30,60 native 999" --> H_host0["host0\n10.100.30.2"]
+  SW -- "Gi1/0/6 1G\ntrunk 30,60 native 999" --> H_host1["host1\n10.100.30.3"]
+  SW -- "Gi1/0/3 1G\ntrunk 30,60 native 999" --> H_host2["host2\n10.100.30.6"]
+  SW -- "Gi1/0/5 1G\ntrunk 30,60 native 999" --> H_host3["host3\n10.100.30.9"]
+  SW -- "Gi1/0/10 100M\naccess VLAN 130" --> AP_Gi1_0_10["02 TPLink\nGuest AP"]
+  SW -- "Gi1/0/7 1G\naccess VLAN 130" --> AP_Gi1_0_7["01 HUAWEI-BE3\nGuest AP"]
 ```
 
 ## 2. VLAN / L3 Topology
@@ -74,3 +76,7 @@ flowchart TB
   N_host2 --> W_111_Pag_darling_vmbr1["CT 111 - Pag-darling\nvmbr1 / VLAN 60 via bridge\nIP 10.100.60.80/24"]
   N_host3 --> W_112_streaming_vmbr0["VM 112 - streaming\nvmbr0 / VLAN 60\nIP Nao determinado"]
 ```
+
+## 5. STP Boundary
+
+O Cisco opera PVST e e root das VLANs 30/60/90/130. A bridge-core da RB opera `protocol-mode=none`; portanto o link RB-Cisco e uma fronteira STP. Nao adicionar segundo enlace L2 sem redesign/MSTP.

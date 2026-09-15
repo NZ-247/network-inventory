@@ -1,1 +1,2 @@
-name: RT-SN-003
+# Derived from sanitized RouterOS export section /system identity
+0   set name=RT-SN-003
