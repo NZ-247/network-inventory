@@ -1,0 +1,58 @@
+{
+  "source": "Operator validation after RouterOS post-hardening snapshot on 2026-09-15",
+  "router": {
+    "latest_snapshot": "baseline-guest-zone.rsc",
+    "bridge_protocol_mode": "none",
+    "ip_services": {
+      "www-ssl": {
+        "status": "disabled",
+        "address": "all/default"
+      }
+    },
+    "ssh_security": {
+      "forwarding-enabled": "no",
+      "always-allow-password-login": "no",
+      "strong-crypto": "yes",
+      "allow-none-crypto": "no",
+      "host-key-size": "2048"
+    },
+    "power_event": {
+      "uptime_after_event": "1h16m43s",
+      "evidence": "Log observed: system,error,critical router rebooted without proper shutdown, probably power outage."
+    },
+    "guest_firewall_counters": [
+      {
+        "rule": "FORWARD - FASTTRACK EST REL",
+        "packets": 862770
+      },
+      {
+        "rule": "FORWARD - ESTABLISHED RELATED",
+        "packets": 862693
+      },
+      {
+        "rule": "FORWARD - DROP INVALID",
+        "packets": 63
+      },
+      {
+        "rule": "GUEST - ALLOW DNS UDP",
+        "packets": 294
+      },
+      {
+        "rule": "GUEST - ALLOW DNS TCP",
+        "packets": 0
+      },
+      {
+        "rule": "GUEST - ALLOW INTERNET",
+        "packets": 566
+      },
+      {
+        "rule": "GUEST - DROP INTERNAL",
+        "packets": 37
+      },
+      {
+        "rule": "GUEST - DROP OTHER",
+        "packets": 0
+      }
+    ]
+  }
+}

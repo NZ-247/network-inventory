@@ -1,9 +1,4 @@
 # Derived from sanitized RouterOS export section /ip pool
-0   add name=dhcp_pool1 ranges=10.100.10.10-10.100.255.254
-1   add name=pool-wifi ranges=10.100.130.0-10.100.130.254
-2   add name=dhcp_pool4 ranges=10.100.130.2-10.100.130.254
-3   add name=dhcp_pool5 ranges=10.100.130.2-10.100.130.254
-4   add name=dhcp_pool6 ranges=10.100.0.2-10.100.0.254
-5   add name=dhcp_pool7 ranges=10.100.30.2-10.100.30.254
-6   add name=dhcp_pool8 ranges=10.100.60.2-10.100.60.254
-7   add name=dhcp_pool11 ranges=10.100.90.2-10.100.90.254
+0   add name=dhcp_pool8 ranges=10.100.60.100-10.100.60.254
+1   add name=dhcp_pool11 ranges=10.100.90.100-10.100.90.105
+2   add name=pool-wifi_guest ranges=10.100.130.40-10.100.130.254

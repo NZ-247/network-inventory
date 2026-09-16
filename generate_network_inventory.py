@@ -14,6 +14,9 @@ RAW = ROOT / "raw"
 DATA = ROOT / "data"
 PROXMOX_DATA = ROOT.parent / "proxmox-inventory" / "data"
 BASELINE_MD = ROOT / "network-baseline-2026-09-15.md"
+ROUTER_LEGACY_RSC = ROOT / "base_line-RT.rsc"
+ROUTER_HARDENING_RSC = ROOT / "baseline-guest-zone.rsc"
+VALIDATED_OVERRIDES = DATA / "validated-overrides.json"
 NA = "Nao determinado"
 REDACTED = "<REDACTED>"
 SEVERITY_ORDER = {
@@ -75,6 +78,13 @@ def sanitize_raw_tree() -> None:
         sanitized = sanitize_text(original)
         if sanitized != original:
             write_text(path, sanitized)
+
+
+def relative_name(path: Path) -> str:
+    try:
+        return str(path.relative_to(ROOT))
+    except ValueError:
+        return str(path)
 
 
 def read_text(path: Path) -> str:
@@ -361,6 +371,7 @@ def routeros_export_commands(text: str) -> dict[str, list[dict[str, Any]]]:
 def write_routeros_export_raw(commands: dict[str, list[dict[str, Any]]], export_text: str) -> None:
     write_text(RAW / "routeros.stream", export_text)
     write_text(RAW / "routeros" / "export_hide_sensitive_terse.txt", export_text)
+    write_text(RAW / "routeros" / "post-hardening-2026-09-15.txt", export_text)
 
     mapping = {
         "/interface bridge": "interface_bridge_print_detail.txt",
@@ -380,6 +391,7 @@ def write_routeros_export_raw(commands: dict[str, list[dict[str, Any]]], export_
         "/ip firewall nat": "ip_firewall_nat_print_detail.txt",
         "/ip pool": "ip_pool_print_detail.txt",
         "/ip service": "ip_service_print_detail.txt",
+        "/ip ssh": "ip_ssh_print_detail.txt",
         "/snmp": "snmp_print.txt",
         "/snmp community": "snmp_community_print_detail.txt",
         "/system clock": "system_clock.txt",
@@ -387,6 +399,7 @@ def write_routeros_export_raw(commands: dict[str, list[dict[str, Any]]], export_
         "/system package update": "system_package.txt",
         "/tool mac-server": "tool_mac_server.txt",
         "/tool mac-server mac-winbox": "tool_mac_server_mac_winbox.txt",
+        "/tool mac-server ping": "tool_mac_server_ping.txt",
     }
     for section, filename in mapping.items():
         rows = commands.get(section, [])
@@ -419,6 +432,27 @@ def ros_disabled(row: dict[str, Any]) -> bool:
     return str(row.get("disabled", "no")).lower() == "yes" or row.get("_flags") == "X"
 
 
+def dhcp_server_enabled(row: dict[str, Any]) -> bool:
+    return str(row.get("disabled", "yes")).lower() == "no"
+
+
+def filter_enabled(row: dict[str, Any]) -> bool:
+    return not ros_disabled(row)
+
+
+def firewall_rows(rows: list[dict[str, Any]], chain: str, action: str | None = None, comment_prefix: str | None = None) -> list[dict[str, Any]]:
+    out: list[dict[str, Any]] = []
+    for row in rows:
+        if row.get("chain") != chain or not filter_enabled(row):
+            continue
+        if action and row.get("action") != action:
+            continue
+        if comment_prefix and not str(row.get("comment", "")).startswith(comment_prefix):
+            continue
+        out.append(row)
+    return out
+
+
 def parse_router_export(raw_text: str, facts: dict[str, Any]) -> dict[str, Any]:
     commands = routeros_export_commands(raw_text)
     write_routeros_export_raw(commands, raw_text)
@@ -430,6 +464,9 @@ def parse_router_export(raw_text: str, facts: dict[str, Any]) -> dict[str, Any]:
     clock_rows = commands.get("/system clock", [])
     package_rows = commands.get("/system package update", [])
     bridge_rows = commands.get("/interface bridge", [])
+    if bridge_rows and facts.get("bridge_protocol_mode") and not bridge_rows[0].get("protocol-mode"):
+        bridge_rows[0]["protocol-mode"] = facts["bridge_protocol_mode"]
+        bridge_rows[0]["_raw"] = f"{bridge_rows[0].get('_raw', '').strip()} protocol-mode={facts['bridge_protocol_mode']}".strip()
     vlan_interfaces = commands.get("/interface vlan", [])
     addresses = commands.get("/ip address", [])
     pools = commands.get("/ip pool", [])
@@ -443,9 +480,19 @@ def parse_router_export(raw_text: str, facts: dict[str, Any]) -> dict[str, Any]:
     firewall_nat = commands.get("/ip firewall nat", [])
     address_lists = commands.get("/ip firewall address-list", [])
     ip_services = commands.get("/ip service", [])
+    ip_ssh = commands.get("/ip ssh", [])
     snmp_rows = commands.get("/snmp", [])
     snmp_communities = commands.get("/snmp community", [])
     neighbor = commands.get("/ip neighbor discovery-settings", [])
+    interface_lists = commands.get("/interface list", [])
+    interface_list_members = commands.get("/interface list member", [])
+    mac_server = commands.get("/tool mac-server", [])
+    mac_winbox = commands.get("/tool mac-server mac-winbox", [])
+    mac_ping = commands.get("/tool mac-server ping", [])
+
+    for server in dhcp_servers:
+        server["status"] = "enabled" if dhcp_server_enabled(server) else "disabled"
+        server["disabled_effective"] = "no" if dhcp_server_enabled(server) else "yes"
 
     for rows in (interfaces, bridge_ports, bridge_vlans, dhcp_leases):
         for row in rows:
@@ -457,6 +504,7 @@ def parse_router_export(raw_text: str, facts: dict[str, Any]) -> dict[str, Any]:
     dhcp_by_network = {d.get("address"): d for d in dhcp_networks if d.get("address")}
     server_by_interface = {d.get("interface"): d for d in dhcp_servers if d.get("interface")}
     pool_by_name = {p.get("name"): p for p in pools if p.get("name")}
+    active_server_pools = {d.get("address-pool") for d in dhcp_servers if d.get("address-pool") and dhcp_server_enabled(d)}
 
     vlans: list[dict[str, Any]] = []
     for vlan in vlan_interfaces:
@@ -482,6 +530,7 @@ def parse_router_export(raw_text: str, facts: dict[str, Any]) -> dict[str, Any]:
                 "gateway": gateway,
                 "network": network_key,
                 "dhcp_server": server.get("name", NA),
+                "dhcp_status": server.get("status", "none" if not server else NA),
                 "dhcp_pool": server.get("address-pool", NA),
                 "dhcp_pool_range": pool.get("ranges", NA),
                 "dhcp_dns": dhcp_network.get("dns-server", NA),
@@ -517,6 +566,8 @@ def parse_router_export(raw_text: str, facts: dict[str, Any]) -> dict[str, Any]:
             "wan": facts.get("router_wan", "PPPoE em ether1-Link-WaveMax"),
         },
         "interfaces": interfaces,
+        "interface_lists": interface_lists,
+        "interface_list_members": interface_list_members,
         "bridge": bridge_rows[0] if bridge_rows else {},
         "bridge_ports": bridge_ports,
         "bridge_vlans": bridge_vlans,
@@ -527,10 +578,15 @@ def parse_router_export(raw_text: str, facts: dict[str, Any]) -> dict[str, Any]:
         "routes": [],
         "dns": commands.get("/ip dns", [{}])[0] if commands.get("/ip dns") else {},
         "dhcp_servers": dhcp_servers,
+        "active_dhcp_pools": sorted(p for p in active_server_pools if p),
         "dhcp_networks": dhcp_networks,
         "dhcp_leases": dhcp_leases,
         "arp": [],
         "ip_services": ip_services,
+        "ip_ssh": ip_ssh[0] if ip_ssh else {},
+        "mac_server": mac_server[0] if mac_server else {},
+        "mac_winbox": mac_winbox[0] if mac_winbox else {},
+        "mac_ping": mac_ping[0] if mac_ping else {},
         "address_lists": address_lists,
         "firewall_filters": firewall_filters,
         "firewall_nat": firewall_nat,
@@ -539,7 +595,7 @@ def parse_router_export(raw_text: str, facts: dict[str, Any]) -> dict[str, Any]:
         "neighbor_discovery": neighbor[0] if neighbor else {},
         "ntp_client_enabled": bool(commands.get("/system ntp client") or commands.get("/system ntp client servers")),
         "collection_warnings": [
-            "RouterOS facts derived from sanitized export base_line-RT.rsc; operational ARP/MAC/route counters were not part of this baseline."
+            f"RouterOS facts derived from sanitized export {facts.get('router_source', 'RouterOS export')}; operational ARP/MAC/route counters were not part of this baseline."
         ],
     }
 
@@ -1101,6 +1157,19 @@ def build_topology(router: dict[str, Any], switch: dict[str, Any], prox_net: dic
                 }
             )
 
+    filters = router.get("firewall_filters", [])
+    global_forward_default_deny = any(
+        row.get("chain") == "forward"
+        and row.get("action") in {"drop", "reject"}
+        and filter_enabled(row)
+        and not any(row.get(key) for key in ("in-interface", "out-interface", "src-address", "dst-address", "src-address-list", "dst-address-list", "connection-state", "protocol", "src-port", "dst-port", "icmp-options"))
+        for row in filters
+    )
+    guest_zone_explicit = all(
+        any(row.get("chain") == "forward" and row.get("comment") == comment and filter_enabled(row) for row in filters)
+        for comment in ("GUEST - ALLOW DNS UDP", "GUEST - ALLOW DNS TCP", "GUEST - ALLOW INTERNET", "GUEST - DROP INTERNAL", "GUEST - DROP OTHER")
+    )
+
     return {
         "router_to_switch": {
             "router": router.get("device", {}).get("name", NA),
@@ -1110,19 +1179,45 @@ def build_topology(router: dict[str, Any], switch: dict[str, Any], prox_net: dic
             "vlans": ["30", "60", "90", "130"],
             "source": "CDP do switch e bridge VLAN do RouterOS",
         },
+        "security_zones": {
+            "guest": {
+                "vlan": "130",
+                "interface": "vlan130-guest_wifi",
+                "subnet": "10.100.130.0/24",
+                "allowed": ["DNS to address-list DNS on TCP/UDP 53", "Internet via pppoe-Link-WaveMax"],
+                "denied": ["Internal 10.100.0.0/16", "Other destinations from guest"],
+                "validated_counters": router.get("validated_overrides", {}).get("guest_firewall_counters", []),
+            },
+            "forward_policy": {
+                "guest_zone": "explicit" if guest_zone_explicit else "Nao determinado",
+                "global_default_deny": global_forward_default_deny,
+                "pending": "Define VLAN30 PROXMOX <-> VLAN60 SERVICES matrix before global forward default-deny."
+                if not global_forward_default_deny
+                else NA,
+            },
+            "management_plane": {
+                "ip_services": router.get("ip_services", []),
+                "mac_server": router.get("mac_server", {}),
+                "mac_winbox": router.get("mac_winbox", {}),
+                "mac_ping": router.get("mac_ping", {}),
+                "neighbor_discovery": router.get("neighbor_discovery", {}),
+            },
+        },
         "proxmox_nodes": node_links,
         "workloads": workload_links,
     }
 
 
-def make_findings(router: dict[str, Any], switch: dict[str, Any], topology: dict[str, Any], storage: dict[str, Any]) -> list[dict[str, str]]:
+def make_findings(router: dict[str, Any], switch: dict[str, Any], topology: dict[str, Any], storage: dict[str, Any], overrides: dict[str, Any] | None = None) -> list[dict[str, str]]:
+    overrides = overrides or {}
     findings: list[dict[str, str]] = []
 
-    def add(level: str, title: str, evidence: str, impact: str, recommendation: str, finding_id: str) -> None:
+    def add(level: str, title: str, evidence: str, impact: str, recommendation: str, finding_id: str, status: str = "OPEN") -> None:
         findings.append(
             {
                 "level": level,
                 "id": finding_id,
+                "status": status,
                 "title": title,
                 "evidence": evidence,
                 "impact": impact,
@@ -1148,15 +1243,26 @@ def make_findings(router: dict[str, Any], switch: dict[str, Any], topology: dict
             "RB-FW-001",
         )
 
-    forward_has_drop = any(row.get("chain") == "forward" and row.get("action") in {"drop", "reject"} and not ros_disabled(row) for row in filters)
-    if not forward_has_drop:
+    forward_has_global_drop = any(
+        row.get("chain") == "forward"
+        and row.get("action") in {"drop", "reject"}
+        and filter_enabled(row)
+        and not any(row.get(key) for key in ("in-interface", "out-interface", "src-address", "dst-address", "src-address-list", "dst-address-list", "connection-state", "protocol", "src-port", "dst-port", "icmp-options"))
+        for row in filters
+    )
+    guest_zone_present = all(
+        any(row.get("chain") == "forward" and row.get("comment") == comment and filter_enabled(row) for row in filters)
+        for comment in ("GUEST - ALLOW DNS UDP", "GUEST - ALLOW DNS TCP", "GUEST - ALLOW INTERNET", "GUEST - DROP INTERNAL", "GUEST - DROP OTHER")
+    )
+    if not forward_has_global_drop:
         add(
             "HIGH",
-            "RB forward policy sem default-deny explicito",
-            "Export contem accepts/fasttrack na chain forward, mas nao contem regra final drop/reject ativa.",
-            "VLANs separam L2, mas nao provam isolamento L3 entre redes quando forward fica aceito por padrao.",
-            "Definir matriz de fluxos inter-VLAN e implantar default-deny gradual, preservando fluxos necessarios.",
+            "RB forward policy parcial; sem default-deny global",
+            "VLAN130 possui politica de zona explicita." if guest_zone_present else "Nao ha regra final drop/reject global ativa na chain forward.",
+            "A zona Guest ja esta isolada, mas VLAN30 PROXMOX e VLAN60 SERVICES ainda precisam de matriz inter-zonas antes de um default-deny global.",
+            "Mapear fluxos 30<->60, definir matriz completa e implementar default-deny global da chain forward de forma gradual.",
             "RB-FW-002",
+            "PARTIAL / IN PROGRESS",
         )
 
     static_ips: set[str] = set()
@@ -1176,11 +1282,12 @@ def make_findings(router: dict[str, Any], switch: dict[str, Any], topology: dict
         if re.fullmatch(r"\d+\.\d+\.\d+\.\d+(?:/\d+)?", address):
             static_ips.add(address.split("/", 1)[0])
 
-    active_pool_names = {row.get("address-pool") for row in router.get("dhcp_servers", []) if row.get("address-pool")}
+    active_dhcp_servers = [row for row in router.get("dhcp_servers", []) if dhcp_server_enabled(row)]
+    active_pool_names = {row.get("address-pool") for row in active_dhcp_servers if row.get("address-pool")}
     active_overlap_pool_names = {
         vlan.get("dhcp_pool")
         for vlan in router.get("vlans", [])
-        if str(vlan.get("id")) in {"30", "60", "90"} and vlan.get("dhcp_pool")
+        if str(vlan.get("id")) in {"30", "60", "90"} and vlan.get("dhcp_status") == "enabled" and vlan.get("dhcp_pool")
     }
     overlaps: list[str] = []
     for pool in router.get("pools", []):
@@ -1243,15 +1350,27 @@ def make_findings(router: dict[str, Any], switch: dict[str, Any], topology: dict
             "RB-NTP-001",
         )
 
-    dns_by_vlan = {str(v.get("id")): str(v.get("dhcp_dns", NA)) for v in router.get("vlans", [])}
-    if len(set(dns_by_vlan.values())) > 1:
+    guest_vlan = next((v for v in router.get("vlans", []) if str(v.get("id")) == "130"), {})
+    guest_dns = [item.strip() for item in str(guest_vlan.get("dhcp_dns", "")).split(",") if item.strip()]
+    dns_nat_targets = sorted(
+        {
+            row.get("to-addresses", "")
+            for row in router.get("firewall_nat", [])
+            if row.get("chain") == "dstnat"
+            and row.get("action") == "dst-nat"
+            and row.get("dst-port") == "53"
+            and row.get("src-address") == "10.100.130.0/24"
+            and row.get("to-addresses")
+        }
+    )
+    if len(guest_dns) > 1 and len(dns_nat_targets) == 1 and dns_nat_targets[0] in guest_dns:
         add(
-            "MEDIUM",
-            "DNS DHCP inconsistente entre VLANs",
-            ", ".join(f"VLAN {vid}: {dns}" for vid, dns in sorted(dns_by_vlan.items(), key=lambda x: int(x[0]))),
-            "VLANs 30/60/90 usam DNS publico enquanto VLAN130 usa Pi-hole e anti-bypass, dificultando observabilidade e politica unica.",
-            "Definir politica DNS por VLAN; se Pi-hole for padrao, alinhar DHCP e NAT anti-bypass para as VLANs aplicaveis.",
-            "RB-DNS-001",
+            "REVIEW",
+            "DNS anti-bypass Guest sem HA efetivo",
+            f"DHCP GUEST entrega {', '.join(guest_dns)}, mas DNAT TCP/UDP 53 redireciona somente para {dns_nat_targets[0]}.",
+            "Se o Pi-hole primario ficar indisponivel, clientes com resolver manual externo continuam redirecionados para o primario indisponivel.",
+            "Avaliar estrategia de HA para o DNAT DNS da VLAN130 ou documentar dependencia do Pi-hole primario.",
+            "RB-DNS-HA-001",
         )
 
     discovery = router.get("neighbor_discovery", {}).get("discover-interface-list")
@@ -1265,19 +1384,21 @@ def make_findings(router: dict[str, Any], switch: dict[str, Any], topology: dict
             "RB-DISC-001",
         )
 
-    legacy = sorted(
-        p.get("name", "")
-        for p in router.get("pools", [])
-        if p.get("name") and p.get("name") not in active_pool_names
+    disabled_servers = sorted(row.get("name", "") for row in router.get("dhcp_servers", []) if row.get("name") and not dhcp_server_enabled(row))
+    residual_pools = sorted(p.get("name", "") for p in router.get("pools", []) if p.get("name") and p.get("name") not in active_pool_names)
+    orphan_leases = sorted(
+        lease.get("address", "")
+        for lease in router.get("dhcp_leases", [])
+        if lease.get("address") and (not lease.get("server") or str(lease.get("server")).startswith("*"))
     )
-    if legacy:
+    if disabled_servers or residual_pools or orphan_leases:
         add(
             "LOW",
-            "Pools DHCP legados aparentemente nao usados",
-            "Pools nao referenciados por DHCP servers ativos: " + ", ".join(legacy) + ".",
-            "Residuos aumentam ambiguidade operacional e risco de reuso indevido.",
-            "Confirmar ausencia de dependencias e remover em mudanca separada.",
-            "RB-POOL-001",
+            "Limpeza DHCP residual pendente",
+            f"Servidores disabled: {', '.join(disabled_servers) or NA}; pools sem servidor ativo: {', '.join(residual_pools) or NA}; leases orfas: {', '.join(orphan_leases) or NA}.",
+            "Residuos de DHCP nao representam colisao ativa, mas aumentam ruido operacional e risco de reuso equivocado.",
+            "Remover servidores disabled, pools nao usados, network definitions sem servidor ativo e lease orfa apos confirmar ausencia de dependencias.",
+            "RB-DHCP-CLEAN-001",
         )
 
     support_populated = any(row.get("address-list") == "rede-suporte" for row in filters if row.get("action") == "add-src-to-address-list")
@@ -1292,6 +1413,17 @@ def make_findings(router: dict[str, Any], switch: dict[str, Any], topology: dict
             "O fluxo de suporte pode estar incompleto ou apenas acumulando listas sem efeito pratico.",
             "Revisar a intencao; concluir o fluxo de accept ou remover as regras orfas.",
             "RB-KNOCK-001",
+        )
+
+    power_event = overrides.get("router", {}).get("power_event", {})
+    if power_event:
+        add(
+            "MEDIUM",
+            "Reboot nao planejado / shutdown incorreto na RT-SN-003",
+            power_event.get("evidence", "Log informou router rebooted without proper shutdown, probably power outage."),
+            "Gateway central pode ter sofrido interrupcao nao limpa; isso aumenta risco de indisponibilidade e perda de estado volatil.",
+            "Verificar alimentacao/fonte, avaliar UPS/nobreak e monitorar novos eventos de reboot inesperado no Zabbix.",
+            "RB-PWR-001",
         )
 
     if switch.get("orphan_acl_10"):
@@ -1354,6 +1486,7 @@ def generate_markdown(router: dict[str, Any], switch: dict[str, Any], topology: 
                 vlan.get("network"),
                 vlan.get("gateway"),
                 vlan.get("dhcp_server"),
+                vlan.get("dhcp_status"),
                 vlan.get("dhcp_pool"),
                 vlan.get("dhcp_pool_range"),
                 vlan.get("dhcp_dns"),
@@ -1403,9 +1536,56 @@ def generate_markdown(router: dict[str, Any], switch: dict[str, Any], topology: 
     ]
 
     finding_rows = [
-        [f.get("level"), f.get("id"), f.get("title"), f.get("evidence"), f.get("recommendation")]
+        [f.get("level"), f.get("status", "OPEN"), f.get("id"), f.get("title"), f.get("evidence"), f.get("recommendation")]
         for f in findings
     ]
+    service_rows = [
+        [
+            svc.get("name"),
+            "disabled" if str(svc.get("disabled", "no")).lower() == "yes" else "enabled",
+            svc.get("address", "all/default"),
+        ]
+        for svc in router.get("ip_services", [])
+    ]
+    service_names = {row[0] for row in service_rows}
+    for name, svc in router.get("validated_overrides", {}).get("ip_services", {}).items():
+        if name not in service_names:
+            service_rows.append([name, svc.get("status", NA), svc.get("address", NA)])
+    ssh_rows = [[key, value] for key, value in router.get("validated_overrides", {}).get("ssh_security", router.get("ip_ssh", {})).items() if not key.startswith("_")]
+    mac_rows = [
+        ["MAC Telnet", "disabled" if router.get("mac_server", {}).get("allowed-interface-list") == "none" else "restricted", router.get("mac_server", {}).get("allowed-interface-list", NA)],
+        ["MAC Winbox", "restricted", router.get("mac_winbox", {}).get("allowed-interface-list", NA)],
+        ["MAC Ping", "disabled" if router.get("mac_ping", {}).get("enabled") == "no" else "enabled", router.get("mac_ping", {}).get("enabled", NA)],
+    ]
+    discovery_rows = [
+        [
+            router.get("neighbor_discovery", {}).get("protocol", NA),
+            router.get("neighbor_discovery", {}).get("discover-interface-list", NA),
+            ", ".join(
+                m.get("interface", "")
+                for m in router.get("interface_list_members", [])
+                if m.get("list") == router.get("neighbor_discovery", {}).get("discover-interface-list")
+            )
+            or NA,
+        ]
+    ]
+    fw_rows = [
+        [
+            row.get("comment", NA),
+            row.get("chain", NA),
+            row.get("action", NA),
+            row.get("in-interface", NA),
+            row.get("out-interface", NA),
+            row.get("src-address", row.get("src-address-list", NA)),
+            row.get("dst-address", row.get("dst-address-list", NA)),
+            row.get("protocol", NA),
+            row.get("dst-port", NA),
+        ]
+        for row in router.get("firewall_filters", [])
+        if str(row.get("comment", "")).startswith(("INPUT -", "FORWARD -", "GUEST -"))
+    ]
+    guest_counters = router.get("validated_overrides", {}).get("guest_firewall_counters", [])
+    counter_rows = [[row.get("rule"), row.get("packets")] for row in guest_counters]
 
     docs = [
         "# Network Inventory - Homelab",
@@ -1424,7 +1604,7 @@ def generate_markdown(router: dict[str, Any], switch: dict[str, Any], topology: 
         f"- Workloads Proxmox preservados do inventario PVE: {len({w['id'] for w in topology['workloads']})}",
         f"- Findings abertos: {severity_counts['CRITICAL']} critical, {severity_counts['HIGH']} high, {severity_counts['MEDIUM']} medium, {severity_counts['REVIEW']} review, {severity_counts['LOW']} low.",
         "",
-        "Fontes primarias: `Base_line-SW.txt` (running-config Cisco), `base_line-RT.rsc` (RouterOS export) e `network-baseline-2026-09-15.md` como criterio tecnico. Segredos, hashes, PPPoE user, SNMP communities/trap-community e e-mail foram redigidos antes de gravar artefatos.",
+        "Fontes primarias: `Base_line-SW.txt` (running-config Cisco), `baseline-guest-zone.rsc` (snapshot RouterOS pos-hardening), `base_line-RT.rsc` (export historico) e `network-baseline-2026-09-15.md` como criterio tecnico. O snapshot pos-hardening prevalece sobre o export historico. Segredos, hashes, PPPoE user, SNMP communities/trap-community e e-mail foram redigidos antes de gravar artefatos.",
         "",
         "## 2. MikroTik RT-SN-003",
         "",
@@ -1447,7 +1627,19 @@ def generate_markdown(router: dict[str, Any], switch: dict[str, Any], topology: 
         "",
         "### VLANs roteadas / DHCP",
         "",
-        md_table(["VLAN", "Interface", "Rede", "Gateway", "DHCP", "Pool", "Range", "DNS entregue"], vlan_rows),
+        md_table(["VLAN", "Interface", "Rede", "Gateway", "DHCP", "Status", "Pool", "Range", "DNS entregue"], vlan_rows),
+        "",
+        "### Management plane MikroTik",
+        "",
+        md_table(["Servico", "Estado", "Address/restricao"], service_rows),
+        "",
+        md_table(["SSH parametro", "Valor"], ssh_rows),
+        "",
+        md_table(["MAC service", "Estado", "Interface-list"], mac_rows),
+        "",
+        md_table(["Discovery protocol", "Interface-list", "Interfaces"], discovery_rows),
+        "",
+        "SSH e Winbox IP estao restritos a VLAN90 e aos enderecos Tailscale administrativos. MAC-Winbox fica restrito a `ether2-PC_DN-06` via `MAC-RECOVERY`; MAC Telnet e MAC Ping estao desativados.",
         "",
         "### Bridge e trunk",
         "",
@@ -1502,22 +1694,44 @@ def generate_markdown(router: dict[str, Any], switch: dict[str, Any], topology: 
         "",
         "A VLAN 999 existe no Cisco como native/blackhole para trunks e portas inutilizadas. Ela nao possui SVI/L3 funcional na RB no baseline atual.",
         "",
-        "## 5. Proxmox na rede",
+        "## 5. Firewall e zona Guest",
+        "",
+        "A chain input da RB esta em default-deny explicito. A chain forward possui zona Guest explicita, mas ainda nao tem default-deny global para todas as zonas; VLAN30 PROXMOX e VLAN60 SERVICES permanecem em revisao de matriz de fluxos.",
+        "",
+        md_table(["Regra", "Chain", "Acao", "In", "Out", "Origem", "Destino", "Proto", "DPort"], fw_rows),
+        "",
+        "### Politica efetiva da VLAN130",
+        "",
+        md_table(
+            ["Fluxo", "Politica"],
+            [
+                ["GUEST -> Pi-hole DNS :53", "ALLOW"],
+                ["GUEST -> Internet / PPPoE", "ALLOW"],
+                ["GUEST -> 10.100.0.0/16", "DROP"],
+                ["GUEST -> outros destinos", "DROP"],
+            ],
+        ),
+        "",
+        "### Validacao por contadores",
+        "",
+        md_table(["Regra", "Pacotes observados"], counter_rows),
+        "",
+        "## 6. Proxmox na rede",
         "",
         md_table(["Host", "IP gerencia", "MAC observado", "Porta switch", "VLAN observada"], node_rows),
         "",
-        "## 6. Workloads Proxmox - Rede",
+        "## 7. Workloads Proxmox - Rede",
         "",
         md_table(
             ["ID", "Nome", "Tipo", "Host", "Status", "IP", "Bridge", "VLAN config", "VLAN efetiva", "Porta observada", "Porta do host", "VLAN observada"],
             workload_rows,
         ),
         "",
-        "## 7. Findings abertos",
+        "## 8. Findings abertos",
         "",
-        md_table(["Severidade", "ID", "Finding", "Evidencia", "Recomendacao"], finding_rows),
+        md_table(["Severidade", "Status", "ID", "Finding", "Evidencia", "Recomendacao"], finding_rows),
         "",
-        "## 8. Observacoes de relacionamento",
+        "## 9. Observacoes de relacionamento",
         "",
         "- A RB RT-SN-003 chega ao switch pela porta Gi1/0/1, associada ao ether3-switch/bridge-core.",
         "- VLANs 30, 60, 90 e 130 passam no trunk RB-Cisco; VLAN 999 e somente native/blackhole no Cisco.",
@@ -1525,9 +1739,10 @@ def generate_markdown(router: dict[str, Any], switch: dict[str, Any], topology: 
         "- O export atual da RB nao traz ARP/MAC operacional; por isso os hosts PVE sao ligados as portas pelo baseline Cisco e os fatos PVE ja existentes.",
         "- O comportamento do storage hd1tb visto no cluster Proxmox continua fora do escopo deste baseline de rede.",
         "",
-        "## 9. Arquivos de origem",
+        "## 10. Arquivos de origem",
         "",
-        "- Fontes sanitizadas: `Base_line-SW.txt`, `base_line-RT.rsc`, `network-baseline-2026-09-15.md`",
+        "- Fontes sanitizadas: `Base_line-SW.txt`, `baseline-guest-zone.rsc`, `base_line-RT.rsc`, `network-baseline-2026-09-15.md`",
+        "- Overrides validados: `data/validated-overrides.json`",
         "- Raw RouterOS sanitizado: `raw/routeros.stream` e `raw/routeros/*.txt`",
         "- Raw switch sanitizado/derivado: `raw/switch.stream` e `raw/switch/*.txt`",
         "- Dados tratados: `data/*.json`",
@@ -1541,7 +1756,7 @@ def generate_markdown(router: dict[str, Any], switch: dict[str, Any], topology: 
         "",
         "Inventario da infraestrutura de rede do homelab com baseline pos-padronizacao validado em 15/09/2026.",
         "",
-        "O estado atual foi regenerado a partir do running-config Cisco `SW-SN-03`, export RouterOS `RT-SN-003` e resumo tecnico `network-baseline-2026-09-15.md`. Os raw/configs publicados foram sanitizados antes de serem gravados.",
+        "O estado atual foi regenerado a partir do running-config Cisco `SW-SN-03`, do snapshot RouterOS pos-hardening `baseline-guest-zone.rsc`, do export historico `base_line-RT.rsc` e do resumo tecnico `network-baseline-2026-09-15.md`. Quando houver conflito, `baseline-guest-zone.rsc` prevalece para fatos da MikroTik. Os raw/configs publicados foram sanitizados antes de serem gravados.",
         "",
         "## Arquivos principais",
         "",
@@ -1549,6 +1764,7 @@ def generate_markdown(router: dict[str, Any], switch: dict[str, Any], topology: 
         "- `topology-current.md`: diagramas Mermaid de topologia.",
         "- `findings.md`: inconsistencias, riscos e itens de revisao.",
         "- `inventory.csv`: endpoints, hosts e workloads em formato tabular.",
+        "- `data/validated-overrides.json`: evidencias validadas pelo operador que nao aparecem no export RouterOS.",
         "- `data/`: JSONs tratados.",
         "- `raw/`: saidas brutas redigidas.",
         "",
@@ -1569,6 +1785,7 @@ def generate_markdown(router: dict[str, Any], switch: dict[str, Any], topology: 
             [
                 f"## [{f['level']}] {f.get('id', 'NO-ID')} - {f['title']}",
                 "",
+                f"- Status: {f.get('status', 'OPEN')}",
                 f"- Evidencia: {f['evidence']}",
                 f"- Impacto: {f['impact']}",
                 f"- Recomendacao: {f['recommendation']}",
@@ -1593,14 +1810,21 @@ def write_roadmap(router: dict[str, Any], switch: dict[str, Any], findings: list
         ["Web management Cisco", "HTTP e HTTPS desabilitados."],
         ["SNMP Cisco", "v3 authPriv com ACL SNMP_ZABBIX_ONLY; v1/v2c removidos."],
         ["NTP/DNS Cisco", "NTP.br redundante e DNS via Pi-hole 10.100.60.71/72."],
+        ["RB management plane", "IP services administrativos restritos; SSH strong-crypto; HTTP/API/Telnet/FTP desativados."],
+        ["RB MAC management", "MAC Telnet e MAC Ping desativados; MAC-Winbox somente em ether2-PC_DN-06 via MAC-RECOVERY."],
+        ["RB discovery", "LLDP somente no uplink ether3-switch via DISCOVERY-UPLINK."],
+        ["RB firewall input", "Default-deny explicito com accepts restritos para MGMT/Tailscale, DHCP guest, SNMP Zabbix e ICMP limitado."],
+        ["RB DHCP operacional", "Somente VLAN130 GUEST possui DHCP ativo, com pool 10.100.130.40-10.100.130.254."],
+        ["RB Guest zone", "VLAN130 permite DNS para Pi-hole e Internet via PPPoE; bloqueia redes internas 10.100.0.0/16 e demais destinos."],
+        ["RB DNS anti-bypass GUEST", "DNAT TCP/UDP 53 da VLAN130 para Pi-hole primario 10.100.60.71."],
     ]
     priority_rows = [
-        [f["level"], f.get("id", ""), f["title"], f["recommendation"]]
+        [f["level"], f.get("status", "OPEN"), f.get("id", ""), f["title"], f["recommendation"]]
         for f in findings
         if f["level"] in {"CRITICAL", "HIGH", "MEDIUM"}
     ]
     cleanup_rows = [
-        [f["level"], f.get("id", ""), f["title"], f["recommendation"]]
+        [f["level"], f.get("status", "OPEN"), f.get("id", ""), f["title"], f["recommendation"]]
         for f in findings
         if f["level"] in {"REVIEW", "LOW"}
     ]
@@ -1641,11 +1865,11 @@ def write_roadmap(router: dict[str, Any], switch: dict[str, Any], findings: list
         "",
         "## 3. Prioridades abertas",
         "",
-        md_table(["Severidade", "ID", "Item", "Proxima acao"], priority_rows),
+        md_table(["Severidade", "Status", "ID", "Item", "Proxima acao"], priority_rows),
         "",
         "## 4. Revisao e limpeza",
         "",
-        md_table(["Severidade", "ID", "Item", "Proxima acao"], cleanup_rows),
+        md_table(["Severidade", "Status", "ID", "Item", "Proxima acao"], cleanup_rows),
         "",
         "## 5. Mapa operacional de portas",
         "",
@@ -1653,14 +1877,16 @@ def write_roadmap(router: dict[str, Any], switch: dict[str, Any], findings: list
         "",
         "## 6. Sequencia segura sugerida",
         "",
-        "1. Auditar `/ip service print detail` na RB e restringir management plane.",
-        "2. Ativar default-deny seguro no input da RB em Safe Mode.",
-        "3. Definir matriz inter-VLAN e aplicar default-deny forward gradual.",
-        "4. Redesenhar pools DHCP para nao sobrepor IPs estaticos.",
-        "5. Alinhar SNMP da RB ao Zabbix real e migrar para v3.",
-        "6. Habilitar NTP/SNTP na RB.",
-        "7. Unificar politica DNS/Pi-hole por VLAN.",
-        "8. Limpar ACL 10 e corrigir/remover banner MOTD no Cisco.",
+        "1. Mapear dependencias VLAN30 PROXMOX <-> VLAN60 SERVICES.",
+        "2. Definir matriz completa inter-zonas.",
+        "3. Implementar default-deny global da chain forward de forma gradual.",
+        "4. Migrar SNMP da MikroTik para SNMPv3 authPriv.",
+        "5. Habilitar NTP/SNTP na RB.",
+        "6. Revisar HA do DNS anti-bypass da VLAN130.",
+        "7. Remover residuos DHCP.",
+        "8. Monitorar alimentacao/reboots inesperados.",
+        "9. Limpar ACL 10 orfa no Cisco.",
+        "10. Corrigir/remover banner MOTD Cisco.",
         "",
         "## 7. Guardrails",
         "",
@@ -1739,6 +1965,64 @@ def write_topology_md(router: dict[str, Any], switch: dict[str, Any], topology: 
         workload_graph.append(f'  {mermaid_id("N_", w["node"])} --> {wid}["{label}"]')
     workload_graph.append("```")
 
+    security_zones = [
+        "```mermaid",
+        "flowchart TB",
+        '  INTERNET["Internet"] -->|"PPPoE pppoe-Link-WaveMax"| RB["RT-SN-003\\nbridge-core / inter-VLAN routing"]',
+        '  RB --> V30["VLAN30 PROXMOX\\n10.100.30.0/24\\nGW 10.100.30.1"]',
+        '  RB --> V60["VLAN60 SERVICES\\n10.100.60.0/24\\nGW 10.100.60.1"]',
+        '  RB --> V90["VLAN90 MGMT\\n10.100.90.0/24\\nGW 10.100.90.1"]',
+        '  RB --> V130["VLAN130 GUEST\\n10.100.130.0/24\\nGW 10.100.130.1"]',
+        '  V30 --> PVE["PVE hosts"]',
+        '  V60 --> SVC["Pi-hole / Apps\\n10.100.60.71 / 10.100.60.72"]',
+        '  V90 --> ADMIN["Admin network"]',
+        '  V130 --> DNS["Pi-hole DNS :53\\nALLOW"]',
+        '  V130 --> WAN["Internet via PPPoE\\nALLOW"]',
+        '  V130 -.-> BLOCK["Internal 10.100.0.0/16\\nDROP"]',
+        "```",
+    ]
+
+    guest_flow = [
+        "```mermaid",
+        "flowchart TD",
+        '  START["Packet from VLAN130\\nvlan130-guest_wifi"] --> EST{"Established / Related?"}',
+        '  EST -->|"yes"| FAST["ACCEPT / FastTrack"]',
+        '  EST -->|"no"| DNSQ{"DNS to Pi-hole :53?"}',
+        '  DNSQ -->|"yes"| DNSA["ACCEPT DNS"]',
+        '  DNSQ -->|"no"| WANQ{"Out PPPoE?"}',
+        '  WANQ -->|"yes"| WANA["ACCEPT Internet"]',
+        '  WANQ -->|"no"| INTQ{"Destination 10.100.0.0/16?"}',
+        '  INTQ -->|"yes"| DROPINT["DROP INTERNAL"]',
+        '  INTQ -->|"no"| DROPOTHER["DROP OTHER"]',
+        "```",
+    ]
+
+    mgmt_plane = [
+        "```mermaid",
+        "flowchart TB",
+        '  RT["RT-SN-003\\nSSH / Winbox IP"]',
+        '  VLAN90["VLAN90 MGMT\\n10.100.90.0/24"] --> RT',
+        '  TS1["Tailscale primary\\n10.100.30.4"] --> RT',
+        '  TS1S["Tailscale primary SERVICES\\n10.100.60.4"] --> RT',
+        '  TSHA["Tailscale HA / rescue\\n10.100.30.26"] --> RT',
+        '  MAC["MAC-Winbox\\nBREAK-GLASS ONLY"] --> ETH2["ether2-PC_DN-06\\nMAC-RECOVERY"]',
+        '  OFF["MAC Telnet OFF\\nMAC Ping OFF\\nHTTP/API OFF"]',
+        "```",
+    ]
+
+    firewall_overview = [
+        "```mermaid",
+        "flowchart LR",
+        "  subgraph INPUT[INPUT chain]",
+        '    I1["EST/REL -> ACCEPT"] --> I2["INVALID -> DROP"] --> I3["MGMT/Tailscale -> ACCEPT"] --> I4["DHCP Guest -> ACCEPT"] --> I5["SNMP Zabbix -> ACCEPT"] --> I6["ICMP limited -> ACCEPT"] --> I7["DEFAULT -> DROP"]',
+        "  end",
+        "  subgraph FORWARD[FORWARD chain]",
+        '    F1["EST/REL -> FASTTRACK/ACCEPT"] --> F2["INVALID -> DROP"] --> F3["MGMT -> ALL"] --> F4["PMTUD ICMP"] --> F5["GUEST zone policy"] --> F6["30 <-> 60\\nstill in review"]',
+        "  end",
+        '  F6 -.->|"no global default-deny yet"| GAP["Policy gap"]',
+        "```",
+    ]
+
     text = [
         "# Current Network Topology",
         "",
@@ -1760,7 +2044,23 @@ def write_topology_md(router: dict[str, Any], switch: dict[str, Any], topology: 
         "",
         "\n".join(workload_graph),
         "",
-        "## 5. STP Boundary",
+        "## 5. Security Zones / L3 Policy",
+        "",
+        "\n".join(security_zones),
+        "",
+        "## 6. Guest Firewall Flow",
+        "",
+        "\n".join(guest_flow),
+        "",
+        "## 7. Management Plane",
+        "",
+        "\n".join(mgmt_plane),
+        "",
+        "## 8. Firewall Chains Overview",
+        "",
+        "\n".join(firewall_overview),
+        "",
+        "## 9. STP Boundary",
         "",
         "O Cisco opera PVST e e root das VLANs 30/60/90/130. A bridge-core da RB opera `protocol-mode=none`; portanto o link RB-Cisco e uma fronteira STP. Nao adicionar segundo enlace L2 sem redesign/MSTP.",
     ]
@@ -1813,24 +2113,39 @@ def preferred_source(primary: Path, fallback: Path) -> str:
     return read_text(fallback)
 
 
+def preferred_existing_source(paths: list[Path]) -> tuple[Path, str]:
+    for path in paths:
+        if path.exists():
+            text = read_text(path)
+            write_text(path, text)
+            return path, text
+    fallback = paths[-1]
+    return fallback, read_text(fallback)
+
+
 def sanitize_workspace_sources() -> None:
-    for path in (BASELINE_MD, ROOT / "Base_line-SW.txt", ROOT / "base_line-RT.rsc"):
+    for path in (BASELINE_MD, ROOT / "Base_line-SW.txt", ROUTER_LEGACY_RSC, ROUTER_HARDENING_RSC):
         if path.exists():
             write_text(path, read_text(path))
 
 
 def main() -> None:
     DATA.mkdir(parents=True, exist_ok=True)
+    overrides = read_json(VALIDATED_OVERRIDES, {})
     facts = baseline_facts()
+    facts["bridge_protocol_mode"] = overrides.get("router", {}).get("bridge_protocol_mode")
     sanitize_workspace_sources()
-    router = parse_router(preferred_source(ROOT / "base_line-RT.rsc", RAW / "routeros.stream"), facts)
+    router_source, router_text = preferred_existing_source([ROUTER_HARDENING_RSC, ROUTER_LEGACY_RSC, RAW / "routeros.stream"])
+    facts["router_source"] = relative_name(router_source)
+    router = parse_router(router_text, facts)
+    router["validated_overrides"] = overrides.get("router", {})
     switch = parse_switch(preferred_source(ROOT / "Base_line-SW.txt", RAW / "switch.stream"), facts)
     prox_net = read_json(PROXMOX_DATA / "network.json", {})
     guests = read_json(PROXMOX_DATA / "guests.json", [])
     prox_nodes = read_json(PROXMOX_DATA / "nodes.json", [])
     storage = read_json(PROXMOX_DATA / "storage.json", {})
     topology = build_topology(router, switch, prox_net, guests, prox_nodes)
-    findings = make_findings(router, switch, topology, storage)
+    findings = make_findings(router, switch, topology, storage, overrides)
     sanitize_raw_tree()
 
     write_json(DATA / "router.json", router)
@@ -1843,6 +2158,7 @@ def main() -> None:
             "router": router["device"],
             "switch": switch["device"],
             "vlans": router["vlans"],
+            "security_zones": topology.get("security_zones", {}),
             "proxmox_nodes": topology["proxmox_nodes"],
             "workloads": topology["workloads"],
             "findings_summary": {

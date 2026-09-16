@@ -1,3 +1,3 @@
 # Derived from sanitized RouterOS export section /ip dhcp-server lease
 0   add address=10.100.130.139 client-id=1:f4:b3:1:94:35:90 mac-address=F4:B3:01:94:35:90 server=dhcp_guest
-1   add address=10.100.30.7 client-id=1:50:0:0:1:0:0 mac-address=50:00:00:01:00:00 server=dhcp_proxmox
+1   add address=10.100.30.7 client-id=1:50:0:0:1:0:0 mac-address=50:00:00:01:00:00

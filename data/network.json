@@ -36,9 +36,10 @@
       "parent": "bridge-core",
       "gateway": "10.100.30.1/24",
       "network": "10.100.30.0/24",
-      "dhcp_server": "dhcp_proxmox",
-      "dhcp_pool": "dhcp_pool7",
-      "dhcp_pool_range": "10.100.30.2-10.100.30.254",
+      "dhcp_server": "Nao determinado",
+      "dhcp_status": "none",
+      "dhcp_pool": "Nao determinado",
+      "dhcp_pool_range": "Nao determinado",
       "dhcp_dns": "1.1.1.1,8.8.8.8",
       "domain": "services.net.br"
     },
@@ -49,8 +50,9 @@
       "gateway": "10.100.60.1/24",
       "network": "10.100.60.0/24",
       "dhcp_server": "dhcp_services",
+      "dhcp_status": "disabled",
       "dhcp_pool": "dhcp_pool8",
-      "dhcp_pool_range": "10.100.60.2-10.100.60.254",
+      "dhcp_pool_range": "10.100.60.100-10.100.60.254",
       "dhcp_dns": "1.1.1.1,8.8.8.8",
       "domain": "services.net.br"
     },
@@ -61,8 +63,9 @@
       "gateway": "10.100.90.1/24",
       "network": "10.100.90.0/24",
       "dhcp_server": "dhcp_gerencia",
+      "dhcp_status": "disabled",
       "dhcp_pool": "dhcp_pool11",
-      "dhcp_pool_range": "10.100.90.2-10.100.90.254",
+      "dhcp_pool_range": "10.100.90.100-10.100.90.105",
       "dhcp_dns": "1.1.1.1,8.8.8.8",
       "domain": "services.net.br"
     },
@@ -73,12 +76,145 @@
       "gateway": "10.100.130.1/24",
       "network": "10.100.130.0/24",
       "dhcp_server": "dhcp_guest",
-      "dhcp_pool": "dhcp_pool5",
-      "dhcp_pool_range": "10.100.130.2-10.100.130.254",
+      "dhcp_status": "enabled",
+      "dhcp_pool": "pool-wifi_guest",
+      "dhcp_pool_range": "10.100.130.40-10.100.130.254",
       "dhcp_dns": "10.100.60.71,10.100.60.72",
       "domain": "services.net.br"
     }
   ],
+  "security_zones": {
+    "guest": {
+      "vlan": "130",
+      "interface": "vlan130-guest_wifi",
+      "subnet": "10.100.130.0/24",
+      "allowed": [
+        "DNS to address-list DNS on TCP/UDP 53",
+        "Internet via pppoe-Link-WaveMax"
+      ],
+      "denied": [
+        "Internal 10.100.0.0/16",
+        "Other destinations from guest"
+      ],
+      "validated_counters": [
+        {
+          "rule": "FORWARD - FASTTRACK EST REL",
+          "packets": 862770
+        },
+        {
+          "rule": "FORWARD - ESTABLISHED RELATED",
+          "packets": 862693
+        },
+        {
+          "rule": "FORWARD - DROP INVALID",
+          "packets": 63
+        },
+        {
+          "rule": "GUEST - ALLOW DNS UDP",
+          "packets": 294
+        },
+        {
+          "rule": "GUEST - ALLOW DNS TCP",
+          "packets": 0
+        },
+        {
+          "rule": "GUEST - ALLOW INTERNET",
+          "packets": 566
+        },
+        {
+          "rule": "GUEST - DROP INTERNAL",
+          "packets": 37
+        },
+        {
+          "rule": "GUEST - DROP OTHER",
+          "packets": 0
+        }
+      ]
+    },
+    "forward_policy": {
+      "guest_zone": "explicit",
+      "global_default_deny": false,
+      "pending": "Define VLAN30 PROXMOX <-> VLAN60 SERVICES matrix before global forward default-deny."
+    },
+    "management_plane": {
+      "ip_services": [
+        {
+          "disabled": "yes",
+          "_action": "set",
+          "_target": "telnet",
+          "_raw": "set telnet disabled=yes",
+          "name": "telnet"
+        },
+        {
+          "disabled": "yes",
+          "_action": "set",
+          "_target": "ftp",
+          "_raw": "set ftp disabled=yes",
+          "name": "ftp"
+        },
+        {
+          "disabled": "yes",
+          "_action": "set",
+          "_target": "www",
+          "_raw": "set www disabled=yes",
+          "name": "www"
+        },
+        {
+          "address": "10.100.90.0/24,10.100.30.4/32,10.100.30.26/32,10.100.60.4/32",
+          "_action": "set",
+          "_target": "ssh",
+          "_raw": "set ssh address=10.100.90.0/24,10.100.30.4/32,10.100.30.26/32,10.100.60.4/32",
+          "name": "ssh"
+        },
+        {
+          "disabled": "yes",
+          "_action": "set",
+          "_target": "api",
+          "_raw": "set api disabled=yes",
+          "name": "api"
+        },
+        {
+          "address": "10.100.90.0/24,10.100.30.4/32,10.100.30.26/32,10.100.60.4/32",
+          "_action": "set",
+          "_target": "winbox",
+          "_raw": "set winbox address=10.100.90.0/24,10.100.30.4/32,10.100.30.26/32,10.100.60.4/32",
+          "name": "winbox"
+        },
+        {
+          "disabled": "yes",
+          "_action": "set",
+          "_target": "api-ssl",
+          "_raw": "set api-ssl disabled=yes",
+          "name": "api-ssl"
+        }
+      ],
+      "mac_server": {
+        "allowed-interface-list": "none",
+        "_action": "set",
+        "_target": "",
+        "_raw": "set allowed-interface-list=none"
+      },
+      "mac_winbox": {
+        "allowed-interface-list": "MAC-RECOVERY",
+        "_action": "set",
+        "_target": "",
+        "_raw": "set allowed-interface-list=MAC-RECOVERY"
+      },
+      "mac_ping": {
+        "enabled": "no",
+        "_action": "set",
+        "_target": "",
+        "_raw": "set enabled=no"
+      },
+      "neighbor_discovery": {
+        "discover-interface-list": "DISCOVERY-UPLINK",
+        "protocol": "lldp",
+        "_action": "set",
+        "_target": "",
+        "_raw": "set discover-interface-list=DISCOVERY-UPLINK protocol=lldp"
+      }
+    }
+  },
   "proxmox_nodes": [
     {
       "node": "host0",
@@ -499,10 +635,10 @@
     }
   ],
   "findings_summary": {
-    "critical": 1,
-    "high": 2,
+    "critical": 0,
+    "high": 1,
     "medium": 3,
     "review": 1,
-    "low": 4
+    "low": 3
   }
 }

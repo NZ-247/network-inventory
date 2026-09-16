@@ -77,6 +77,64 @@ flowchart TB
   N_host3 --> W_112_streaming_vmbr0["VM 112 - streaming\nvmbr0 / VLAN 60\nIP Nao determinado"]
 ```
 
-## 5. STP Boundary
+## 5. Security Zones / L3 Policy
+
+```mermaid
+flowchart TB
+  INTERNET["Internet"] -->|"PPPoE pppoe-Link-WaveMax"| RB["RT-SN-003\nbridge-core / inter-VLAN routing"]
+  RB --> V30["VLAN30 PROXMOX\n10.100.30.0/24\nGW 10.100.30.1"]
+  RB --> V60["VLAN60 SERVICES\n10.100.60.0/24\nGW 10.100.60.1"]
+  RB --> V90["VLAN90 MGMT\n10.100.90.0/24\nGW 10.100.90.1"]
+  RB --> V130["VLAN130 GUEST\n10.100.130.0/24\nGW 10.100.130.1"]
+  V30 --> PVE["PVE hosts"]
+  V60 --> SVC["Pi-hole / Apps\n10.100.60.71 / 10.100.60.72"]
+  V90 --> ADMIN["Admin network"]
+  V130 --> DNS["Pi-hole DNS :53\nALLOW"]
+  V130 --> WAN["Internet via PPPoE\nALLOW"]
+  V130 -.-> BLOCK["Internal 10.100.0.0/16\nDROP"]
+```
+
+## 6. Guest Firewall Flow
+
+```mermaid
+flowchart TD
+  START["Packet from VLAN130\nvlan130-guest_wifi"] --> EST{"Established / Related?"}
+  EST -->|"yes"| FAST["ACCEPT / FastTrack"]
+  EST -->|"no"| DNSQ{"DNS to Pi-hole :53?"}
+  DNSQ -->|"yes"| DNSA["ACCEPT DNS"]
+  DNSQ -->|"no"| WANQ{"Out PPPoE?"}
+  WANQ -->|"yes"| WANA["ACCEPT Internet"]
+  WANQ -->|"no"| INTQ{"Destination 10.100.0.0/16?"}
+  INTQ -->|"yes"| DROPINT["DROP INTERNAL"]
+  INTQ -->|"no"| DROPOTHER["DROP OTHER"]
+```
+
+## 7. Management Plane
+
+```mermaid
+flowchart TB
+  RT["RT-SN-003\nSSH / Winbox IP"]
+  VLAN90["VLAN90 MGMT\n10.100.90.0/24"] --> RT
+  TS1["Tailscale primary\n10.100.30.4"] --> RT
+  TS1S["Tailscale primary SERVICES\n10.100.60.4"] --> RT
+  TSHA["Tailscale HA / rescue\n10.100.30.26"] --> RT
+  MAC["MAC-Winbox\nBREAK-GLASS ONLY"] --> ETH2["ether2-PC_DN-06\nMAC-RECOVERY"]
+  OFF["MAC Telnet OFF\nMAC Ping OFF\nHTTP/API OFF"]
+```
+
+## 8. Firewall Chains Overview
+
+```mermaid
+flowchart LR
+  subgraph INPUT[INPUT chain]
+    I1["EST/REL -> ACCEPT"] --> I2["INVALID -> DROP"] --> I3["MGMT/Tailscale -> ACCEPT"] --> I4["DHCP Guest -> ACCEPT"] --> I5["SNMP Zabbix -> ACCEPT"] --> I6["ICMP limited -> ACCEPT"] --> I7["DEFAULT -> DROP"]
+  end
+  subgraph FORWARD[FORWARD chain]
+    F1["EST/REL -> FASTTRACK/ACCEPT"] --> F2["INVALID -> DROP"] --> F3["MGMT -> ALL"] --> F4["PMTUD ICMP"] --> F5["GUEST zone policy"] --> F6["30 <-> 60\nstill in review"]
+  end
+  F6 -.->|"no global default-deny yet"| GAP["Policy gap"]
+```
+
+## 9. STP Boundary
 
 O Cisco opera PVST e e root das VLANs 30/60/90/130. A bridge-core da RB opera `protocol-mode=none`; portanto o link RB-Cisco e uma fronteira STP. Nao adicionar segundo enlace L2 sem redesign/MSTP.

@@ -1,0 +1,2 @@
+# Derived from sanitized RouterOS export section /tool mac-server ping
+0   set enabled=no

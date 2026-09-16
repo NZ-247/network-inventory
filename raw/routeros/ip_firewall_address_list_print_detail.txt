@@ -1,8 +1,7 @@
 # Derived from sanitized RouterOS export section /ip firewall address-list
 0   add address=10.100.90.0/24 list=rede-admin
-1   add address=10.100.130.139 comment="DN-06 Via WI-FI" list=rede-admin
-2   add address=10.100.30.4 comment="IP BKP VM Tailscale" list=rede-admin
-3   add address=10.100.60.4 comment="IP VM Tailscale" list=rede-admin
-4   add address=10.100.60.71 list=DNS
-5   add address=10.100.60.72 list=DNS
-6   add address=10.100.30.26 comment=TS-RESCUE list=rede-admin
+1   add address=10.100.30.4 comment="IP BKP VM Tailscale" list=rede-admin
+2   add address=10.100.60.4 comment="IP VM Tailscale" list=rede-admin
+3   add address=10.100.60.71 list=DNS
+4   add address=10.100.60.72 list=DNS
+5   add address=10.100.30.26 comment=TS-RESCUE list=rede-admin

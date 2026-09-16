@@ -2,3 +2,5 @@
 0   add interface=ether3-switch list=interfaces-secure
 1   add interface=ether2-PC_DN-06 list=interfaces-secure
 2   add interface=vlan90-MGMT list=interfaces-secure
+3   add interface=ether2-PC_DN-06 list=MAC-RECOVERY
+4   add interface=ether3-switch list=DISCOVERY-UPLINK
