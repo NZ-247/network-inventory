@@ -1,5 +1,4 @@
 # Derived from sanitized RouterOS export section /ip dhcp-server
-0   add address-pool=dhcp_pool5 disabled=no interface=vlan130-guest_wifi lease-time=1h name=dhcp_guest
-1   add address-pool=dhcp_pool7 disabled=no interface=vlan30-proxmox-hosts lease-time=1h name=dhcp_proxmox
-2   add address-pool=dhcp_pool8 disabled=no interface=vlan60-services lease-time=1h name=dhcp_services
-3   add address-pool=dhcp_pool11 disabled=no interface=vlan90-MGMT lease-time=8h name=dhcp_gerencia
+0   add address-pool=pool-wifi_guest disabled=no interface=vlan130-guest_wifi lease-time=1h name=dhcp_guest
+1   add address-pool=dhcp_pool8 interface=vlan60-services lease-time=1h name=dhcp_services
+2   add address-pool=dhcp_pool11 interface=vlan90-MGMT lease-time=8h name=dhcp_gerencia

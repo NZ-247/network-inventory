@@ -1,2 +1,2 @@
 # Derived from sanitized RouterOS export section /interface bridge
-0   add frame-types=admit-only-vlan-tagged ingress-filtering=yes name=bridge-core protocol-mode=none pvid=999 vlan-filtering=yes
+0   add frame-types=admit-only-vlan-tagged ingress-filtering=yes name=bridge-core pvid=999 vlan-filtering=yes

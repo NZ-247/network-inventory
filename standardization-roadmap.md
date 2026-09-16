@@ -25,27 +25,31 @@ Roadmap atualizado pelo baseline real de 15/09/2026. As etapas abaixo nao sao sc
 | Web management Cisco | HTTP e HTTPS desabilitados. |
 | SNMP Cisco | v3 authPriv com ACL SNMP_ZABBIX_ONLY; v1/v2c removidos. |
 | NTP/DNS Cisco | NTP.br redundante e DNS via Pi-hole 10.100.60.71/72. |
+| RB management plane | IP services administrativos restritos; SSH strong-crypto; HTTP/API/Telnet/FTP desativados. |
+| RB MAC management | MAC Telnet e MAC Ping desativados; MAC-Winbox somente em ether2-PC_DN-06 via MAC-RECOVERY. |
+| RB discovery | LLDP somente no uplink ether3-switch via DISCOVERY-UPLINK. |
+| RB firewall input | Default-deny explicito com accepts restritos para MGMT/Tailscale, DHCP guest, SNMP Zabbix e ICMP limitado. |
+| RB DHCP operacional | Somente VLAN130 GUEST possui DHCP ativo, com pool 10.100.130.40-10.100.130.254. |
+| RB Guest zone | VLAN130 permite DNS para Pi-hole e Internet via PPPoE; bloqueia redes internas 10.100.0.0/16 e demais destinos. |
+| RB DNS anti-bypass GUEST | DNAT TCP/UDP 53 da VLAN130 para Pi-hole primario 10.100.60.71. |
 
 ## 3. Prioridades abertas
 
-| Severidade | ID | Item | Proxima acao |
-| --- | --- | --- | --- |
-| CRITICAL | RB-FW-001 | RB input firewall: DROP GERAL disabled | Auditar /ip service print detail, restringir servicos administrativos e aplicar default-deny seguro em Safe Mode. |
-| HIGH | RB-DHCP-001 | DHCP pools sobrepoem IPs estaticos | Separar faixas dinamicas das reservas/estaticos e revisar leases antes da mudanca. |
-| HIGH | RB-FW-002 | RB forward policy sem default-deny explicito | Definir matriz de fluxos inter-VLAN e implantar default-deny gradual, preservando fluxos necessarios. |
-| MEDIUM | RB-DNS-001 | DNS DHCP inconsistente entre VLANs | Definir politica DNS por VLAN; se Pi-hole for padrao, alinhar DHCP e NAT anti-bypass para as VLANs aplicaveis. |
-| MEDIUM | RB-NTP-001 | RB NTP client disabled | Habilitar NTP/SNTP com fontes confiaveis e validar timezone America/Cuiaba. |
-| MEDIUM | RB-SNMP-001 | RB SNMP community difere da origem liberada no firewall | Confirmar IP do Zabbix, alinhar a origem e migrar a RB para SNMPv3 authPriv. |
+| Severidade | Status | ID | Item | Proxima acao |
+| --- | --- | --- | --- | --- |
+| HIGH | PARTIAL / IN PROGRESS | RB-FW-002 | RB forward policy parcial; sem default-deny global | Mapear fluxos 30<->60, definir matriz completa e implementar default-deny global da chain forward de forma gradual. |
+| MEDIUM | OPEN | RB-NTP-001 | RB NTP client disabled | Habilitar NTP/SNTP com fontes confiaveis e validar timezone America/Cuiaba. |
+| MEDIUM | OPEN | RB-PWR-001 | Reboot nao planejado / shutdown incorreto na RT-SN-003 | Verificar alimentacao/fonte, avaliar UPS/nobreak e monitorar novos eventos de reboot inesperado no Zabbix. |
+| MEDIUM | OPEN | RB-SNMP-001 | RB SNMP community difere da origem liberada no firewall | Confirmar IP do Zabbix, alinhar a origem e migrar a RB para SNMPv3 authPriv. |
 
 ## 4. Revisao e limpeza
 
-| Severidade | ID | Item | Proxima acao |
-| --- | --- | --- | --- |
-| REVIEW | RB-DISC-001 | Neighbor discovery usa lista invertida | Validar intencao no RouterOS antes de alterar; limitar descoberta somente onde for necessario. |
-| LOW | RB-KNOCK-001 | Port-knocking popula rede-suporte sem accept correspondente | Revisar a intencao; concluir o fluxo de accept ou remover as regras orfas. |
-| LOW | RB-POOL-001 | Pools DHCP legados aparentemente nao usados | Confirmar ausencia de dependencias e remover em mudanca separada. |
-| LOW | SW-BANNER-001 | Cisco banner MOTD truncado/malformado | Remover o MOTD ou recria-lo com delimitador limpo e texto unico aprovado. |
-| LOW | SW-CLEAN-001 | Cisco ACL 10 orfa apos remocao do SNMPv2c | Remover ACL 10 apos confirmar que nao ha referencia remanescente. |
+| Severidade | Status | ID | Item | Proxima acao |
+| --- | --- | --- | --- | --- |
+| REVIEW | OPEN | RB-DNS-HA-001 | DNS anti-bypass Guest sem HA efetivo | Avaliar estrategia de HA para o DNAT DNS da VLAN130 ou documentar dependencia do Pi-hole primario. |
+| LOW | OPEN | RB-DHCP-CLEAN-001 | Limpeza DHCP residual pendente | Remover servidores disabled, pools nao usados, network definitions sem servidor ativo e lease orfa apos confirmar ausencia de dependencias. |
+| LOW | OPEN | SW-BANNER-001 | Cisco banner MOTD truncado/malformado | Remover o MOTD ou recria-lo com delimitador limpo e texto unico aprovado. |
+| LOW | OPEN | SW-CLEAN-001 | Cisco ACL 10 orfa apos remocao do SNMPv2c | Remover ACL 10 apos confirmar que nao ha referencia remanescente. |
 
 ## 5. Mapa operacional de portas
 
@@ -61,14 +65,16 @@ Roadmap atualizado pelo baseline real de 15/09/2026. As etapas abaixo nao sao sc
 
 ## 6. Sequencia segura sugerida
 
-1. Auditar `/ip service print detail` na RB e restringir management plane.
-2. Ativar default-deny seguro no input da RB em Safe Mode.
-3. Definir matriz inter-VLAN e aplicar default-deny forward gradual.
-4. Redesenhar pools DHCP para nao sobrepor IPs estaticos.
-5. Alinhar SNMP da RB ao Zabbix real e migrar para v3.
-6. Habilitar NTP/SNTP na RB.
-7. Unificar politica DNS/Pi-hole por VLAN.
-8. Limpar ACL 10 e corrigir/remover banner MOTD no Cisco.
+1. Mapear dependencias VLAN30 PROXMOX <-> VLAN60 SERVICES.
+2. Definir matriz completa inter-zonas.
+3. Implementar default-deny global da chain forward de forma gradual.
+4. Migrar SNMP da MikroTik para SNMPv3 authPriv.
+5. Habilitar NTP/SNTP na RB.
+6. Revisar HA do DNS anti-bypass da VLAN130.
+7. Remover residuos DHCP.
+8. Monitorar alimentacao/reboots inesperados.
+9. Limpar ACL 10 orfa no Cisco.
+10. Corrigir/remover banner MOTD Cisco.
 
 ## 7. Guardrails
 

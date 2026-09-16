@@ -1,2 +1,2 @@
 # Derived from sanitized RouterOS export section /tool mac-server
-0   set allowed-interface-list=interfaces-secure
+0   set allowed-interface-list=none

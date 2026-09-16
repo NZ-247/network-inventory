@@ -1,5 +1,8 @@
 # Derived from sanitized RouterOS export section /ip service
 0 X set telnet disabled=yes
 1 X set ftp disabled=yes
-2 X set api disabled=yes
-3 X set api-ssl disabled=yes
+2 X set www disabled=yes
+3   set ssh address=10.100.90.0/24,10.100.30.4/32,10.100.30.26/32,10.100.60.4/32
+4 X set api disabled=yes
+5   set winbox address=10.100.90.0/24,10.100.30.4/32,10.100.30.26/32,10.100.60.4/32
+6 X set api-ssl disabled=yes

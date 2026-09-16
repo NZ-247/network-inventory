@@ -2,7 +2,7 @@
 
 Inventario da infraestrutura de rede do homelab com baseline pos-padronizacao validado em 15/09/2026.
 
-O estado atual foi regenerado a partir do running-config Cisco `SW-SN-03`, export RouterOS `RT-SN-003` e resumo tecnico `network-baseline-2026-09-15.md`. Os raw/configs publicados foram sanitizados antes de serem gravados.
+O estado atual foi regenerado a partir do running-config Cisco `SW-SN-03`, do snapshot RouterOS pos-hardening `baseline-guest-zone.rsc`, do export historico `base_line-RT.rsc` e do resumo tecnico `network-baseline-2026-09-15.md`. Quando houver conflito, `baseline-guest-zone.rsc` prevalece para fatos da MikroTik. Os raw/configs publicados foram sanitizados antes de serem gravados.
 
 ## Arquivos principais
 
@@ -10,6 +10,7 @@ O estado atual foi regenerado a partir do running-config Cisco `SW-SN-03`, expor
 - `topology-current.md`: diagramas Mermaid de topologia.
 - `findings.md`: inconsistencias, riscos e itens de revisao.
 - `inventory.csv`: endpoints, hosts e workloads em formato tabular.
+- `data/validated-overrides.json`: evidencias validadas pelo operador que nao aparecem no export RouterOS.
 - `data/`: JSONs tratados.
 - `raw/`: saidas brutas redigidas.
 

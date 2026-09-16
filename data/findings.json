@@ -1,39 +1,17 @@
 [
   {
-    "level": "CRITICAL",
-    "id": "RB-FW-001",
-    "title": "RB input firewall: DROP GERAL disabled",
-    "evidence": "RouterOS export mostra chain=input action=drop comment=\"DROP GERAL\" disabled=yes.",
-    "impact": "Sem drop final ativo, trafego ao plano de controle da RB que nao casa com regras anteriores pode ser aceito por padrao.",
-    "recommendation": "Auditar /ip service print detail, restringir servicos administrativos e aplicar default-deny seguro em Safe Mode."
-  },
-  {
-    "level": "HIGH",
-    "id": "RB-DHCP-001",
-    "title": "DHCP pools sobrepoem IPs estaticos",
-    "evidence": "dhcp_pool7 10.100.30.2-10.100.30.254: 10.100.30.12, 10.100.30.2, 10.100.30.26, 10.100.30.3, 10.100.30.4, 10.100.30.6, 10.100.30.60, 10.100.30.9; dhcp_pool8 10.100.60.2-10.100.60.254: 10.100.60.16, 10.100.60.20, 10.100.60.4, 10.100.60.71, 10.100.60.72, 10.100.60.80; dhcp_pool11 10.100.90.2-10.100.90.254: 10.100.90.99",
-    "impact": "DHCP pode entregar endereco ja usado por PVE, Tailscale, Zabbix, Pi-hole, switch ou gateways.",
-    "recommendation": "Separar faixas dinamicas das reservas/estaticos e revisar leases antes da mudanca."
-  },
-  {
     "level": "HIGH",
     "id": "RB-FW-002",
-    "title": "RB forward policy sem default-deny explicito",
-    "evidence": "Export contem accepts/fasttrack na chain forward, mas nao contem regra final drop/reject ativa.",
-    "impact": "VLANs separam L2, mas nao provam isolamento L3 entre redes quando forward fica aceito por padrao.",
-    "recommendation": "Definir matriz de fluxos inter-VLAN e implantar default-deny gradual, preservando fluxos necessarios."
-  },
-  {
-    "level": "MEDIUM",
-    "id": "RB-DNS-001",
-    "title": "DNS DHCP inconsistente entre VLANs",
-    "evidence": "VLAN 30: 1.1.1.1,8.8.8.8, VLAN 60: 1.1.1.1,8.8.8.8, VLAN 90: 1.1.1.1,8.8.8.8, VLAN 130: 10.100.60.71,10.100.60.72",
-    "impact": "VLANs 30/60/90 usam DNS publico enquanto VLAN130 usa Pi-hole e anti-bypass, dificultando observabilidade e politica unica.",
-    "recommendation": "Definir politica DNS por VLAN; se Pi-hole for padrao, alinhar DHCP e NAT anti-bypass para as VLANs aplicaveis."
+    "status": "PARTIAL / IN PROGRESS",
+    "title": "RB forward policy parcial; sem default-deny global",
+    "evidence": "VLAN130 possui politica de zona explicita.",
+    "impact": "A zona Guest ja esta isolada, mas VLAN30 PROXMOX e VLAN60 SERVICES ainda precisam de matriz inter-zonas antes de um default-deny global.",
+    "recommendation": "Mapear fluxos 30<->60, definir matriz completa e implementar default-deny global da chain forward de forma gradual."
   },
   {
     "level": "MEDIUM",
     "id": "RB-NTP-001",
+    "status": "OPEN",
     "title": "RB NTP client disabled",
     "evidence": "O export nao contem cliente NTP/SNTP ativo; o resumo tecnico valida NTP client desabilitado.",
     "impact": "Relogio sem sincronismo confiavel prejudica correlacao de logs e auditoria.",
@@ -41,7 +19,17 @@
   },
   {
     "level": "MEDIUM",
+    "id": "RB-PWR-001",
+    "status": "OPEN",
+    "title": "Reboot nao planejado / shutdown incorreto na RT-SN-003",
+    "evidence": "Log observed: system,error,critical router rebooted without proper shutdown, probably power outage.",
+    "impact": "Gateway central pode ter sofrido interrupcao nao limpa; isso aumenta risco de indisponibilidade e perda de estado volatil.",
+    "recommendation": "Verificar alimentacao/fonte, avaliar UPS/nobreak e monitorar novos eventos de reboot inesperado no Zabbix."
+  },
+  {
+    "level": "MEDIUM",
     "id": "RB-SNMP-001",
+    "status": "OPEN",
     "title": "RB SNMP community difere da origem liberada no firewall",
     "evidence": "Community addresses=10.100.0.6/32; firewall UDP/161 src-address=10.100.30.60.",
     "impact": "O poller real pode nao casar com a community ou a regra pode permitir uma origem diferente da pretendida.",
@@ -49,31 +37,26 @@
   },
   {
     "level": "REVIEW",
-    "id": "RB-DISC-001",
-    "title": "Neighbor discovery usa lista invertida",
-    "evidence": "Export contem discover-interface-list=!interfaces-secure.",
-    "impact": "A expressao parece inversa ao nome da lista e pode expor descoberta em interfaces nao administrativas.",
-    "recommendation": "Validar intencao no RouterOS antes de alterar; limitar descoberta somente onde for necessario."
+    "id": "RB-DNS-HA-001",
+    "status": "OPEN",
+    "title": "DNS anti-bypass Guest sem HA efetivo",
+    "evidence": "DHCP GUEST entrega 10.100.60.71, 10.100.60.72, mas DNAT TCP/UDP 53 redireciona somente para 10.100.60.71.",
+    "impact": "Se o Pi-hole primario ficar indisponivel, clientes com resolver manual externo continuam redirecionados para o primario indisponivel.",
+    "recommendation": "Avaliar estrategia de HA para o DNAT DNS da VLAN130 ou documentar dependencia do Pi-hole primario."
   },
   {
     "level": "LOW",
-    "id": "RB-KNOCK-001",
-    "title": "Port-knocking popula rede-suporte sem accept correspondente",
-    "evidence": "Regras adicionam pre-rede-suporte/rede-suporte, mas o export nao mostra regra action=accept usando rede-suporte.",
-    "impact": "O fluxo de suporte pode estar incompleto ou apenas acumulando listas sem efeito pratico.",
-    "recommendation": "Revisar a intencao; concluir o fluxo de accept ou remover as regras orfas."
-  },
-  {
-    "level": "LOW",
-    "id": "RB-POOL-001",
-    "title": "Pools DHCP legados aparentemente nao usados",
-    "evidence": "Pools nao referenciados por DHCP servers ativos: dhcp_pool1, dhcp_pool4, dhcp_pool6, pool-wifi.",
-    "impact": "Residuos aumentam ambiguidade operacional e risco de reuso indevido.",
-    "recommendation": "Confirmar ausencia de dependencias e remover em mudanca separada."
+    "id": "RB-DHCP-CLEAN-001",
+    "status": "OPEN",
+    "title": "Limpeza DHCP residual pendente",
+    "evidence": "Servidores disabled: dhcp_gerencia, dhcp_services; pools sem servidor ativo: dhcp_pool11, dhcp_pool8; leases orfas: 10.100.30.7.",
+    "impact": "Residuos de DHCP nao representam colisao ativa, mas aumentam ruido operacional e risco de reuso equivocado.",
+    "recommendation": "Remover servidores disabled, pools nao usados, network definitions sem servidor ativo e lease orfa apos confirmar ausencia de dependencias."
   },
   {
     "level": "LOW",
     "id": "SW-BANNER-001",
+    "status": "OPEN",
     "title": "Cisco banner MOTD truncado/malformado",
     "evidence": "running-config mostra banner motd com delimitador/texto truncado; banner login esta integro.",
     "impact": "Nao afeta encaminhamento, mas deixa a configuracao administrativa inconsistente.",
@@ -82,6 +65,7 @@
   {
     "level": "LOW",
     "id": "SW-CLEAN-001",
+    "status": "OPEN",
     "title": "Cisco ACL 10 orfa apos remocao do SNMPv2c",
     "evidence": "running-config ainda contem access-list 10 permit 10.100.30.60, enquanto SNMP usa SNMP_ZABBIX_ONLY.",
     "impact": "Configuracao residual aumenta ruido e pode confundir auditorias futuras.",

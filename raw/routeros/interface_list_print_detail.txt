@@ -1,2 +1,4 @@
 # Derived from sanitized RouterOS export section /interface list
 0   add name=interfaces-secure
+1   add name=MAC-RECOVERY
+2   add name=DISCOVERY-UPLINK

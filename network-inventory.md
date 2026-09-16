@@ -12,9 +12,9 @@
 - Portas conectadas no switch: 7
 - Hosts Proxmox mapeados no switch: 4/4
 - Workloads Proxmox preservados do inventario PVE: 13
-- Findings abertos: 1 critical, 2 high, 3 medium, 1 review, 4 low.
+- Findings abertos: 0 critical, 1 high, 3 medium, 1 review, 3 low.
 
-Fontes primarias: `Base_line-SW.txt` (running-config Cisco), `base_line-RT.rsc` (RouterOS export) e `network-baseline-2026-09-15.md` como criterio tecnico. Segredos, hashes, PPPoE user, SNMP communities/trap-community e e-mail foram redigidos antes de gravar artefatos.
+Fontes primarias: `Base_line-SW.txt` (running-config Cisco), `baseline-guest-zone.rsc` (snapshot RouterOS pos-hardening), `base_line-RT.rsc` (export historico) e `network-baseline-2026-09-15.md` como criterio tecnico. O snapshot pos-hardening prevalece sobre o export historico. Segredos, hashes, PPPoE user, SNMP communities/trap-community e e-mail foram redigidos antes de gravar artefatos.
 
 ## 2. MikroTik RT-SN-003
 
@@ -34,12 +34,45 @@ Fontes primarias: `Base_line-SW.txt` (running-config Cisco), `base_line-RT.rsc` 
 
 ### VLANs roteadas / DHCP
 
-| VLAN | Interface | Rede | Gateway | DHCP | Pool | Range | DNS entregue |
-| --- | --- | --- | --- | --- | --- | --- | --- |
-| 30 | vlan30-proxmox-hosts | 10.100.30.0/24 | 10.100.30.1/24 | dhcp_proxmox | dhcp_pool7 | 10.100.30.2-10.100.30.254 | 1.1.1.1,8.8.8.8 |
-| 60 | vlan60-services | 10.100.60.0/24 | 10.100.60.1/24 | dhcp_services | dhcp_pool8 | 10.100.60.2-10.100.60.254 | 1.1.1.1,8.8.8.8 |
-| 90 | vlan90-MGMT | 10.100.90.0/24 | 10.100.90.1/24 | dhcp_gerencia | dhcp_pool11 | 10.100.90.2-10.100.90.254 | 1.1.1.1,8.8.8.8 |
-| 130 | vlan130-guest_wifi | 10.100.130.0/24 | 10.100.130.1/24 | dhcp_guest | dhcp_pool5 | 10.100.130.2-10.100.130.254 | 10.100.60.71,10.100.60.72 |
+| VLAN | Interface | Rede | Gateway | DHCP | Status | Pool | Range | DNS entregue |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| 30 | vlan30-proxmox-hosts | 10.100.30.0/24 | 10.100.30.1/24 | Nao determinado | none | Nao determinado | Nao determinado | 1.1.1.1,8.8.8.8 |
+| 60 | vlan60-services | 10.100.60.0/24 | 10.100.60.1/24 | dhcp_services | disabled | dhcp_pool8 | 10.100.60.100-10.100.60.254 | 1.1.1.1,8.8.8.8 |
+| 90 | vlan90-MGMT | 10.100.90.0/24 | 10.100.90.1/24 | dhcp_gerencia | disabled | dhcp_pool11 | 10.100.90.100-10.100.90.105 | 1.1.1.1,8.8.8.8 |
+| 130 | vlan130-guest_wifi | 10.100.130.0/24 | 10.100.130.1/24 | dhcp_guest | enabled | pool-wifi_guest | 10.100.130.40-10.100.130.254 | 10.100.60.71,10.100.60.72 |
+
+### Management plane MikroTik
+
+| Servico | Estado | Address/restricao |
+| --- | --- | --- |
+| telnet | disabled | all/default |
+| ftp | disabled | all/default |
+| www | disabled | all/default |
+| ssh | enabled | 10.100.90.0/24,10.100.30.4/32,10.100.30.26/32,10.100.60.4/32 |
+| api | disabled | all/default |
+| winbox | enabled | 10.100.90.0/24,10.100.30.4/32,10.100.30.26/32,10.100.60.4/32 |
+| api-ssl | disabled | all/default |
+| www-ssl | disabled | all/default |
+
+| SSH parametro | Valor |
+| --- | --- |
+| forwarding-enabled | no |
+| always-allow-password-login | no |
+| strong-crypto | yes |
+| allow-none-crypto | no |
+| host-key-size | 2048 |
+
+| MAC service | Estado | Interface-list |
+| --- | --- | --- |
+| MAC Telnet | disabled | none |
+| MAC Winbox | restricted | MAC-RECOVERY |
+| MAC Ping | disabled | no |
+
+| Discovery protocol | Interface-list | Interfaces |
+| --- | --- | --- |
+| lldp | DISCOVERY-UPLINK | ether3-switch |
+
+SSH e Winbox IP estao restritos a VLAN90 e aos enderecos Tailscale administrativos. MAC-Winbox fica restrito a `ether2-PC_DN-06` via `MAC-RECOVERY`; MAC Telnet e MAC Ping estao desativados.
 
 ### Bridge e trunk
 
@@ -118,7 +151,56 @@ Fontes primarias: `Base_line-SW.txt` (running-config Cisco), `base_line-RT.rsc` 
 
 A VLAN 999 existe no Cisco como native/blackhole para trunks e portas inutilizadas. Ela nao possui SVI/L3 funcional na RB no baseline atual.
 
-## 5. Proxmox na rede
+## 5. Firewall e zona Guest
+
+A chain input da RB esta em default-deny explicito. A chain forward possui zona Guest explicita, mas ainda nao tem default-deny global para todas as zonas; VLAN30 PROXMOX e VLAN60 SERVICES permanecem em revisao de matriz de fluxos.
+
+| Regra | Chain | Acao | In | Out | Origem | Destino | Proto | DPort |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| INPUT - ESTABLISHED RELATED | input | accept | Nao determinado | Nao determinado | Nao determinado | Nao determinado | Nao determinado | Nao determinado |
+| INPUT - DROP INVALID | input | drop | Nao determinado | Nao determinado | Nao determinado | Nao determinado | Nao determinado | Nao determinado |
+| INPUT - ADMIN VLAN90 | input | accept | vlan90-MGMT | Nao determinado | 10.100.90.0/24 | Nao determinado | Nao determinado | Nao determinado |
+| INPUT - ADMIN TS PRIMARY VLAN30 | input | accept | vlan30-proxmox-hosts | Nao determinado | 10.100.30.4 | Nao determinado | Nao determinado | Nao determinado |
+| INPUT - ADMIN TS HA VLAN30 | input | accept | vlan30-proxmox-hosts | Nao determinado | 10.100.30.26 | Nao determinado | Nao determinado | Nao determinado |
+| INPUT - ADMIN TS PRIMARY VLAN60 | input | accept | vlan60-services | Nao determinado | 10.100.60.4 | Nao determinado | Nao determinado | Nao determinado |
+| INPUT - DHCP GUEST | input | accept | vlan130-guest_wifi | Nao determinado | Nao determinado | Nao determinado | udp | 67 |
+| INPUT - SNMP ZABBIX | input | accept | vlan30-proxmox-hosts | Nao determinado | 10.100.30.60 | Nao determinado | udp | 161 |
+| INPUT - ICMP LIMITED | input | accept | Nao determinado | Nao determinado | Nao determinado | Nao determinado | icmp | Nao determinado |
+| FORWARD - FASTTRACK EST REL | forward | fasttrack-connection | Nao determinado | Nao determinado | Nao determinado | Nao determinado | Nao determinado | Nao determinado |
+| FORWARD - ESTABLISHED RELATED | forward | accept | Nao determinado | Nao determinado | Nao determinado | Nao determinado | Nao determinado | Nao determinado |
+| FORWARD - DROP INVALID | forward | drop | Nao determinado | Nao determinado | Nao determinado | Nao determinado | Nao determinado | Nao determinado |
+| FORWARD - MGMT ALL | forward | accept | vlan90-MGMT | Nao determinado | 10.100.90.0/24 | Nao determinado | Nao determinado | Nao determinado |
+| FORWARD - ICMP FRAG NEEDED | forward | accept | Nao determinado | Nao determinado | Nao determinado | Nao determinado | icmp | Nao determinado |
+| INPUT - DROP DEFAULT | input | drop | Nao determinado | Nao determinado | Nao determinado | Nao determinado | Nao determinado | Nao determinado |
+| GUEST - ALLOW DNS UDP | forward | accept | vlan130-guest_wifi | Nao determinado | Nao determinado | DNS | udp | 53 |
+| GUEST - ALLOW DNS TCP | forward | accept | vlan130-guest_wifi | Nao determinado | Nao determinado | DNS | tcp | 53 |
+| GUEST - ALLOW INTERNET | forward | accept | vlan130-guest_wifi | pppoe-Link-WaveMax | Nao determinado | Nao determinado | Nao determinado | Nao determinado |
+| GUEST - DROP INTERNAL | forward | drop | vlan130-guest_wifi | Nao determinado | Nao determinado | 10.100.0.0/16 | Nao determinado | Nao determinado |
+| GUEST - DROP OTHER | forward | drop | vlan130-guest_wifi | Nao determinado | Nao determinado | Nao determinado | Nao determinado | Nao determinado |
+
+### Politica efetiva da VLAN130
+
+| Fluxo | Politica |
+| --- | --- |
+| GUEST -> Pi-hole DNS :53 | ALLOW |
+| GUEST -> Internet / PPPoE | ALLOW |
+| GUEST -> 10.100.0.0/16 | DROP |
+| GUEST -> outros destinos | DROP |
+
+### Validacao por contadores
+
+| Regra | Pacotes observados |
+| --- | --- |
+| FORWARD - FASTTRACK EST REL | 862770 |
+| FORWARD - ESTABLISHED RELATED | 862693 |
+| FORWARD - DROP INVALID | 63 |
+| GUEST - ALLOW DNS UDP | 294 |
+| GUEST - ALLOW DNS TCP | 0 |
+| GUEST - ALLOW INTERNET | 566 |
+| GUEST - DROP INTERNAL | 37 |
+| GUEST - DROP OTHER | 0 |
+
+## 6. Proxmox na rede
 
 | Host | IP gerencia | MAC observado | Porta switch | VLAN observada |
 | --- | --- | --- | --- | --- |
@@ -127,7 +209,7 @@ A VLAN 999 existe no Cisco como native/blackhole para trunks e portas inutilizad
 | host2 | 10.100.30.6 | Nao determinado | Gi1/0/3 | 30 |
 | host3 | 10.100.30.9 | Nao determinado | Gi1/0/5 | 30 |
 
-## 6. Workloads Proxmox - Rede
+## 7. Workloads Proxmox - Rede
 
 | ID | Nome | Tipo | Host | Status | IP | Bridge | VLAN config | VLAN efetiva | Porta observada | Porta do host | VLAN observada |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
@@ -147,23 +229,20 @@ A VLAN 999 existe no Cisco como native/blackhole para trunks e portas inutilizad
 | 111 | Pag-darling | CT | host2 | running | 10.100.60.80/24 | vmbr1 | Nao determinado | 60 via bridge | Nao determinado | Gi1/0/3 | 60 |
 | 112 | streaming | VM | host3 | stopped | Nao determinado | vmbr0 | 60 | 60 | Nao determinado | Gi1/0/5 | Nao determinado |
 
-## 7. Findings abertos
+## 8. Findings abertos
 
-| Severidade | ID | Finding | Evidencia | Recomendacao |
-| --- | --- | --- | --- | --- |
-| CRITICAL | RB-FW-001 | RB input firewall: DROP GERAL disabled | RouterOS export mostra chain=input action=drop comment="DROP GERAL" disabled=yes. | Auditar /ip service print detail, restringir servicos administrativos e aplicar default-deny seguro em Safe Mode. |
-| HIGH | RB-DHCP-001 | DHCP pools sobrepoem IPs estaticos | dhcp_pool7 10.100.30.2-10.100.30.254: 10.100.30.12, 10.100.30.2, 10.100.30.26, 10.100.30.3, 10.100.30.4, 10.100.30.6, 10.100.30.60, 10.100.30.9; dhcp_pool8 10.100.60.2-10.100.60.254: 10.100.60.16, 10.100.60.20, 10.100.60.4, 10.100.60.71, 10.100.60.72, 10.100.60.80; dhcp_pool11 10.100.90.2-10.100.90.254: 10.100.90.99 | Separar faixas dinamicas das reservas/estaticos e revisar leases antes da mudanca. |
-| HIGH | RB-FW-002 | RB forward policy sem default-deny explicito | Export contem accepts/fasttrack na chain forward, mas nao contem regra final drop/reject ativa. | Definir matriz de fluxos inter-VLAN e implantar default-deny gradual, preservando fluxos necessarios. |
-| MEDIUM | RB-DNS-001 | DNS DHCP inconsistente entre VLANs | VLAN 30: 1.1.1.1,8.8.8.8, VLAN 60: 1.1.1.1,8.8.8.8, VLAN 90: 1.1.1.1,8.8.8.8, VLAN 130: 10.100.60.71,10.100.60.72 | Definir politica DNS por VLAN; se Pi-hole for padrao, alinhar DHCP e NAT anti-bypass para as VLANs aplicaveis. |
-| MEDIUM | RB-NTP-001 | RB NTP client disabled | O export nao contem cliente NTP/SNTP ativo; o resumo tecnico valida NTP client desabilitado. | Habilitar NTP/SNTP com fontes confiaveis e validar timezone America/Cuiaba. |
-| MEDIUM | RB-SNMP-001 | RB SNMP community difere da origem liberada no firewall | Community addresses=10.100.0.6/32; firewall UDP/161 src-address=10.100.30.60. | Confirmar IP do Zabbix, alinhar a origem e migrar a RB para SNMPv3 authPriv. |
-| REVIEW | RB-DISC-001 | Neighbor discovery usa lista invertida | Export contem discover-interface-list=!interfaces-secure. | Validar intencao no RouterOS antes de alterar; limitar descoberta somente onde for necessario. |
-| LOW | RB-KNOCK-001 | Port-knocking popula rede-suporte sem accept correspondente | Regras adicionam pre-rede-suporte/rede-suporte, mas o export nao mostra regra action=accept usando rede-suporte. | Revisar a intencao; concluir o fluxo de accept ou remover as regras orfas. |
-| LOW | RB-POOL-001 | Pools DHCP legados aparentemente nao usados | Pools nao referenciados por DHCP servers ativos: dhcp_pool1, dhcp_pool4, dhcp_pool6, pool-wifi. | Confirmar ausencia de dependencias e remover em mudanca separada. |
-| LOW | SW-BANNER-001 | Cisco banner MOTD truncado/malformado | running-config mostra banner motd com delimitador/texto truncado; banner login esta integro. | Remover o MOTD ou recria-lo com delimitador limpo e texto unico aprovado. |
-| LOW | SW-CLEAN-001 | Cisco ACL 10 orfa apos remocao do SNMPv2c | running-config ainda contem access-list 10 permit 10.100.30.60, enquanto SNMP usa SNMP_ZABBIX_ONLY. | Remover ACL 10 apos confirmar que nao ha referencia remanescente. |
+| Severidade | Status | ID | Finding | Evidencia | Recomendacao |
+| --- | --- | --- | --- | --- | --- |
+| HIGH | PARTIAL / IN PROGRESS | RB-FW-002 | RB forward policy parcial; sem default-deny global | VLAN130 possui politica de zona explicita. | Mapear fluxos 30<->60, definir matriz completa e implementar default-deny global da chain forward de forma gradual. |
+| MEDIUM | OPEN | RB-NTP-001 | RB NTP client disabled | O export nao contem cliente NTP/SNTP ativo; o resumo tecnico valida NTP client desabilitado. | Habilitar NTP/SNTP com fontes confiaveis e validar timezone America/Cuiaba. |
+| MEDIUM | OPEN | RB-PWR-001 | Reboot nao planejado / shutdown incorreto na RT-SN-003 | Log observed: system,error,critical router rebooted without proper shutdown, probably power outage. | Verificar alimentacao/fonte, avaliar UPS/nobreak e monitorar novos eventos de reboot inesperado no Zabbix. |
+| MEDIUM | OPEN | RB-SNMP-001 | RB SNMP community difere da origem liberada no firewall | Community addresses=10.100.0.6/32; firewall UDP/161 src-address=10.100.30.60. | Confirmar IP do Zabbix, alinhar a origem e migrar a RB para SNMPv3 authPriv. |
+| REVIEW | OPEN | RB-DNS-HA-001 | DNS anti-bypass Guest sem HA efetivo | DHCP GUEST entrega 10.100.60.71, 10.100.60.72, mas DNAT TCP/UDP 53 redireciona somente para 10.100.60.71. | Avaliar estrategia de HA para o DNAT DNS da VLAN130 ou documentar dependencia do Pi-hole primario. |
+| LOW | OPEN | RB-DHCP-CLEAN-001 | Limpeza DHCP residual pendente | Servidores disabled: dhcp_gerencia, dhcp_services; pools sem servidor ativo: dhcp_pool11, dhcp_pool8; leases orfas: 10.100.30.7. | Remover servidores disabled, pools nao usados, network definitions sem servidor ativo e lease orfa apos confirmar ausencia de dependencias. |
+| LOW | OPEN | SW-BANNER-001 | Cisco banner MOTD truncado/malformado | running-config mostra banner motd com delimitador/texto truncado; banner login esta integro. | Remover o MOTD ou recria-lo com delimitador limpo e texto unico aprovado. |
+| LOW | OPEN | SW-CLEAN-001 | Cisco ACL 10 orfa apos remocao do SNMPv2c | running-config ainda contem access-list 10 permit 10.100.30.60, enquanto SNMP usa SNMP_ZABBIX_ONLY. | Remover ACL 10 apos confirmar que nao ha referencia remanescente. |
 
-## 8. Observacoes de relacionamento
+## 9. Observacoes de relacionamento
 
 - A RB RT-SN-003 chega ao switch pela porta Gi1/0/1, associada ao ether3-switch/bridge-core.
 - VLANs 30, 60, 90 e 130 passam no trunk RB-Cisco; VLAN 999 e somente native/blackhole no Cisco.
@@ -171,9 +250,10 @@ A VLAN 999 existe no Cisco como native/blackhole para trunks e portas inutilizad
 - O export atual da RB nao traz ARP/MAC operacional; por isso os hosts PVE sao ligados as portas pelo baseline Cisco e os fatos PVE ja existentes.
 - O comportamento do storage hd1tb visto no cluster Proxmox continua fora do escopo deste baseline de rede.
 
-## 9. Arquivos de origem
+## 10. Arquivos de origem
 
-- Fontes sanitizadas: `Base_line-SW.txt`, `base_line-RT.rsc`, `network-baseline-2026-09-15.md`
+- Fontes sanitizadas: `Base_line-SW.txt`, `baseline-guest-zone.rsc`, `base_line-RT.rsc`, `network-baseline-2026-09-15.md`
+- Overrides validados: `data/validated-overrides.json`
 - Raw RouterOS sanitizado: `raw/routeros.stream` e `raw/routeros/*.txt`
 - Raw switch sanitizado/derivado: `raw/switch.stream` e `raw/switch/*.txt`
 - Dados tratados: `data/*.json`

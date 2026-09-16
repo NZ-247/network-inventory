@@ -81,16 +81,73 @@
       "_raw": "add interface=bridge-core name=vlan130-guest_wifi vlan-id=130"
     }
   ],
+  "interface_lists": [
+    {
+      "name": "interfaces-secure",
+      "_action": "add",
+      "_target": "",
+      "_raw": "add name=interfaces-secure"
+    },
+    {
+      "name": "MAC-RECOVERY",
+      "_action": "add",
+      "_target": "",
+      "_raw": "add name=MAC-RECOVERY"
+    },
+    {
+      "name": "DISCOVERY-UPLINK",
+      "_action": "add",
+      "_target": "",
+      "_raw": "add name=DISCOVERY-UPLINK"
+    }
+  ],
+  "interface_list_members": [
+    {
+      "interface": "ether3-switch",
+      "list": "interfaces-secure",
+      "_action": "add",
+      "_target": "",
+      "_raw": "add interface=ether3-switch list=interfaces-secure"
+    },
+    {
+      "interface": "ether2-PC_DN-06",
+      "list": "interfaces-secure",
+      "_action": "add",
+      "_target": "",
+      "_raw": "add interface=ether2-PC_DN-06 list=interfaces-secure"
+    },
+    {
+      "interface": "vlan90-MGMT",
+      "list": "interfaces-secure",
+      "_action": "add",
+      "_target": "",
+      "_raw": "add interface=vlan90-MGMT list=interfaces-secure"
+    },
+    {
+      "interface": "ether2-PC_DN-06",
+      "list": "MAC-RECOVERY",
+      "_action": "add",
+      "_target": "",
+      "_raw": "add interface=ether2-PC_DN-06 list=MAC-RECOVERY"
+    },
+    {
+      "interface": "ether3-switch",
+      "list": "DISCOVERY-UPLINK",
+      "_action": "add",
+      "_target": "",
+      "_raw": "add interface=ether3-switch list=DISCOVERY-UPLINK"
+    }
+  ],
   "bridge": {
     "frame-types": "admit-only-vlan-tagged",
     "ingress-filtering": "yes",
     "name": "bridge-core",
-    "protocol-mode": "none",
     "pvid": "999",
     "vlan-filtering": "yes",
     "_action": "add",
     "_target": "",
-    "_raw": "add frame-types=admit-only-vlan-tagged ingress-filtering=yes name=bridge-core protocol-mode=none pvid=999 vlan-filtering=yes"
+    "_raw": "add frame-types=admit-only-vlan-tagged ingress-filtering=yes name=bridge-core pvid=999 vlan-filtering=yes protocol-mode=none",
+    "protocol-mode": "none"
   },
   "bridge_ports": [
     {
@@ -157,9 +214,10 @@
       "parent": "bridge-core",
       "gateway": "10.100.30.1/24",
       "network": "10.100.30.0/24",
-      "dhcp_server": "dhcp_proxmox",
-      "dhcp_pool": "dhcp_pool7",
-      "dhcp_pool_range": "10.100.30.2-10.100.30.254",
+      "dhcp_server": "Nao determinado",
+      "dhcp_status": "none",
+      "dhcp_pool": "Nao determinado",
+      "dhcp_pool_range": "Nao determinado",
       "dhcp_dns": "1.1.1.1,8.8.8.8",
       "domain": "services.net.br"
     },
@@ -170,8 +228,9 @@
       "gateway": "10.100.60.1/24",
       "network": "10.100.60.0/24",
       "dhcp_server": "dhcp_services",
+      "dhcp_status": "disabled",
       "dhcp_pool": "dhcp_pool8",
-      "dhcp_pool_range": "10.100.60.2-10.100.60.254",
+      "dhcp_pool_range": "10.100.60.100-10.100.60.254",
       "dhcp_dns": "1.1.1.1,8.8.8.8",
       "domain": "services.net.br"
     },
@@ -182,8 +241,9 @@
       "gateway": "10.100.90.1/24",
       "network": "10.100.90.0/24",
       "dhcp_server": "dhcp_gerencia",
+      "dhcp_status": "disabled",
       "dhcp_pool": "dhcp_pool11",
-      "dhcp_pool_range": "10.100.90.2-10.100.90.254",
+      "dhcp_pool_range": "10.100.90.100-10.100.90.105",
       "dhcp_dns": "1.1.1.1,8.8.8.8",
       "domain": "services.net.br"
     },
@@ -194,68 +254,34 @@
       "gateway": "10.100.130.1/24",
       "network": "10.100.130.0/24",
       "dhcp_server": "dhcp_guest",
-      "dhcp_pool": "dhcp_pool5",
-      "dhcp_pool_range": "10.100.130.2-10.100.130.254",
+      "dhcp_status": "enabled",
+      "dhcp_pool": "pool-wifi_guest",
+      "dhcp_pool_range": "10.100.130.40-10.100.130.254",
       "dhcp_dns": "10.100.60.71,10.100.60.72",
       "domain": "services.net.br"
     }
   ],
   "pools": [
     {
-      "name": "dhcp_pool1",
-      "ranges": "10.100.10.10-10.100.255.254",
-      "_action": "add",
-      "_target": "",
-      "_raw": "add name=dhcp_pool1 ranges=10.100.10.10-10.100.255.254"
-    },
-    {
-      "name": "pool-wifi",
-      "ranges": "10.100.130.0-10.100.130.254",
-      "_action": "add",
-      "_target": "",
-      "_raw": "add name=pool-wifi ranges=10.100.130.0-10.100.130.254"
-    },
-    {
-      "name": "dhcp_pool4",
-      "ranges": "10.100.130.2-10.100.130.254",
-      "_action": "add",
-      "_target": "",
-      "_raw": "add name=dhcp_pool4 ranges=10.100.130.2-10.100.130.254"
-    },
-    {
-      "name": "dhcp_pool5",
-      "ranges": "10.100.130.2-10.100.130.254",
-      "_action": "add",
-      "_target": "",
-      "_raw": "add name=dhcp_pool5 ranges=10.100.130.2-10.100.130.254"
-    },
-    {
-      "name": "dhcp_pool6",
-      "ranges": "10.100.0.2-10.100.0.254",
-      "_action": "add",
-      "_target": "",
-      "_raw": "add name=dhcp_pool6 ranges=10.100.0.2-10.100.0.254"
-    },
-    {
-      "name": "dhcp_pool7",
-      "ranges": "10.100.30.2-10.100.30.254",
-      "_action": "add",
-      "_target": "",
-      "_raw": "add name=dhcp_pool7 ranges=10.100.30.2-10.100.30.254"
-    },
-    {
       "name": "dhcp_pool8",
-      "ranges": "10.100.60.2-10.100.60.254",
+      "ranges": "10.100.60.100-10.100.60.254",
       "_action": "add",
       "_target": "",
-      "_raw": "add name=dhcp_pool8 ranges=10.100.60.2-10.100.60.254"
+      "_raw": "add name=dhcp_pool8 ranges=10.100.60.100-10.100.60.254"
     },
     {
       "name": "dhcp_pool11",
-      "ranges": "10.100.90.2-10.100.90.254",
+      "ranges": "10.100.90.100-10.100.90.105",
       "_action": "add",
       "_target": "",
-      "_raw": "add name=dhcp_pool11 ranges=10.100.90.2-10.100.90.254"
+      "_raw": "add name=dhcp_pool11 ranges=10.100.90.100-10.100.90.105"
+    },
+    {
+      "name": "pool-wifi_guest",
+      "ranges": "10.100.130.40-10.100.130.254",
+      "_action": "add",
+      "_target": "",
+      "_raw": "add name=pool-wifi_guest ranges=10.100.130.40-10.100.130.254"
     }
   ],
   "ip_addresses": [
@@ -301,45 +327,42 @@
   },
   "dhcp_servers": [
     {
-      "address-pool": "dhcp_pool5",
+      "address-pool": "pool-wifi_guest",
       "disabled": "no",
       "interface": "vlan130-guest_wifi",
       "lease-time": "1h",
       "name": "dhcp_guest",
       "_action": "add",
       "_target": "",
-      "_raw": "add address-pool=dhcp_pool5 disabled=no interface=vlan130-guest_wifi lease-time=1h name=dhcp_guest"
-    },
-    {
-      "address-pool": "dhcp_pool7",
-      "disabled": "no",
-      "interface": "vlan30-proxmox-hosts",
-      "lease-time": "1h",
-      "name": "dhcp_proxmox",
-      "_action": "add",
-      "_target": "",
-      "_raw": "add address-pool=dhcp_pool7 disabled=no interface=vlan30-proxmox-hosts lease-time=1h name=dhcp_proxmox"
+      "_raw": "add address-pool=pool-wifi_guest disabled=no interface=vlan130-guest_wifi lease-time=1h name=dhcp_guest",
+      "status": "enabled",
+      "disabled_effective": "no"
     },
     {
       "address-pool": "dhcp_pool8",
-      "disabled": "no",
       "interface": "vlan60-services",
       "lease-time": "1h",
       "name": "dhcp_services",
       "_action": "add",
       "_target": "",
-      "_raw": "add address-pool=dhcp_pool8 disabled=no interface=vlan60-services lease-time=1h name=dhcp_services"
+      "_raw": "add address-pool=dhcp_pool8 interface=vlan60-services lease-time=1h name=dhcp_services",
+      "status": "disabled",
+      "disabled_effective": "yes"
     },
     {
       "address-pool": "dhcp_pool11",
-      "disabled": "no",
       "interface": "vlan90-MGMT",
       "lease-time": "8h",
       "name": "dhcp_gerencia",
       "_action": "add",
       "_target": "",
-      "_raw": "add address-pool=dhcp_pool11 disabled=no interface=vlan90-MGMT lease-time=8h name=dhcp_gerencia"
+      "_raw": "add address-pool=dhcp_pool11 interface=vlan90-MGMT lease-time=8h name=dhcp_gerencia",
+      "status": "disabled",
+      "disabled_effective": "yes"
     }
+  ],
+  "active_dhcp_pools": [
+    "pool-wifi_guest"
   ],
   "dhcp_networks": [
     {
@@ -393,10 +416,9 @@
       "address": "10.100.30.7",
       "client-id": "1:50:0:0:1:0:0",
       "mac-address": "50:00:00:01:00:00",
-      "server": "dhcp_proxmox",
       "_action": "add",
       "_target": "",
-      "_raw": "add address=10.100.30.7 client-id=1:50:0:0:1:0:0 mac-address=50:00:00:01:00:00 server=dhcp_proxmox"
+      "_raw": "add address=10.100.30.7 client-id=1:50:0:0:1:0:0 mac-address=50:00:00:01:00:00"
     }
   ],
   "arp": [],
@@ -418,9 +440,30 @@
     {
       "disabled": "yes",
       "_action": "set",
+      "_target": "www",
+      "_raw": "set www disabled=yes",
+      "name": "www"
+    },
+    {
+      "address": "10.100.90.0/24,10.100.30.4/32,10.100.30.26/32,10.100.60.4/32",
+      "_action": "set",
+      "_target": "ssh",
+      "_raw": "set ssh address=10.100.90.0/24,10.100.30.4/32,10.100.30.26/32,10.100.60.4/32",
+      "name": "ssh"
+    },
+    {
+      "disabled": "yes",
+      "_action": "set",
       "_target": "api",
       "_raw": "set api disabled=yes",
       "name": "api"
+    },
+    {
+      "address": "10.100.90.0/24,10.100.30.4/32,10.100.30.26/32,10.100.60.4/32",
+      "_action": "set",
+      "_target": "winbox",
+      "_raw": "set winbox address=10.100.90.0/24,10.100.30.4/32,10.100.30.26/32,10.100.60.4/32",
+      "name": "winbox"
     },
     {
       "disabled": "yes",
@@ -430,6 +473,30 @@
       "name": "api-ssl"
     }
   ],
+  "ip_ssh": {
+    "strong-crypto": "yes",
+    "_action": "set",
+    "_target": "",
+    "_raw": "set strong-crypto=yes"
+  },
+  "mac_server": {
+    "allowed-interface-list": "none",
+    "_action": "set",
+    "_target": "",
+    "_raw": "set allowed-interface-list=none"
+  },
+  "mac_winbox": {
+    "allowed-interface-list": "MAC-RECOVERY",
+    "_action": "set",
+    "_target": "",
+    "_raw": "set allowed-interface-list=MAC-RECOVERY"
+  },
+  "mac_ping": {
+    "enabled": "no",
+    "_action": "set",
+    "_target": "",
+    "_raw": "set enabled=no"
+  },
   "address_lists": [
     {
       "address": "10.100.90.0/24",
@@ -437,14 +504,6 @@
       "_action": "add",
       "_target": "",
       "_raw": "add address=10.100.90.0/24 list=rede-admin"
-    },
-    {
-      "address": "10.100.130.139",
-      "comment": "DN-06 Via WI-FI",
-      "list": "rede-admin",
-      "_action": "add",
-      "_target": "",
-      "_raw": "add address=10.100.130.139 comment=\"DN-06 Via WI-FI\" list=rede-admin"
     },
     {
       "address": "10.100.30.4",
@@ -487,134 +546,204 @@
   ],
   "firewall_filters": [
     {
-      "action": "fasttrack-connection",
-      "chain": "forward",
-      "comment": "Ativa FastTrack",
+      "action": "accept",
+      "chain": "input",
+      "comment": "INPUT - ESTABLISHED RELATED",
       "connection-state": "established,related",
       "_action": "add",
       "_target": "",
-      "_raw": "add action=fasttrack-connection chain=forward comment=\"Ativa FastTrack\" connection-state=established,related"
-    },
-    {
-      "action": "accept",
-      "chain": "input",
-      "comment": "Rede-Admin",
-      "src-address-list": "rede-admin",
-      "_action": "add",
-      "_target": "",
-      "_raw": "add action=accept chain=input comment=Rede-Admin src-address-list=rede-admin"
-    },
-    {
-      "action": "accept",
-      "chain": "forward",
-      "comment": "Permite tr\\E1fego passar no FastTrack",
-      "connection-state": "established,related",
-      "_action": "add",
-      "_target": "",
-      "_raw": "add action=accept chain=forward comment=\"Permite tr\\E1fego passar no FastTrack\" connection-state=established,related"
-    },
-    {
-      "action": "accept",
-      "chain": "input",
-      "comment": "Allow full access from MGMT VLAN",
-      "in-interface": "vlan90-MGMT",
-      "_action": "add",
-      "_target": "",
-      "_raw": "add action=accept chain=input comment=\"Allow full access from MGMT VLAN\" in-interface=vlan90-MGMT"
-    },
-    {
-      "action": "accept",
-      "chain": "forward",
-      "comment": "MGMT -> ALL",
-      "in-interface": "vlan90-MGMT",
-      "src-address": "10.100.90.0/24",
-      "_action": "add",
-      "_target": "",
-      "_raw": "add action=accept chain=forward comment=\"MGMT -> ALL\" in-interface=vlan90-MGMT src-address=10.100.90.0/24"
-    },
-    {
-      "action": "accept",
-      "chain": "input",
-      "comment": "Aceita conex\\F5es estabelecidas ou relacionadas",
-      "connection-state": "established,related",
-      "_action": "add",
-      "_target": "",
-      "_raw": "add action=accept chain=input comment=\"Aceita conex\\F5es estabelecidas ou relacionadas\" connection-state=established,related"
-    },
-    {
-      "action": "accept",
-      "chain": "input",
-      "comment": "Aceita 50 packages ICMP/S",
-      "limit": "50,5:packet",
-      "protocol": "icmp",
-      "_action": "add",
-      "_target": "",
-      "_raw": "add action=accept chain=input comment=\"Aceita 50 packages ICMP/S\" limit=50,5:packet protocol=icmp"
-    },
-    {
-      "action": "accept",
-      "chain": "input",
-      "comment": "Libera SMNP para Zabbix",
-      "dst-port": "161",
-      "protocol": "udp",
-      "src-address": "10.100.30.60",
-      "_action": "add",
-      "_target": "",
-      "_raw": "add action=accept chain=input comment=\"Libera SMNP para Zabbix\" dst-port=161 protocol=udp src-address=10.100.30.60"
-    },
-    {
-      "action": "accept",
-      "chain": "forward",
-      "comment": "Permitir ICMP Frag Needed",
-      "icmp-options": "3:4",
-      "protocol": "icmp",
-      "_action": "add",
-      "_target": "",
-      "_raw": "add action=accept chain=forward comment=\"Permitir ICMP Frag Needed\" icmp-options=3:4 protocol=icmp"
-    },
-    {
-      "action": "accept",
-      "chain": "input",
-      "comment": "Permitir Frag Needed para o Mikrotik",
-      "icmp-options": "3:4",
-      "protocol": "icmp",
-      "_action": "add",
-      "_target": "",
-      "_raw": "add action=accept chain=input comment=\"Permitir Frag Needed para o Mikrotik\" icmp-options=3:4 protocol=icmp"
-    },
-    {
-      "action": "add-src-to-address-list",
-      "address-list": "pre-rede-suporte",
-      "address-list-timeout": "3s",
-      "chain": "input",
-      "comment": "Pega IP para pre-rede-Admin",
-      "dst-port": "3399",
-      "protocol": "tcp",
-      "_action": "add",
-      "_target": "",
-      "_raw": "add action=add-src-to-address-list address-list=pre-rede-suporte address-list-timeout=3s chain=input comment=\"Pega IP para pre-rede-Admin\" dst-port=3399 protocol=tcp"
-    },
-    {
-      "action": "add-src-to-address-list",
-      "address-list": "rede-suporte",
-      "address-list-timeout": "5h",
-      "chain": "input",
-      "comment": "Pega IP para rede Admin",
-      "dst-port": "6699",
-      "protocol": "tcp",
-      "src-address-list": "pre-rede-suporte",
-      "_action": "add",
-      "_target": "",
-      "_raw": "add action=add-src-to-address-list address-list=rede-suporte address-list-timeout=5h chain=input comment=\"Pega IP para rede Admin\" dst-port=6699 protocol=tcp src-address-list=pre-rede-suporte"
+      "_raw": "add action=accept chain=input comment=\"INPUT - ESTABLISHED RELATED\" connection-state=established,related"
     },
     {
       "action": "drop",
       "chain": "input",
-      "comment": "DROP GERAL",
-      "disabled": "yes",
+      "comment": "INPUT - DROP INVALID",
+      "connection-state": "invalid",
       "_action": "add",
       "_target": "",
-      "_raw": "add action=drop chain=input comment=\"DROP GERAL\" disabled=yes"
+      "_raw": "add action=drop chain=input comment=\"INPUT - DROP INVALID\" connection-state=invalid"
+    },
+    {
+      "action": "accept",
+      "chain": "input",
+      "comment": "INPUT - ADMIN VLAN90",
+      "in-interface": "vlan90-MGMT",
+      "src-address": "10.100.90.0/24",
+      "_action": "add",
+      "_target": "",
+      "_raw": "add action=accept chain=input comment=\"INPUT - ADMIN VLAN90\" in-interface=vlan90-MGMT src-address=10.100.90.0/24"
+    },
+    {
+      "action": "accept",
+      "chain": "input",
+      "comment": "INPUT - ADMIN TS PRIMARY VLAN30",
+      "in-interface": "vlan30-proxmox-hosts",
+      "src-address": "10.100.30.4",
+      "_action": "add",
+      "_target": "",
+      "_raw": "add action=accept chain=input comment=\"INPUT - ADMIN TS PRIMARY VLAN30\" in-interface=vlan30-proxmox-hosts src-address=10.100.30.4"
+    },
+    {
+      "action": "accept",
+      "chain": "input",
+      "comment": "INPUT - ADMIN TS HA VLAN30",
+      "in-interface": "vlan30-proxmox-hosts",
+      "src-address": "10.100.30.26",
+      "_action": "add",
+      "_target": "",
+      "_raw": "add action=accept chain=input comment=\"INPUT - ADMIN TS HA VLAN30\" in-interface=vlan30-proxmox-hosts src-address=10.100.30.26"
+    },
+    {
+      "action": "accept",
+      "chain": "input",
+      "comment": "INPUT - ADMIN TS PRIMARY VLAN60",
+      "in-interface": "vlan60-services",
+      "src-address": "10.100.60.4",
+      "_action": "add",
+      "_target": "",
+      "_raw": "add action=accept chain=input comment=\"INPUT - ADMIN TS PRIMARY VLAN60\" in-interface=vlan60-services src-address=10.100.60.4"
+    },
+    {
+      "action": "accept",
+      "chain": "input",
+      "comment": "INPUT - DHCP GUEST",
+      "dst-port": "67",
+      "in-interface": "vlan130-guest_wifi",
+      "protocol": "udp",
+      "src-port": "68",
+      "_action": "add",
+      "_target": "",
+      "_raw": "add action=accept chain=input comment=\"INPUT - DHCP GUEST\" dst-port=67 in-interface=vlan130-guest_wifi protocol=udp src-port=68"
+    },
+    {
+      "action": "accept",
+      "chain": "input",
+      "comment": "INPUT - SNMP ZABBIX",
+      "dst-port": "161",
+      "in-interface": "vlan30-proxmox-hosts",
+      "protocol": "udp",
+      "src-address": "10.100.30.60",
+      "_action": "add",
+      "_target": "",
+      "_raw": "add action=accept chain=input comment=\"INPUT - SNMP ZABBIX\" dst-port=161 in-interface=vlan30-proxmox-hosts protocol=udp src-address=10.100.30.60"
+    },
+    {
+      "action": "accept",
+      "chain": "input",
+      "comment": "INPUT - ICMP LIMITED",
+      "limit": "50,5:packet",
+      "protocol": "icmp",
+      "_action": "add",
+      "_target": "",
+      "_raw": "add action=accept chain=input comment=\"INPUT - ICMP LIMITED\" limit=50,5:packet protocol=icmp"
+    },
+    {
+      "action": "fasttrack-connection",
+      "chain": "forward",
+      "comment": "FORWARD - FASTTRACK EST REL",
+      "connection-state": "established,related",
+      "_action": "add",
+      "_target": "",
+      "_raw": "add action=fasttrack-connection chain=forward comment=\"FORWARD - FASTTRACK EST REL\" connection-state=established,related"
+    },
+    {
+      "action": "accept",
+      "chain": "forward",
+      "comment": "FORWARD - ESTABLISHED RELATED",
+      "connection-state": "established,related",
+      "_action": "add",
+      "_target": "",
+      "_raw": "add action=accept chain=forward comment=\"FORWARD - ESTABLISHED RELATED\" connection-state=established,related"
+    },
+    {
+      "action": "drop",
+      "chain": "forward",
+      "comment": "FORWARD - DROP INVALID",
+      "connection-state": "invalid",
+      "_action": "add",
+      "_target": "",
+      "_raw": "add action=drop chain=forward comment=\"FORWARD - DROP INVALID\" connection-state=invalid"
+    },
+    {
+      "action": "accept",
+      "chain": "forward",
+      "comment": "FORWARD - MGMT ALL",
+      "in-interface": "vlan90-MGMT",
+      "src-address": "10.100.90.0/24",
+      "_action": "add",
+      "_target": "",
+      "_raw": "add action=accept chain=forward comment=\"FORWARD - MGMT ALL\" in-interface=vlan90-MGMT src-address=10.100.90.0/24"
+    },
+    {
+      "action": "accept",
+      "chain": "forward",
+      "comment": "FORWARD - ICMP FRAG NEEDED",
+      "icmp-options": "3:4",
+      "protocol": "icmp",
+      "_action": "add",
+      "_target": "",
+      "_raw": "add action=accept chain=forward comment=\"FORWARD - ICMP FRAG NEEDED\" icmp-options=3:4 protocol=icmp"
+    },
+    {
+      "action": "drop",
+      "chain": "input",
+      "comment": "INPUT - DROP DEFAULT",
+      "_action": "add",
+      "_target": "",
+      "_raw": "add action=drop chain=input comment=\"INPUT - DROP DEFAULT\""
+    },
+    {
+      "action": "accept",
+      "chain": "forward",
+      "comment": "GUEST - ALLOW DNS UDP",
+      "dst-address-list": "DNS",
+      "dst-port": "53",
+      "in-interface": "vlan130-guest_wifi",
+      "protocol": "udp",
+      "_action": "add",
+      "_target": "",
+      "_raw": "add action=accept chain=forward comment=\"GUEST - ALLOW DNS UDP\" dst-address-list=DNS dst-port=53 in-interface=vlan130-guest_wifi protocol=udp"
+    },
+    {
+      "action": "accept",
+      "chain": "forward",
+      "comment": "GUEST - ALLOW DNS TCP",
+      "dst-address-list": "DNS",
+      "dst-port": "53",
+      "in-interface": "vlan130-guest_wifi",
+      "protocol": "tcp",
+      "_action": "add",
+      "_target": "",
+      "_raw": "add action=accept chain=forward comment=\"GUEST - ALLOW DNS TCP\" dst-address-list=DNS dst-port=53 in-interface=vlan130-guest_wifi protocol=tcp"
+    },
+    {
+      "action": "accept",
+      "chain": "forward",
+      "comment": "GUEST - ALLOW INTERNET",
+      "in-interface": "vlan130-guest_wifi",
+      "out-interface": "pppoe-Link-WaveMax",
+      "_action": "add",
+      "_target": "",
+      "_raw": "add action=accept chain=forward comment=\"GUEST - ALLOW INTERNET\" in-interface=vlan130-guest_wifi out-interface=pppoe-Link-WaveMax"
+    },
+    {
+      "action": "drop",
+      "chain": "forward",
+      "comment": "GUEST - DROP INTERNAL",
+      "dst-address": "10.100.0.0/16",
+      "in-interface": "vlan130-guest_wifi",
+      "_action": "add",
+      "_target": "",
+      "_raw": "add action=drop chain=forward comment=\"GUEST - DROP INTERNAL\" dst-address=10.100.0.0/16 in-interface=vlan130-guest_wifi"
+    },
+    {
+      "action": "drop",
+      "chain": "forward",
+      "comment": "GUEST - DROP OTHER",
+      "in-interface": "vlan130-guest_wifi",
+      "_action": "add",
+      "_target": "",
+      "_raw": "add action=drop chain=forward comment=\"GUEST - DROP OTHER\" in-interface=vlan130-guest_wifi"
     }
   ],
   "firewall_nat": [
@@ -681,13 +810,69 @@
     }
   ],
   "neighbor_discovery": {
-    "discover-interface-list": "!interfaces-secure",
+    "discover-interface-list": "DISCOVERY-UPLINK",
+    "protocol": "lldp",
     "_action": "set",
     "_target": "",
-    "_raw": "set discover-interface-list=!interfaces-secure"
+    "_raw": "set discover-interface-list=DISCOVERY-UPLINK protocol=lldp"
   },
   "ntp_client_enabled": false,
   "collection_warnings": [
-    "RouterOS facts derived from sanitized export base_line-RT.rsc; operational ARP/MAC/route counters were not part of this baseline."
-  ]
+    "RouterOS facts derived from sanitized export baseline-guest-zone.rsc; operational ARP/MAC/route counters were not part of this baseline."
+  ],
+  "validated_overrides": {
+    "latest_snapshot": "baseline-guest-zone.rsc",
+    "bridge_protocol_mode": "none",
+    "ip_services": {
+      "www-ssl": {
+        "status": "disabled",
+        "address": "all/default"
+      }
+    },
+    "ssh_security": {
+      "forwarding-enabled": "no",
+      "always-allow-password-login": "no",
+      "strong-crypto": "yes",
+      "allow-none-crypto": "no",
+      "host-key-size": "2048"
+    },
+    "power_event": {
+      "uptime_after_event": "1h16m43s",
+      "evidence": "Log observed: system,error,critical router rebooted without proper shutdown, probably power outage."
+    },
+    "guest_firewall_counters": [
+      {
+        "rule": "FORWARD - FASTTRACK EST REL",
+        "packets": 862770
+      },
+      {
+        "rule": "FORWARD - ESTABLISHED RELATED",
+        "packets": 862693
+      },
+      {
+        "rule": "FORWARD - DROP INVALID",
+        "packets": 63
+      },
+      {
+        "rule": "GUEST - ALLOW DNS UDP",
+        "packets": 294
+      },
+      {
+        "rule": "GUEST - ALLOW DNS TCP",
+        "packets": 0
+      },
+      {
+        "rule": "GUEST - ALLOW INTERNET",
+        "packets": 566
+      },
+      {
+        "rule": "GUEST - DROP INTERNAL",
+        "packets": 37
+      },
+      {
+        "rule": "GUEST - DROP OTHER",
+        "packets": 0
+      }
+    ]
+  }
 }
